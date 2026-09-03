@@ -41,3 +41,7 @@ uv run --project proto sect-proto filter fixtures/corpus --questions eval/questi
 ```
 
 Hand-written questions cover the other types. Everything refers to the synthetic Title 99 in `fixtures/corpus`; none of it is real law.
+
+## Real titles
+
+`ecfr/title1-queries.jsonl` holds 50 queries over the converted eCFR Title 1 (`corpora/ecfr`, built by `packages/sect-convert`): 45 locate, 2 id-lookup, 3 definition, each with an `expected` section as a hint for a human reader. Milestone 4 uses them for latency (`eval/eval_m4.py`); milestone 5 turns them into a gold-labelled set with the CRAwLeR recipe for cross-references.

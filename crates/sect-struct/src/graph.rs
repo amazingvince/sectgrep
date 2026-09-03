@@ -151,27 +151,48 @@ pub fn build_graph(docs: &[Document], tree: &Tree) -> Graph {
             g.tables.push(TableRec { id: id.clone(), expr: expr.clone(), index: i, line: t.line, header: t.header.clone(), rows: t.rows.clone(), flat_rows: t.flat_rows() });
         }
     }
-    // Terms: defined in current Expressions; usages counted over current Expressions of other Works.
+    // Terms: defined in current Expressions; usages counted over current section-level
+    // Expressions of other Works with one combined regex pass per document (not one per term).
     let current: Vec<&Document> = docs.iter().filter(|d| is_current(tree, d)).collect();
+    let mut term_owner: BTreeMap<String, (String, String)> = BTreeMap::new(); // lowercase term -> (slug, defining id)
     for d in &current {
-        let (Some(id), Some(expr)) = (d.id().map(str::to_string), d.expr()) else { continue };
+        let Some(id) = d.id() else { continue };
         for def in &d.definitions {
-            let pattern = format!(r"(?i)\b{}s?\b", regex::escape(&def.term));
-            let re = Regex::new(&pattern).ok();
-            let mut usages = Vec::new();
-            if let Some(re) = &re {
-                for other in &current {
-                    let Some(oid) = other.id() else { continue };
-                    if oid == id {
-                        continue;
-                    }
-                    let count = re.find_iter(&other.body).count();
-                    if count > 0 {
-                        usages.push(Usage { id: oid.to_string(), count });
+            term_owner.entry(def.term.to_lowercase()).or_insert((def.slug.clone(), id.to_string()));
+        }
+    }
+    let mut counts: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new(); // slug -> id -> count
+    if !term_owner.is_empty() {
+        let mut alts: Vec<&String> = term_owner.keys().collect();
+        alts.sort_by_key(|t| std::cmp::Reverse(t.len()));
+        let pattern = format!(r"\b(?:{})s?\b", alts.iter().map(|t| regex::escape(t)).collect::<Vec<_>>().join("|"));
+        if let Ok(re) = Regex::new(&pattern) {
+            for other in &current {
+                let Some(oid) = other.id() else { continue };
+                let level = other.front.level.as_deref().unwrap_or("section");
+                if matches!(level, "title" | "subtitle" | "chapter" | "subchapter" | "part" | "subpart" | "subjectgroup") {
+                    continue;
+                }
+                let low = other.body.to_lowercase();
+                for m in re.find_iter(&low) {
+                    let mut t = m.as_str();
+                    let owner = term_owner.get(t).or_else(|| t.strip_suffix('s').and_then(|s| {
+                        t = s;
+                        term_owner.get(s)
+                    }));
+                    if let Some((slug, def_id)) = owner {
+                        if def_id != oid {
+                            *counts.entry(slug.clone()).or_default().entry(oid.to_string()).or_default() += 1;
+                        }
                     }
                 }
             }
-            usages.sort_by(|a, b| a.id.cmp(&b.id));
+        }
+    }
+    for d in &current {
+        let (Some(id), Some(expr)) = (d.id().map(str::to_string), d.expr()) else { continue };
+        for def in &d.definitions {
+            let usages: Vec<Usage> = counts.get(&def.slug).map(|m| m.iter().map(|(id, c)| Usage { id: id.clone(), count: *c }).collect()).unwrap_or_default();
             g.terms.insert(
                 def.slug.clone(),
                 TermRec { slug: def.slug.clone(), term: def.term.clone(), id: id.clone(), expr: expr.clone(), anchor: def.slug.clone(), source: d.source.clone(), line: def.line, definition: def.text.clone(), usages },

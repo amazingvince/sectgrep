@@ -2,7 +2,7 @@
 
 `sect` is a single-binary search and navigation tool over a structured markdown corpus of rules and guidelines, built for AI agents: exact, lexical, semantic, and structural retrieval behind seven verbs (`search`, `grep`, `read`, `refs`, `define`, `map`, `status`) over CLI and MCP. This repository also holds `sect-convert` (preprocessing and validators) and the ingest harness that fills a corpus without ever writing to it directly.
 
-**Status:** milestones 0, 0.5, 1, 2, and 3 done (2026-09-03). `sect grep` runs on ripgrep's crates with rg-compatible flags and output; 28 parity cases match ripgrep 14.1.1 byte for byte ([eval/results/m3.md](eval/results/m3.md)). The milestone-0 gate passed (locate Recall@5 0.95, definition 1.00, [eval/results/m0.md](eval/results/m0.md)); the fork-or-borrow decision is in [docs/decisions.md](docs/decisions.md) 15a; the Rust binary indexes the fixture into `tree.json`, `xrefs.jsonl`, `actions.jsonl`, `terms.json`, and `tables.jsonl`, and answers `read`, `map`, `refs`, `define`, and `status`, with `--as-of` snapping, `--history`, `map --complete`, and overlay markers inline. Exact-match on the fixture is 1.00 for refs, define, as-of, and map --complete ([eval/results/m2.md](eval/results/m2.md)). Next: milestone 4 (lexical and semantic `search`), C0 and C1 on the converter track. Nothing is published yet.
+**Status:** milestones 0, 0.5, 1, 2, 3, and 4 done (2026-09-03). `sect grep` runs on ripgrep's crates with rg-compatible flags and output ([eval/results/m3.md](eval/results/m3.md)); `sect search` fuses a tantivy BM25 index with model2vec embeddings (RRF k=60) and answers 50 queries on two converted eCFR titles with a p95 of 240 ms ([eval/results/m4.md](eval/results/m4.md)). The eCFR XML half of the converter (C1) shipped early as `packages/sect-convert`. The milestone-0 gate passed (locate Recall@5 0.95, definition 1.00, [eval/results/m0.md](eval/results/m0.md)); the fork-or-borrow decision is in [docs/decisions.md](docs/decisions.md) 15a; the Rust binary indexes the fixture into `tree.json`, `xrefs.jsonl`, `actions.jsonl`, `terms.json`, and `tables.jsonl`, and answers `read`, `map`, `refs`, `define`, and `status`, with `--as-of` snapping, `--history`, `map --complete`, and overlay markers inline. Exact-match on the fixture is 1.00 for refs, define, as-of, and map --complete ([eval/results/m2.md](eval/results/m2.md)). Next: milestone 5 (rerank signals, citation short-circuit, `--expand`, `--seed`, abstention; the E.1 gates), then C0 and the rest of C1 on the converter track. Nothing is published yet.
 
 ## Build and run
 
@@ -27,6 +27,27 @@ target/release/sect grep "the" --max-hits 50 --corpus fixtures/corpus     # over
 
 `grep` takes the common ripgrep flags (`-i -w -F -e -g -n -N -c -l -A -B -C`) and prints what ripgrep prints, after the two header lines. It is exhaustive and bounded: past `--max-hits` (default 200) it answers with per-file counts and asks you to narrow.
 
+```
+target/release/sect search "toeboard height at a guardrail" --corpus fixtures/corpus
+target/release/sect search "fixed ladder cage requirement" --as-of 2025-06-01 --corpus fixtures/corpus
+target/release/sect search "guardrail" --kind overlay --fts --corpus fixtures/corpus
+target/release/sect index --embedding none fixtures/corpus     # lexical only, no model download
+```
+
+`search` fuses BM25 (tantivy, fielded per spec B.4) with static embeddings (model2vec `potion-retrieval-32M`) by reciprocal rank fusion and returns one hit per section, at most 50. The model is fetched from the Hugging Face hub at index time and copied into `.sect/semantic/model/`, so queries never touch the network. `--fts` and `--vector` run one leg; `--scope`, `--source`, `--kind`, `--as-of`, and `--include-superseded` filter before ranking.
+
+## Converting a real title (WS2, eCFR XML)
+
+```
+pnpm install
+pnpm --filter @sectgrep/convert convert fetch --title 1 --out "$PWD/raw"
+pnpm --filter @sectgrep/convert convert ecfr --xml "$PWD/raw/cfr-title-1/<date>/ECFR-title1.xml" --title 1 --out "$PWD/corpora/ecfr"
+target/release/sect index --validate-only corpora/ecfr
+target/release/sect search "how to cite the Federal Register" --corpus corpora/ecfr
+```
+
+Titles 1 and 4 (510 sections) convert into the B.2 contract with zero validation errors. `raw/` and `corpora/` are gitignored; the fixture stays in the repository.
+
 Every answer starts with a freshness line and a counts line. `--json` puts `freshness` and `counts` first. A query on a changed corpus rebuilds the index first and says so; `--no-refresh` answers from the index as it is and says `possibly_stale`.
 
 - Roadmap and definition of done: [GOAL.md](GOAL.md)
@@ -40,7 +61,8 @@ Every answer starts with a freshness line and a counts line. `--json` puts `fres
 crates/      Rust workspace for `sect`: sect-core, sect-corpus, sect-struct, sect-index, sect-query,
              sect-format, sect-cli (real); sect-exact, sect-ngram, sect-lexical, sect-semantic,
              sect-rank, sect-mcp (stubs naming their milestone)
-packages/    sect-convert and the ingest harness (TypeScript; from milestone C1)
+packages/    sect-convert (TypeScript: eCFR XML native parser today; PDF/DOCX/HTML/XLSX, OCR, and the
+             validators at C1/C2) and, later, the ingest harness
 proto/       Milestone-0 Python prototype (semble); throwaway, never shipped
 eval/        Question sets, golden data, and per-milestone results
 fixtures/    Synthetic corpus for CI (spec B.2 contract)

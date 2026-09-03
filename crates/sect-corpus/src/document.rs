@@ -107,6 +107,11 @@ impl Document {
     pub fn link_targets(&self) -> impl Iterator<Item = &Link> {
         self.links.iter().filter(|l| l.via == Via::Link)
     }
+
+    /// The body with markdown link syntax reduced to its text (`[§ 1.5](CFR:99-1.5)` -> `§ 1.5`).
+    pub fn body_plain(&self) -> String {
+        LINK_RE.replace_all(&self.body, |c: &regex::Captures| c[1].to_string()).into_owned()
+    }
 }
 
 /// `guardrail system` -> `guardrail-system`.
@@ -225,12 +230,13 @@ pub fn parse_markdown(body: &str) -> (Vec<Link>, Vec<Table>) {
     (links, tables)
 }
 
-/// Prose citations outside markdown links, resolved through the sources' `id_pattern`s.
-pub fn prose_links(body: &str, resolver: &Resolver) -> Vec<Link> {
+/// Prose citations outside markdown links, resolved through the sources' `id_pattern`s with
+/// `home` as the base source that bare citations belong to.
+pub fn prose_links(body: &str, resolver: &Resolver, home: Option<&str>) -> Vec<Link> {
     // Blank out link syntax so a linked citation is not counted twice.
     let blanked = LINK_RE.replace_all(body, |c: &regex::Captures| " ".repeat(c[0].len()));
     let mut out = Vec::new();
-    for c in resolver.find_all(&blanked) {
+    for c in resolver.find_all(&blanked, home) {
         let line = blanked[..c.offset].matches('\n').count() + 1;
         out.push(Link { target: c.id, anchor: c.anchor, line, via: Via::Prose });
     }
@@ -278,8 +284,14 @@ pub fn parse_text(rel: &str, source: &str, text: &str, resolver: &Resolver) -> R
         serde_yaml_ng::from_value(value).map_err(|e| SectError::FrontMatter { path: path.clone(), message: e.to_string() })?;
     let body = body.trim_end().to_string();
     let (mut links, tables) = parse_markdown(&body);
+    // Bare "§ x.y" citations belong to the document's home title (its own, or the one it amends).
+    let mut targets: Vec<String> = links.iter().map(|l| l.target.clone()).collect();
+    targets.extend(front.overrides.iter().cloned());
+    targets.extend(front.narrows.iter().map(|n| n.id.clone()));
+    targets.extend(front.actions.iter().map(|a| a.target_id.clone()));
+    let home = resolver.home_source(source, &targets).map(str::to_string);
     // A section citing itself ("paragraph (a) of this section", its own heading) is not a cross-reference.
-    links.extend(prose_links(&body, resolver).into_iter().filter(|l| Some(l.target.as_str()) != front.id.as_deref()));
+    links.extend(prose_links(&body, resolver, home.as_deref()).into_iter().filter(|l| Some(l.target.as_str()) != front.id.as_deref()));
     let definitions = definitions(&body, &front.defines);
     Ok(Document {
         rel: rel.to_string(),
@@ -343,7 +355,7 @@ mod tests {
         );
         let d = parse_text("x.md", "cfr-title-99", SAMPLE, &Resolver::new(&sources)).unwrap();
         let prose: Vec<(&str, usize)> = d.links.iter().filter(|l| l.via == Via::Prose).map(|l| (l.target.as_str(), l.line)).collect();
-        assert_eq!(prose, vec![("CFR:99-2.9", 7), ("CFR:99-3", 7)]);
+        assert_eq!(prose, vec![("CFR:99-2.9", 7), ("CFR:99-3", 7)], "{:?}", d.links);
         // Linked citations are not double counted as prose.
         assert_eq!(d.links.iter().filter(|l| l.target == "CFR:99-3.5").count(), 1);
     }

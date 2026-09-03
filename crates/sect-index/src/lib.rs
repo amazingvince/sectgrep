@@ -5,6 +5,8 @@
 //! Milestones 1-2 rebuild the structural layer whole when anything changed; milestone 6 makes
 //! the rebuild incremental and moves large rebuilds to the background.
 
+pub mod chunks;
+
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -16,14 +18,22 @@ use sect_corpus::{
     fingerprint_file, load_sources, parse_document, split_front_matter, stat_file, validate, walk_corpus, Document,
     Fingerprint, Issue, Level, Resolver,
 };
+use sect_lexical::LexDoc;
+use sect_semantic::{EmbeddingProvider, Model2VecProvider, VectorIndex};
 use sect_struct::{build_graph, build_tree, Edge, Graph, Tree};
 use serde::{Deserialize, Serialize};
+
+pub use chunks::Chunk;
 
 pub const MANIFEST: &str = "manifest.json";
 pub const FINGERPRINTS: &str = "fingerprints.json";
 pub const TREE: &str = "tree.json";
 pub const LOG: &str = "log.jsonl";
-pub const STRUCTURAL_FILES: &[&str] = &["tree.json", "xrefs.jsonl", "actions.jsonl", "terms.json", "tables.jsonl"];
+pub const CHUNKS: &str = "chunks.jsonl";
+pub const VECTORS: &str = "vectors.bin";
+pub const TANTIVY_DIR: &str = "tantivy";
+pub const MODEL_DIR: &str = "semantic/model";
+pub const STRUCTURAL_FILES: &[&str] = &["tree.json", "xrefs.jsonl", "actions.jsonl", "terms.json", "tables.jsonl", "chunks.jsonl"];
 
 #[derive(Debug, Clone, Default)]
 pub struct BuildOptions {
@@ -31,6 +41,9 @@ pub struct BuildOptions {
     pub full: bool,
     /// Run the contract check only; write nothing (the check WS3 runs on staging).
     pub validate_only: bool,
+    /// Embedding provider spec (`model2vec:<repo-or-path>`, a bare repo/path, or `none` to skip
+    /// the semantic layer). None = the default potion-retrieval-32M.
+    pub embedding: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -83,8 +96,13 @@ pub struct Manifest {
     pub expressions: usize,
     pub superseded: usize,
     pub sources: Vec<SourceSummary>,
-    /// Which index layers exist on disk: structural now; lexical, semantic, ngram at later milestones.
+    /// Which index layers exist on disk: structural, lexical, semantic now; exact and ngram at 3b.
     pub layers: BTreeMap<String, bool>,
+    #[serde(default)]
+    pub chunks: usize,
+    /// Embedding provider recorded at build time (e.g. `model2vec:minishlab/potion-retrieval-32M`).
+    #[serde(default)]
+    pub embedding: Option<String>,
     #[serde(default)]
     pub edges: usize,
     #[serde(default)]
@@ -134,11 +152,51 @@ fn append_log(dir: &Path, entry: &serde_json::Value) {
     }
 }
 
+/// Exclusive build lock: `.sect/.lock`, created atomically; a second builder waits for it and a
+/// lock older than ten minutes is treated as abandoned. Two `sect` processes rebuilding the same
+/// index at once would otherwise race on the tantivy directory.
+struct BuildLock(PathBuf);
+
+impl BuildLock {
+    fn acquire(dir: &Path) -> Result<BuildLock> {
+        std::fs::create_dir_all(dir).map_err(|e| SectError::io(dir, e))?;
+        let path = dir.join(".lock");
+        let started = Instant::now();
+        loop {
+            match std::fs::OpenOptions::new().write(true).create_new(true).open(&path) {
+                Ok(mut f) => {
+                    let _ = writeln!(f, "{} {}", std::process::id(), now());
+                    return Ok(BuildLock(path));
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                    let stale = std::fs::metadata(&path).and_then(|m| m.modified()).map(|t| t.elapsed().map(|d| d.as_secs() > 600).unwrap_or(false)).unwrap_or(true);
+                    if stale {
+                        let _ = std::fs::remove_file(&path);
+                        continue;
+                    }
+                    if started.elapsed().as_secs() > 600 {
+                        return Err(SectError::Other(format!("index build lock {} held for over ten minutes", path.display())));
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                }
+                Err(e) => return Err(SectError::io(&path, e)),
+            }
+        }
+    }
+}
+
+impl Drop for BuildLock {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
+    }
+}
+
 /// Build (or validate) the index for `root`.
 pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
-    let t0 = Instant::now();
     let root = absolutize(root);
     let dir = index_dir(&root);
+    let _lock = if opts.validate_only { None } else { Some(BuildLock::acquire(&dir)?) };
+    let t0 = Instant::now();
     let sources = load_sources(&root)?;
     let resolver = Resolver::new(&sources);
     let files = walk_corpus(&root, &sources)?;
@@ -166,6 +224,15 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     }
     changed += prev.keys().filter(|k| !fps.contains_key(*k)).count();
 
+    let timing = std::env::var("SECT_TIMING").is_ok();
+    let mut stage = Instant::now();
+    let lap = |name: &str, stage: &mut Instant| {
+        if timing {
+            eprintln!("timing: {name} {} ms", stage.elapsed().as_millis());
+            *stage = Instant::now();
+        }
+    };
+    lap("walk+fingerprint", &mut stage);
     let mut issues: Vec<Issue> = Vec::new();
     let mut docs: Vec<Document> = Vec::new();
     for f in &files {
@@ -174,9 +241,13 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
             Err(e) => issues.push(Issue { level: Level::Error, path: f.rel.clone(), message: e.to_string() }),
         }
     }
+    lap("parse", &mut stage);
     issues.extend(validate(&docs, &sources));
+    lap("validate", &mut stage);
     let tree = build_tree(&docs, &sources);
+    lap("tree", &mut stage);
     let graph = build_graph(&docs, &tree);
+    lap("graph", &mut stage);
     let (works, expressions, superseded) = tree.counts();
     let unresolved: Vec<Edge> = graph.unresolved().into_iter().cloned().collect();
     let mut report = BuildReport {
@@ -208,6 +279,50 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     std::fs::create_dir_all(&dir).map_err(|e| SectError::io(&dir, e))?;
     tree.save(&dir.join(TREE))?;
     graph.save(&dir)?;
+    let chunk_list = chunks::build_chunks(&docs, &tree);
+    chunks::save(&dir.join(CHUNKS), &chunk_list)?;
+    let lex_docs: Vec<LexDoc> = chunk_list
+        .iter()
+        .map(|c| LexDoc {
+            chunk_id: c.chunk_id.clone(),
+            expr: c.expr.clone(),
+            id: c.id.clone(),
+            node: c.node.clone(),
+            title: format!("{} {}", c.label, c.title),
+            path: c.breadcrumb.clone(),
+            context: c.context.clone(),
+            body: c.body.clone(),
+            citations: c.citations.clone(),
+            terms_defined: c.terms_defined.clone(),
+            source: c.source.clone(),
+            kind: c.kind.clone(),
+            effective: c.effective,
+            superseded: c.superseded,
+        })
+        .collect();
+    lap("chunks", &mut stage);
+    sect_lexical::build(&dir.join(TANTIVY_DIR), &lex_docs)?;
+    lap("lexical", &mut stage);
+    let embedding_spec = opts.embedding.clone().unwrap_or_else(|| sect_semantic::DEFAULT_MODEL.to_string());
+    let mut embedding_name = None;
+    let semantic_built = if embedding_spec == "none" {
+        let _ = std::fs::remove_file(dir.join(VECTORS));
+        false
+    } else {
+        // Network (hub fetch) happens here, at index time, never at query time. `provider_for`
+        // refuses `remote:` specs unless a remote provider has been configured (opt-in).
+        let provider = sect_semantic::provider_for(&embedding_spec)?;
+        let target = embedding_spec.strip_prefix("model2vec:").unwrap_or(&embedding_spec).to_string();
+        let model_dir = dir.join(MODEL_DIR);
+        Model2VecProvider::materialize(&target, &model_dir)?;
+        let texts: Vec<String> = chunk_list.iter().map(|c| c.text.clone()).collect();
+        let ids: Vec<String> = chunk_list.iter().map(|c| c.chunk_id.clone()).collect();
+        let vectors = VectorIndex::build(provider.as_ref(), ids, &texts)?;
+        vectors.save(&dir.join(VECTORS))?;
+        embedding_name = Some(provider.name());
+        lap("semantic", &mut stage);
+        true
+    };
     let fp_path = dir.join(FINGERPRINTS);
     std::fs::write(&fp_path, serde_json::to_string_pretty(&fps)?).map_err(|e| SectError::io(&fp_path, e))?;
     let mut per_source: BTreeMap<String, usize> = BTreeMap::new();
@@ -234,10 +349,12 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
                 files: per_source.get(&s.name).copied().unwrap_or(0),
             })
             .collect(),
-        layers: [("structural", true), ("exact", false), ("ngram", false), ("lexical", false), ("semantic", false)]
+        layers: [("structural", true), ("exact", true), ("ngram", false), ("lexical", true), ("semantic", semantic_built)]
             .into_iter()
             .map(|(k, v)| (k.to_string(), v))
             .collect(),
+        chunks: chunk_list.len(),
+        embedding: embedding_name,
         edges: graph.edges.len(),
         actions: graph.actions.len(),
         terms: graph.terms.len(),
@@ -309,6 +426,36 @@ impl Index {
         let path = self.root.join(rel);
         let text = std::fs::read_to_string(&path).map_err(|e| SectError::io(&path, e))?;
         Ok(split_front_matter(&text).map(|(_, b)| b.trim_end().to_string()).unwrap_or(text))
+    }
+
+    pub fn dir(&self) -> PathBuf {
+        index_dir(&self.root)
+    }
+
+    /// The chunk list (loaded on demand; only `search` needs it).
+    pub fn chunks(&self) -> Result<Vec<Chunk>> {
+        chunks::load(&self.dir().join(CHUNKS))
+    }
+
+    pub fn lexical(&self) -> Result<sect_lexical::LexicalIndex> {
+        sect_lexical::LexicalIndex::open(&self.dir().join(TANTIVY_DIR))
+    }
+
+    pub fn has_semantic(&self) -> bool {
+        self.manifest.layers.get("semantic").copied().unwrap_or(false) && self.dir().join(VECTORS).is_file()
+    }
+
+    pub fn vectors(&self) -> Result<VectorIndex> {
+        VectorIndex::load(&self.dir().join(VECTORS))
+    }
+
+    /// The embedding provider for queries: the model copied next to the index, so no network.
+    pub fn embedder(&self) -> Result<Box<dyn EmbeddingProvider>> {
+        let dir = self.dir().join(MODEL_DIR);
+        if !dir.join("model.safetensors").is_file() {
+            return Err(SectError::Other(format!("no local embedding model under {}; run `sect index` to build the semantic layer", dir.display())));
+        }
+        Ok(Box::new(Model2VecProvider::load(&dir.to_string_lossy())?))
     }
 }
 

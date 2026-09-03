@@ -4,6 +4,8 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "sect-rank: stub until milestone 5 (see GOAL.md section 5)"
+description = "Fusion and rerank: RRF (k=60) over the lexical and vector candidate lists via the rrf crate, collapsed to one hit per section; milestone 5 adds the signal table"
 
 [dependencies]
+rrf.workspace = true
+serde.workspace = true

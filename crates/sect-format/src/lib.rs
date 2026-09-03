@@ -5,7 +5,7 @@ use sect_core::{Freshness, Response};
 use sect_corpus::Level;
 use sect_index::BuildReport;
 use sect_exact::LineKind;
-use sect_query::{DefineResult, GrepResult, MapResult, ReadResult, RefsResult, StatusResult};
+use sect_query::{DefineResult, GrepResult, MapResult, ReadResult, RefsResult, SearchMode, SearchResult, StatusResult};
 use sect_struct::{Direction, HistoryEntry};
 use serde::Serialize;
 
@@ -217,12 +217,61 @@ pub fn grep_text(r: &Response<GrepResult>, line_numbers: bool) -> String {
     s
 }
 
+/// Per hit (spec B.3): rank, id, title, breadcrumb, effective date, matched line with context,
+/// overridden-by / narrowed-by, refs-in/out counts.
+pub fn search_text(r: &Response<SearchResult>) -> String {
+    let x = &r.result;
+    let mut s = header(r);
+    let mode = match x.mode {
+        SearchMode::Fuse => "fuse (bm25 + vector, rrf k=60)",
+        SearchMode::Fts => "fts (bm25 only)",
+        SearchMode::Vector => "vector only",
+    };
+    let mut bits = vec![format!("mode {mode}")];
+    if let Some(d) = x.as_of {
+        bits.push(format!("as-of {d}"));
+    }
+    if let Some(sc) = &x.scope {
+        bits.push(format!("scope {sc}"));
+    }
+    if let Some(e) = &x.embedding {
+        bits.push(format!("embedding {e}"));
+    }
+    s.push_str(&format!("search: {:?}; {}\n", x.query, bits.join("; ")));
+    if x.abstained {
+        s.push_str("not found: nothing above the confidence floor\n");
+    }
+    for h in &x.hits {
+        let legs = match (h.lex_rank, h.vec_rank) {
+            (Some(l), Some(v)) => format!("lex {l}, vec {v}"),
+            (Some(l), None) => format!("lex {l}"),
+            (None, Some(v)) => format!("vec {v}"),
+            (None, None) => String::new(),
+        };
+        let mut flags = Vec::new();
+        if !h.overridden_by.is_empty() {
+            flags.push(format!("overridden-by {}", h.overridden_by.join(",")));
+        }
+        if !h.narrowed_by.is_empty() {
+            flags.push(format!("narrowed-by {}", h.narrowed_by.iter().map(|n| format!("{}#{}", n.id, n.anchor.clone().unwrap_or_default())).collect::<Vec<_>>().join(",")));
+        }
+        let part = if h.nparts > 1 { format!("  part {}/{}", h.part + 1, h.nparts) } else { String::new() };
+        s.push_str(&format!("{}. {}  {} {}  eff {}  score {:.3} ({legs})  refs in {} / out {}{part}{}\n", h.rank, h.expr, h.label, h.title, date(&h.effective), h.score, h.refs_in, h.refs_out, if flags.is_empty() { String::new() } else { format!("  [{}]", flags.join("; ")) }));
+        s.push_str(&format!("   {}\n", h.breadcrumb));
+        match h.line {
+            Some(l) => s.push_str(&format!("   L{l}: {}\n", h.snippet)),
+            None => s.push_str(&format!("   {}\n", h.snippet)),
+        }
+    }
+    s
+}
+
 pub fn status_text(r: &Response<StatusResult>) -> String {
     let x = &r.result;
     let mut s = header(r);
     s.push_str(&format!("corpus: {}\nindex: {}\nbuilt: {} by sect {} (schema {}) in {} ms\n", x.corpus_root, x.index_dir, x.built_at, x.sect_version, x.schema_version, x.build_ms));
     s.push_str(&format!("files: {}; works: {}; expressions: {} ({} superseded)\n", x.files, x.works, x.expressions, x.superseded));
-    s.push_str(&format!("structure: {} edges, {} actions, {} terms, {} tables\n", x.edges, x.actions, x.terms, x.tables));
+    s.push_str(&format!("structure: {} edges, {} actions, {} terms, {} tables; {} chunks{}\n", x.edges, x.actions, x.terms, x.tables, x.chunks, x.embedding.as_ref().map(|e| format!("; embedding {e}")).unwrap_or_default()));
     s.push_str("sources:\n");
     for src in &x.sources {
         s.push_str(&format!("  {:<18} kind {:<8} precedence {:<4} legal-status {:<15} files {}\n", src.name, src.kind, src.precedence, src.legal_status, src.files));

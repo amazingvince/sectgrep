@@ -406,6 +406,200 @@ pub fn define(index: &Index, term: &str, usages: bool, scope: Option<&str>, as_o
     Ok(Response { header: header(index, shown, shown, vec![]), result })
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SearchMode {
+    /// BM25 top-100 + vector top-100 fused with RRF (the default).
+    Fuse,
+    /// Lexical only.
+    Fts,
+    /// Vector only.
+    Vector,
+}
+
+#[derive(Debug, Clone)]
+pub struct SearchOptions {
+    pub query: String,
+    pub mode: SearchMode,
+    pub scope: Option<String>,
+    pub source: Option<String>,
+    pub kind: Option<String>,
+    pub as_of: Option<NaiveDate>,
+    pub include_superseded: bool,
+    pub limit: usize,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SearchHit {
+    pub rank: usize,
+    pub id: String,
+    pub expr: String,
+    pub label: String,
+    pub title: String,
+    pub breadcrumb: String,
+    pub kind: String,
+    pub source: String,
+    pub effective: Option<NaiveDate>,
+    /// RRF score normalized so that rank 1 in both lists is 1.0.
+    pub score: f64,
+    pub lex_rank: Option<usize>,
+    pub vec_rank: Option<usize>,
+    pub chunk_id: String,
+    pub part: usize,
+    pub nparts: usize,
+    /// Best matching body line (1-based) and its text.
+    pub line: Option<usize>,
+    pub snippet: String,
+    pub overridden_by: Vec<String>,
+    pub narrowed_by: Vec<Narrow>,
+    pub refs_in: usize,
+    pub refs_out: usize,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SearchResult {
+    pub query: String,
+    pub mode: SearchMode,
+    pub scope: Option<String>,
+    pub source: Option<String>,
+    pub kind: Option<String>,
+    pub as_of: Option<NaiveDate>,
+    pub include_superseded: bool,
+    pub limit: usize,
+    pub candidates_lexical: usize,
+    pub candidates_vector: usize,
+    pub embedding: Option<String>,
+    /// Milestone 5 turns this on when nothing clears the confidence floor.
+    pub abstained: bool,
+    pub hits: Vec<SearchHit>,
+}
+
+fn best_line(body: &str, terms: &[String], line_start: usize) -> (Option<usize>, String) {
+    let mut best: Option<(usize, usize, &str)> = None;
+    for (i, line) in body.lines().enumerate() {
+        let low = line.to_lowercase();
+        let score = terms.iter().filter(|t| low.contains(t.as_str())).count();
+        if score > 0 && best.map(|b| score > b.0).unwrap_or(true) {
+            best = Some((score, i, line));
+        }
+    }
+    match best {
+        Some((_, i, line)) => {
+            let mut text = line.trim().to_string();
+            if text.chars().count() > 220 {
+                text = text.chars().take(217).collect::<String>() + "...";
+            }
+            (Some(line_start + i), text)
+        }
+        None => {
+            let first = body.lines().find(|l| !l.trim().is_empty() && !l.starts_with('#')).unwrap_or("").trim();
+            (None, first.chars().take(220).collect())
+        }
+    }
+}
+
+/// `sect search`: hybrid retrieval (spec B.4). Structural guarantees never come from here.
+pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResult>> {
+    let limit = opts.limit.clamp(1, 50);
+    if let Some(s) = &opts.scope {
+        if index.tree.get(s).is_none() {
+            return Err(SectError::NotFound(s.clone()));
+        }
+    }
+    let chunks = index.chunks()?;
+    // Which Expressions may answer: as-of snapping (current-only by default), scope, source, kind.
+    let mut allowed_exprs: std::collections::HashSet<String> = std::collections::HashSet::new();
+    for n in index.tree.nodes.values() {
+        if opts.scope.as_deref().map(|s| !index.tree.within(&n.id, s)).unwrap_or(false) {
+            continue;
+        }
+        if opts.source.as_deref().map(|s| n.source != s).unwrap_or(false) || opts.kind.as_deref().map(|k| n.kind != k).unwrap_or(false) {
+            continue;
+        }
+        for e in &n.expressions {
+            let active = match opts.as_of {
+                Some(d) => index.tree.active_at(&e.expr, d, opts.include_superseded),
+                None => opts.include_superseded || e.superseded_by.is_none(),
+            };
+            if active {
+                allowed_exprs.insert(e.expr.clone());
+            }
+        }
+    }
+    let allowed_idx: std::collections::HashSet<usize> = chunks.iter().enumerate().filter(|(_, c)| allowed_exprs.contains(&c.expr)).map(|(i, _)| i).collect();
+    let by_chunk: BTreeMap<&str, usize> = chunks.iter().enumerate().map(|(i, c)| (c.chunk_id.as_str(), i)).collect();
+
+    let mut lex_ids: Vec<String> = Vec::new();
+    let mut vec_ids: Vec<String> = Vec::new();
+    let mut terms: Vec<String> = Vec::new();
+    let mut embedding = None;
+    if opts.mode != SearchMode::Vector {
+        let lx = index.lexical()?;
+        terms = lx.text_terms(&opts.query);
+        let filter = sect_lexical::Filter { source: opts.source.clone(), kind: opts.kind.clone(), exprs: Some(allowed_exprs.clone()) };
+        lex_ids = lx.search(&opts.query, &filter, sect_lexical::CANDIDATES)?.into_iter().filter(|h| by_chunk.contains_key(h.chunk_id.as_str())).map(|h| h.chunk_id).collect();
+    }
+    if opts.mode != SearchMode::Fts {
+        if !index.has_semantic() {
+            if opts.mode == SearchMode::Vector {
+                return Err(SectError::Other("the semantic layer is not built (indexed with --embedding none); use --fts or rebuild the index".into()));
+            }
+        } else {
+            let vectors = index.vectors()?;
+            let embedder = index.embedder()?;
+            embedding = Some(vectors.model.clone());
+            let q = embedder.embed(&[opts.query.clone()])?.remove(0);
+            let row_allowed: std::collections::HashSet<usize> = vectors.ids.iter().enumerate().filter(|(_, id)| by_chunk.get(id.as_str()).map(|i| allowed_idx.contains(i)).unwrap_or(false)).map(|(i, _)| i).collect();
+            vec_ids = vectors.search(&q, sect_semantic::CANDIDATES, Some(&row_allowed)).into_iter().map(|(i, _)| vectors.ids[i].clone()).collect();
+        }
+    }
+    if terms.is_empty() {
+        terms = opts.query.split_whitespace().map(|w| w.to_lowercase()).collect();
+    }
+    let fused = sect_rank::fuse(&lex_ids, &vec_ids, (1.0, 1.0), sect_rank::RRF_K);
+    // One hit per section. With --include-superseded every Expression is its own section so an
+    // older text can appear next to the current one (milestone 5 penalizes it by -0.5).
+    let per_expr = opts.include_superseded;
+    let collapsed = sect_rank::collapse(fused, |chunk_id| by_chunk.get(chunk_id).map(|i| if per_expr { chunks[*i].expr.clone() } else { chunks[*i].id.clone() }).unwrap_or_else(|| chunk_id.to_string()));
+    let matched = collapsed.len();
+    let mut hits = Vec::new();
+    for (rank, f) in collapsed.into_iter().take(limit).enumerate() {
+        let Some(&ci) = by_chunk.get(f.chunk_id.as_str()) else { continue };
+        let c = &chunks[ci];
+        let node = index.tree.get(&c.id);
+        let (line, snippet) = best_line(&c.body, &terms, c.line_start);
+        let refs_in = index.graph.edges.iter().filter(|e| e.to == c.id && matches!(e.kind.as_str(), "references" | "overrides" | "narrows")).count();
+        let refs_out = index.graph.edges.iter().filter(|e| e.from == c.id && e.kind == "references").count();
+        hits.push(SearchHit {
+            rank: rank + 1,
+            id: c.id.clone(),
+            expr: c.expr.clone(),
+            label: c.label.clone(),
+            title: c.title.clone(),
+            breadcrumb: c.breadcrumb.clone(),
+            kind: c.kind.clone(),
+            source: c.source.clone(),
+            effective: c.effective,
+            score: (f.score * 10_000.0).round() / 10_000.0,
+            lex_rank: f.lex_rank,
+            vec_rank: f.vec_rank,
+            chunk_id: c.chunk_id.clone(),
+            part: c.part,
+            nparts: c.nparts,
+            line,
+            snippet,
+            overridden_by: node.map(|n| n.overridden_by.clone()).unwrap_or_default(),
+            narrowed_by: node.map(|n| n.narrowed_by.clone()).unwrap_or_default(),
+            refs_in,
+            refs_out,
+        });
+    }
+    let shown = hits.len();
+    let extra = vec![("candidates-lexical".to_string(), lex_ids.len()), ("candidates-vector".to_string(), vec_ids.len()), ("limit".to_string(), limit)];
+    let result = SearchResult { query: opts.query.clone(), mode: opts.mode, scope: opts.scope.clone(), source: opts.source.clone(), kind: opts.kind.clone(), as_of: opts.as_of, include_superseded: opts.include_superseded, limit, candidates_lexical: lex_ids.len(), candidates_vector: vec_ids.len(), embedding, abstained: false, hits };
+    Ok(Response { header: header(index, shown, matched, extra), result })
+}
+
 /// Where a matched line sits in the corpus: the Work, the Expression, and the nearest paragraph.
 #[derive(Debug, Clone, Serialize)]
 pub struct Annotation {
@@ -545,6 +739,8 @@ pub struct StatusResult {
     pub actions: usize,
     pub terms: usize,
     pub tables: usize,
+    pub chunks: usize,
+    pub embedding: Option<String>,
     pub warnings: Vec<Issue>,
     pub unresolved: Vec<Edge>,
     pub unresolved_refs: usize,
@@ -576,6 +772,8 @@ pub fn status(index: &Index) -> Result<Response<StatusResult>> {
         actions: m.actions,
         terms: m.terms,
         tables: m.tables,
+        chunks: m.chunks,
+        embedding: m.embedding.clone(),
         warnings: m.warnings.clone(),
         unresolved: m.unresolved.clone(),
         unresolved_refs: m.unresolved_refs,

@@ -1,0 +1,25 @@
+{
+  "name": "@sectgrep/convert",
+  "version": "0.1.0",
+  "private": true,
+  "description": "sect-convert: deterministic preprocessing of raw documents into the sect corpus contract (spec Part C). Milestone C1 (partial): the eCFR bulk XML native parser.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "sect-convert": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "convert": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}

@@ -40,6 +40,34 @@ enum Cmd {
         /// Check the B.2 contract only; write nothing. Exit 1 on errors.
         #[arg(long)]
         validate_only: bool,
+        /// Embedding provider: `model2vec:<hub repo or local dir>` (default minishlab/potion-retrieval-32M), or `none`.
+        #[arg(long, value_name = "SPEC")]
+        embedding: Option<String>,
+    },
+    /// Ranked hybrid retrieval: BM25 + vector fused with RRF, one hit per section, bounded.
+    Search {
+        query: String,
+        /// Lexical (BM25) only.
+        #[arg(long)]
+        fts: bool,
+        /// Vector only.
+        #[arg(long)]
+        vector: bool,
+        /// Fuse both legs (the default).
+        #[arg(long)]
+        fuse: bool,
+        #[arg(long, value_name = "ID")]
+        scope: Option<String>,
+        #[arg(long, value_name = "NAME")]
+        source: Option<String>,
+        /// base | overlay | notice | internal | note
+        #[arg(long, value_name = "KIND")]
+        kind: Option<String>,
+        #[arg(long, value_name = "DATE")]
+        as_of: Option<String>,
+        /// Hits to return (at most 50).
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
     },
     /// Show a section (Work id, Expression id, or id#anchor) with its structural context.
     Read {
@@ -174,9 +202,21 @@ fn main() {
 fn run() -> Result<i32> {
     let cli = Cli::parse();
     match cli.cmd {
-        Cmd::Index { path, full, validate_only } => {
+        Cmd::Search { query, fts, vector, fuse, scope, source, kind, as_of, limit } => {
+            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let mode = match (fts, vector, fuse) {
+                (true, false, false) => sect_query::SearchMode::Fts,
+                (false, true, false) => sect_query::SearchMode::Vector,
+                _ => sect_query::SearchMode::Fuse,
+            };
+            let opts = sect_query::SearchOptions { query, mode, scope, source, kind, as_of: parse_date(&as_of)?, include_superseded: cli.include_superseded, limit };
+            let r = sect_query::search(&index, &opts)?;
+            print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::search_text(&r) });
+            Ok(0)
+        }
+        Cmd::Index { path, full, validate_only, embedding } => {
             let root = path.unwrap_or(cli.corpus);
-            let rep = sect_index::build(&root, &BuildOptions { full, validate_only })?;
+            let rep = sect_index::build(&root, &BuildOptions { full, validate_only, embedding })?;
             if cli.json {
                 println!("{}", sect_format::json_value(&rep));
             } else {

@@ -2,6 +2,9 @@
 target/
 # Node
 node_modules/
+packages/*/dist/
+# Converted real corpora (regenerable from raw/ with sect-convert)
+corpora/
 # Python prototype (milestone 0, not shipped)
 proto/.venv/
 .uv-cache/

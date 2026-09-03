@@ -27,6 +27,9 @@ grep-searcher = "0.1"
 regex = "1"
 clap = { version = "4", features = ["derive", "env"] }
 tempfile = "3"
+tantivy = "0.26"
+model2vec-rs = { version = "0.2", default-features = false, features = ["fancy-regex", "hf-hub"] }
+rrf = "0.1"
 
 sect-core = { path = "crates/sect-core" }
 sect-corpus = { path = "crates/sect-corpus" }

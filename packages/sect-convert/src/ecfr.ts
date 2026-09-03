@@ -1,0 +1,408 @@
+/**
+ * eCFR bulk XML native parser (spec C.3, first row): DIV1..DIV8 -> tree, NODE -> node and derived
+ * Work id, HEAD -> title, AUTH/SOURCE -> authority/citation, <I>Term</I> means -> defines, explicit
+ * "§ X.Y" / "part N" references -> markdown links (spec C.4 explicit-ref pass). No OCR, no layout,
+ * no model. The `context` prefix is a deterministic placeholder that names the section's place in
+ * the hierarchy and what it refers to; WS3 rewrites it (spec D.2 step 4).
+ */
+import { createHash } from "node:crypto";
+import { attr, children, child, Elem, inlineMd, parseXml, squash, textOf } from "./xml.js";
+
+export interface ConvertOptions {
+  title: number;
+  /** Corpus-relative path of the raw XML, recorded in provenance. */
+  rawPath: string;
+  /** Effective date (YYYY-MM-DD). Defaults to the AMDDATE in the XML. */
+  effective?: string;
+  ingestRun?: string;
+}
+
+export interface OutFile {
+  /** Path relative to the corpus root, forward slashes. */
+  path: string;
+  text: string;
+}
+
+interface NodeRec {
+  id: string;
+  node: string;
+  level: string;
+  label: string;
+  title: string;
+  parent: string | null;
+  order: number;
+  dir: string;
+  file: string;
+  body: string;
+  defines: string[];
+  authority: string | null;
+  citation: string | null;
+  refs: string[];
+}
+
+const LEVELS: Record<string, string> = {
+  TITLE: "title",
+  SUBTITLE: "subtitle",
+  CHAPTER: "chapter",
+  SUBCHAP: "subchapter",
+  PART: "part",
+  SUBPART: "subpart",
+  SUBJGRP: "subjectgroup",
+  SECTION: "section",
+};
+
+const SMALL = new Set(["of", "the", "and", "for", "to", "in", "on", "by", "or", "a", "an", "at", "with"]);
+
+export function titleCase(s: string): string {
+  return s
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w, i) => (i > 0 && SMALL.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(" ");
+}
+
+function headTitle(head: string, level: string): string {
+  let h = squash(head).replace(/--Volume \d+$/i, "");
+  const dash = h.search(/[—–-]/);
+  if (level !== "section" && dash > 0) h = h.slice(dash + 1).trim();
+  if (level === "section") h = h.replace(/^§+\s*[\d.]+[a-z]?(?:-\d+)?\s*/i, "").replace(/\.$/, "").trim();
+  if (level !== "section" && h === h.toUpperCase()) h = titleCase(h);
+  return h || "[Reserved]";
+}
+
+export function parseAmdDate(s: string): string | undefined {
+  const m = s.match(/([A-Z][a-z]+)\.?\s+(\d{1,2}),\s+(\d{4})/);
+  if (!m) return undefined;
+  const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const mi = months.indexOf(m[1].slice(0, 3).toLowerCase());
+  if (mi < 0) return undefined;
+  return `${m[3]}-${String(mi + 1).padStart(2, "0")}-${m[2].padStart(2, "0")}`;
+}
+
+/** Render the block children of a section (everything but HEAD/CITA/AUTH/SOURCE) to markdown. */
+function renderBlocks(sec: Elem): string {
+  const out: string[] = [];
+  let tableRows: string[] = [];
+  const flushTable = () => {
+    if (tableRows.length) {
+      const cols = tableRows[0].split("|").length - 2;
+      out.push([tableRows[0], "|" + "---|".repeat(Math.max(cols, 1)), ...tableRows.slice(1)].join("\n"));
+      tableRows = [];
+    }
+  };
+  for (const c of children(sec)) {
+    const tag = c.tagName;
+    if (tag !== "TR") flushTable();
+    switch (tag) {
+      case "HEAD":
+      case "CITA":
+      case "AUTH":
+      case "SOURCE":
+        break;
+      case "P":
+      case "FP":
+      case "NOTE":
+      case "EXAMPLE": {
+        const t = squash(inlineMd(c));
+        if (t) out.push(t);
+        break;
+      }
+      case "HD": {
+        const t = squash(inlineMd(c));
+        if (t) out.push(`### ${t}`);
+        break;
+      }
+      case "EXTRACT": {
+        const lines = children(c).map((p) => squash(inlineMd(p))).filter(Boolean);
+        if (lines.length) out.push(lines.map((l) => `> ${l}`).join("\n>\n"));
+        break;
+      }
+      case "TR": {
+        const cells = children(c).map((td) => squash(inlineMd(td)).replace(/\|/g, "\\|"));
+        tableRows.push(`| ${cells.join(" | ")} |`);
+        break;
+      }
+      case "FTNT": {
+        const t = squash(inlineMd(c));
+        if (t) out.push(`Footnote: ${t}`);
+        break;
+      }
+      case "GPOTABLE": {
+        const rows: string[] = [];
+        for (const row of children(c)) {
+          const cells = children(row).map((cell) => squash(inlineMd(cell)).replace(/\|/g, "\\|"));
+          if (cells.length) rows.push(`| ${cells.join(" | ")} |`);
+        }
+        if (rows.length) {
+          const cols = rows[0].split("|").length - 2;
+          out.push([rows[0], "|" + "---|".repeat(Math.max(cols, 1)), ...rows.slice(1)].join("\n"));
+        }
+        break;
+      }
+      default: {
+        const t = squash(inlineMd(c));
+        if (t) out.push(t);
+      }
+    }
+  }
+  flushTable();
+  return out.join("\n\n");
+}
+
+const DEF_RE = /^\*([^*]{1,80})\*\s+(?:means|includes|has the meaning|is defined as)\b/;
+
+function definedTerms(body: string): string[] {
+  const out: string[] = [];
+  for (const para of body.split("\n\n")) {
+    const m = para.match(DEF_RE);
+    if (m) {
+      const term = m[1].replace(/[.,;:]$/, "").trim();
+      if (term && !out.includes(term)) out.push(term);
+    }
+  }
+  return out;
+}
+
+/** Link "§ X.Y", "§§ X.Y and X.Z", "part N" to Works that exist in this title. */
+function linkRefs(body: string, title: number, ids: Set<string>, selfId: string, refs: string[]): string {
+  const sec = /§§?\s*(\d{1,3})\.(\d{1,4}[a-z]?(?:-\d+)?)((?:\s*\([a-z0-9]{1,4}\))*)/g;
+  let out = body.replace(sec, (m, part: string, num: string) => {
+    const id = `CFR:${title}-${part}.${num}`;
+    if (!ids.has(id) || id === selfId) return m;
+    if (!refs.includes(id)) refs.push(id);
+    return `[${m.trim()}](${id})`;
+  });
+  // A "§§ 1.1 and 1.2" continuation: the second number has no § in front.
+  out = out.replace(/\]\((CFR:\d+-\d+\.[^)]+)\)\s+(and|through|or|to)\s+(\d{1,3})\.(\d{1,4}[a-z]?)(?![\w.])/g, (m, _prev: string, _conj: string, part: string, num: string) => {
+    const id = `CFR:${title}-${part}.${num}`;
+    if (!ids.has(id) || id === selfId) return m;
+    if (!refs.includes(id)) refs.push(id);
+    // Replace only the trailing number: the earlier link's target may contain the same digits.
+    const tail = `${part}.${num}`;
+    const cut = m.lastIndexOf(tail);
+    return `${m.slice(0, cut)}[${tail}](${id})`;
+  });
+  const part = /\b[Pp]art\s+(\d{1,4})\b(?!\.)/g;
+  out = out.replace(part, (m, num: string) => {
+    const id = `CFR:${title}-${num}`;
+    if (!ids.has(id) || id === selfId) return m;
+    if (!refs.includes(id)) refs.push(id);
+    return `[${m}](${id})`;
+  });
+  return out;
+}
+
+function q(s: string | null | undefined): string {
+  return s == null ? "null" : JSON.stringify(s);
+}
+
+function contextFor(n: NodeRec, byId: Map<string, NodeRec>, titleName: string, title: number, kids: NodeRec[]): string {
+  const chain: NodeRec[] = [];
+  let cur = n.parent ? byId.get(n.parent) : undefined;
+  while (cur) {
+    chain.push(cur);
+    cur = cur.parent ? byId.get(cur.parent) : undefined;
+  }
+  const where = chain
+    .filter((c) => c.level !== "title")
+    .map((c) => `${c.label} (${c.title})`)
+    .join(", ");
+  const parts: string[] = [];
+  parts.push(`${n.label} ${n.title}${where ? `, within ${where}` : ""} of Title ${title} (${titleName}).`);
+  const refTitles = n.refs
+    .map((r) => byId.get(r))
+    .filter((r): r is NodeRec => !!r)
+    .slice(0, 4)
+    .map((r) => `${r.label} (${r.title})`);
+  if (refTitles.length) parts.push(`It refers to ${refTitles.join(", ")}.`);
+  if (n.defines.length) parts.push(`It defines ${n.defines.length} term${n.defines.length > 1 ? "s" : ""}: ${n.defines.slice(0, 6).join(", ")}.`);
+  if (kids.length) {
+    // Counts only: naming the children would paraphrase the container's own table of contents.
+    const first = kids[0];
+    const last = kids[kids.length - 1];
+    parts.push(`It contains ${kids.length} ${first.level}${kids.length > 1 ? "s" : ""}, from ${first.label} to ${last.label}.`);
+  }
+  if (n.authority) parts.push(`Authority: ${n.authority.slice(0, 120)}.`);
+  if (n.citation) parts.push(`Source: ${n.citation.slice(0, 120)}.`);
+  let ctx = parts.join(" ");
+  if (ctx.split(/\s+/).length < 40) {
+    ctx += ` This deterministic context prefix was written by sect-convert from the eCFR XML hierarchy, headings, and explicit references only; it names where the text sits and what it points to, and the WS3 ingest agent replaces it with a written prefix.`;
+  }
+  const words = squash(ctx).split(" ");
+  return words.length > 110 ? words.slice(0, 110).join(" ") : words.join(" ");
+}
+
+export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string } {
+  const doc = parseXml(xml);
+  const root = doc.documentElement;
+  const amd = textOf(child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") && (child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") as Elem).getElementsByTagName("AMDDATE")[0]);
+  const effective = opts.effective ?? parseAmdDate(amd) ?? "1970-01-01";
+  const rawSha = createHash("sha256").update(xml).digest("hex");
+  const ingestRun = opts.ingestRun ?? `${new Date().toISOString().slice(0, 16)}Z/sect-convert`;
+  const t = opts.title;
+  const nodes: NodeRec[] = [];
+  const byId = new Map<string, NodeRec>();
+  let titleName = "";
+
+  function walk(el: Elem, parent: NodeRec | null, dir: string, order: number, partAuth: string | null, partSource: string | null): void {
+    const type = attr(el, "TYPE");
+    const level = LEVELS[type];
+    if (!level) return;
+    const n = attr(el, "N").replace(/^§+\s*/, "").trim();
+    const head = textOf(child(el, "HEAD"));
+    const title = headTitle(head, level);
+    let id: string;
+    let label: string;
+    let subdir: string;
+    switch (level) {
+      case "title":
+        id = `CFR:${t}`;
+        label = `Title ${t}`;
+        subdir = "";
+        titleName = title;
+        break;
+      case "subtitle":
+        id = `CFR:${t}-subtitle-${n}`;
+        label = `Subtitle ${n}`;
+        subdir = `subtitle-${n}`;
+        break;
+      case "chapter":
+        id = `CFR:${t}-${n}`;
+        label = `Chapter ${n}`;
+        subdir = n;
+        break;
+      case "subchapter":
+        id = `${parent!.id}-${n}`;
+        label = `Subchapter ${n}`;
+        subdir = n;
+        break;
+      case "part":
+        id = `CFR:${t}-${n}`;
+        label = `Part ${n}`;
+        subdir = n;
+        break;
+      case "subpart":
+        id = `${parent!.id}-${n}`;
+        label = `Subpart ${n}`;
+        subdir = n;
+        break;
+      case "subjectgroup":
+        id = `${parent!.id}-sg${order}`;
+        label = "Subject group";
+        subdir = `sg${order}`;
+        break;
+      default:
+        id = `CFR:${t}-${n}`;
+        label = `§ ${n}`;
+        subdir = n;
+    }
+    const authEl = child(el, "AUTH");
+    const srcEl = child(el, "SOURCE");
+    const authority = authEl ? textOf(child(authEl, "PSPACE") ?? authEl).replace(/^Authority:\s*/i, "") : partAuth;
+    const source = srcEl ? textOf(child(srcEl, "PSPACE") ?? srcEl).replace(/^Source:\s*/i, "") : partSource;
+    const cita = level === "section" ? textOf(child(el, "CITA")).replace(/^\[|\]$/g, "") : "";
+    const nodeDir = dir ? `${dir}/${subdir}` : subdir;
+    const rec: NodeRec = {
+      id,
+      node: attr(el, "NODE"),
+      level,
+      label,
+      title,
+      parent: parent ? parent.id : null,
+      order,
+      dir: nodeDir,
+      file: `${t}-${id.slice(`CFR:${t}-`.length) || t}.md`,
+      body: level === "section" ? renderBlocks(el) : "",
+      defines: [],
+      authority: authority || null,
+      citation: cita || source || null,
+      refs: [],
+    };
+    if (level === "title") rec.file = `${t}.md`;
+    nodes.push(rec);
+    byId.set(id, rec);
+    let i = 0;
+    for (const c of children(el)) {
+      if (/^DIV\d$/.test(c.tagName) && LEVELS[attr(c, "TYPE")]) {
+        i += 1;
+        walk(c, rec, nodeDir, i, level === "part" ? authority : partAuth, level === "part" ? source : partSource);
+      }
+    }
+  }
+
+  const div1 = root.getElementsByTagName("DIV1")[0];
+  if (!div1) throw new Error("no DIV1 (title) element in the XML");
+  walk(div1 as Elem, null, "", 1, null, null);
+
+  const ids = new Set(nodes.map((n) => n.id));
+  for (const n of nodes) {
+    if (n.level === "section") {
+      n.body = linkRefs(n.body, t, ids, n.id, n.refs);
+      n.defines = definedTerms(n.body);
+    }
+  }
+  const childrenOf = new Map<string, NodeRec[]>();
+  for (const n of nodes) if (n.parent) (childrenOf.get(n.parent) ?? childrenOf.set(n.parent, []).get(n.parent)!).push(n);
+
+  const files: OutFile[] = [];
+  for (const n of nodes) {
+    const kids = childrenOf.get(n.id) ?? [];
+    const heading = n.level === "section" ? `# ${n.label} ${n.title}` : `# ${n.label} - ${n.title}`;
+    const toc = kids.map((k) => `- [${k.label} ${k.title}](${k.id})`).join("\n");
+    const body = n.level === "section" ? n.body || "[Reserved]" : toc;
+    const fm = [
+      "---",
+      `id: ${q(n.id)}`,
+      `node: ${q(n.node)}`,
+      `source: ${q(`cfr-title-${t}`)}`,
+      `title: ${q(n.title)}`,
+      `level: ${q(n.level)}`,
+      `parent: ${q(n.parent)}`,
+      `order: ${n.order}`,
+      `effective: ${effective}`,
+      "supersedes: null",
+      "superseded_by: null",
+      "amended_by: []",
+      "overrides: []",
+      "narrows: []",
+      `defines: ${JSON.stringify(n.defines)}`,
+      `authority: ${q(n.authority)}`,
+      `citation: ${q(n.citation)}`,
+      "tags: []",
+      `context: ${q(contextFor(n, byId, titleName, t, kids))}`,
+      "provenance:",
+      `  raw: ${q(opts.rawPath)}`,
+      `  raw_sha256: ${q(rawSha)}`,
+      `  locator: {xpath: ${q(`//${n.level === "section" ? "DIV8" : "DIV*"}[@NODE='${n.node}']`)}}`,
+      "  legal_status: unofficial-xml",
+      `  ingest_run: ${q(ingestRun)}`,
+      "  confidence: 1.0",
+      "  verified_by: [sect-convert]",
+      "---",
+      "",
+      heading,
+      "",
+      body,
+      "",
+    ].join("\n");
+    const path = `cfr-title-${t}/${n.dir ? n.dir + "/" : ""}${n.file}`;
+    files.push({ path, text: fm });
+  }
+  const sourceYaml = [
+    `name: cfr-title-${t}`,
+    "kind: base",
+    `title: ${q(`Title ${t} - ${titleName}`)}`,
+    'publisher: "Office of the Federal Register; GPO eCFR bulk XML (not the official legal edition)"',
+    "precedence: 100",
+    `id_prefix: ${q(`CFR:${t}-`)}`,
+    `id_pattern: ${q(`(?i)(?:\\b${t}\\s*C\\.?F\\.?R\\.?\\s*(?:§\\s*)?|§\\s*|\\bsection\\s+)(?P<part>\\d{1,3})\\.(?P<section>\\d{1,4}[a-z]?)(?:\\s*\\((?P<p1>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?(?:\\s*\\((?P<p2>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?`)}`,
+    `id_template: ${q(`CFR:${t}-{part}.{section}`)}`,
+    'anchor_template: "{p1}-{p2}"',
+    "legal_status: unofficial-xml",
+    `version: ${q(effective)}`,
+    `acquire: ${q(`https://www.govinfo.gov/bulkdata/ECFR/title-${t}/ECFR-title${t}.xml`)}`,
+    "",
+  ].join("\n");
+  files.push({ path: `cfr-title-${t}/_source.yaml`, text: sourceYaml });
+  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName };
+}

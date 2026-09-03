@@ -4,6 +4,14 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "sect-lexical: stub until milestone 4 (see GOAL.md section 5)"
+description = "Lexical layer on tantivy: the spec B.4 fielded schema, an id-splitting tokenizer, stopword removal and stemming for text fields"
 
 [dependencies]
+chrono.workspace = true
+regex.workspace = true
+sect-core.workspace = true
+serde.workspace = true
+tantivy.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

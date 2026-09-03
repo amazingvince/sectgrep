@@ -14,10 +14,31 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Install ripgrep for live grep parity (the goldens cover the case where it is absent)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep && rg --version
+      - name: Cache the embedding model (fetched from the Hugging Face hub at index time only)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-potion-retrieval-32M-v1
       - run: cargo build --workspace --locked
       - run: cargo test --workspace --locked
       - name: Fixture passes the B.2 contract check
         run: cargo run -p sect-cli --locked -- index --validate-only fixtures/corpus
+
+  converter:
+    name: sect-convert (TypeScript, WS2)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm -r test
 
   fixture-and-prototype:
     name: Fixture contract + milestone-0 eval

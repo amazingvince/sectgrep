@@ -1,0 +1,50 @@
+{"qid": "t1-01", "type": "locate", "query": "office hours and location of the Office of the Federal Register", "expected": ["CFR:1-2.3"]}
+{"qid": "t1-02", "type": "locate", "query": "general authority of the Director of the Federal Register", "expected": ["CFR:1-2.4"]}
+{"qid": "t1-03", "type": "locate", "query": "can the public reproduce Federal Register content without restriction", "expected": ["CFR:1-2.6"]}
+{"qid": "t1-04", "type": "locate", "query": "how to get a certified copy of a document filed with the Office", "expected": ["CFR:1-3.3"]}
+{"qid": "t1-05", "type": "locate", "query": "public inspection of documents before they are published", "expected": ["CFR:1-3.2"]}
+{"qid": "t1-06", "type": "locate", "query": "what documents must be published in the Federal Register", "expected": ["CFR:1-5.2"]}
+{"qid": "t1-07", "type": "locate", "query": "documents that are not authorized for publication", "expected": ["CFR:1-5.4"]}
+{"qid": "t1-08", "type": "locate", "query": "is the Federal Register published every day", "expected": ["CFR:1-5.6"]}
+{"qid": "t1-09", "type": "locate", "query": "how to cite the Federal Register", "expected": ["CFR:1-5.8"]}
+{"qid": "t1-10", "type": "locate", "query": "categories of documents published in the Federal Register", "expected": ["CFR:1-5.9"]}
+{"qid": "t1-11", "type": "locate", "query": "daily list of CFR parts affected", "expected": ["CFR:1-6.3"]}
+{"qid": "t1-12", "type": "locate", "query": "monthly list of sections affected", "expected": ["CFR:1-6.4"]}
+{"qid": "t1-13", "type": "locate", "query": "how often is the Code of Federal Regulations updated", "expected": ["CFR:1-8.3"]}
+{"qid": "t1-14", "type": "locate", "query": "how to cite the Code of Federal Regulations", "expected": ["CFR:1-8.9"]}
+{"qid": "t1-15", "type": "locate", "query": "is the United States Government Manual required to be published", "expected": ["CFR:1-9.1"]}
+{"qid": "t1-16", "type": "locate", "query": "publication of Presidential papers", "expected": ["CFR:1-10.1"]}
+{"qid": "t1-17", "type": "locate", "query": "how can a member of the public subscribe to the Federal Register", "expected": ["CFR:1-11.1", "CFR:1-11.2"]}
+{"qid": "t1-18", "type": "locate", "query": "LSA list of CFR sections affected", "expected": ["CFR:1-11.8"]}
+{"qid": "t1-19", "type": "locate", "query": "distribution of the Federal Register within the federal government", "expected": ["CFR:1-12.1"]}
+{"qid": "t1-20", "type": "locate", "query": "designation of agency representatives to the Office of the Federal Register", "expected": ["CFR:1-16.1"]}
+{"qid": "t1-21", "type": "locate", "query": "liaison duties of agency representatives", "expected": ["CFR:1-16.2"]}
+{"qid": "t1-22", "type": "locate", "query": "who may certify documents on behalf of an agency", "expected": ["CFR:1-16.3"]}
+{"qid": "t1-23", "type": "locate", "query": "when is a document considered received and processed for filing", "expected": ["CFR:1-17.1"]}
+{"qid": "t1-24", "type": "locate", "query": "regular filing and publication schedule", "expected": ["CFR:1-17.2"]}
+{"qid": "t1-25", "type": "locate", "query": "criteria for emergency publication", "expected": ["CFR:1-17.3"]}
+{"qid": "t1-26", "type": "locate", "query": "deferred publication schedule criteria", "expected": ["CFR:1-17.7"]}
+{"qid": "t1-27", "type": "locate", "query": "how many copies of a document must be submitted", "expected": ["CFR:1-18.1"]}
+{"qid": "t1-28", "type": "locate", "query": "combined category documents are prohibited", "expected": ["CFR:1-18.2"]}
+{"qid": "t1-29", "type": "locate", "query": "signature requirements on documents submitted for publication", "expected": ["CFR:1-18.7"]}
+{"qid": "t1-30", "type": "locate", "query": "use of an agency seal on a document", "expected": ["CFR:1-18.8"]}
+{"qid": "t1-31", "type": "locate", "query": "illustrations, tables, and forms in documents", "expected": ["CFR:1-18.10"]}
+{"qid": "t1-32", "type": "locate", "query": "what a preamble must contain", "expected": ["CFR:1-18.12"]}
+{"qid": "t1-33", "type": "locate", "query": "withdrawing or correcting a document already filed", "expected": ["CFR:1-18.13"]}
+{"qid": "t1-34", "type": "locate", "query": "correcting printing errors", "expected": ["CFR:1-18.15"]}
+{"qid": "t1-35", "type": "locate", "query": "reinstating a regulation that expired", "expected": ["CFR:1-18.16"]}
+{"qid": "t1-36", "type": "locate", "query": "effective dates and computing time periods", "expected": ["CFR:1-18.17"]}
+{"qid": "t1-37", "type": "locate", "query": "list of subjects in agency regulations", "expected": ["CFR:1-18.20"]}
+{"qid": "t1-38", "type": "locate", "query": "form of an Executive order", "expected": ["CFR:1-19.1"]}
+{"qid": "t1-39", "type": "locate", "query": "proclamations for special days or events", "expected": ["CFR:1-19.4"]}
+{"qid": "t1-40", "type": "locate", "query": "authority citation requirements for codified documents", "expected": ["CFR:1-21.40"]}
+{"qid": "t1-41", "type": "locate", "query": "notice that codified material is expiring", "expected": ["CFR:1-21.6"]}
+{"qid": "t1-42", "type": "locate", "query": "when will the Director approve an incorporation by reference", "expected": ["CFR:1-51.3"]}
+{"qid": "t1-43", "type": "locate", "query": "which publications are eligible for incorporation by reference", "expected": ["CFR:1-51.7"]}
+{"qid": "t1-44", "type": "locate", "query": "where is the Administrative Conference of the United States located", "expected": ["CFR:1-301.1"]}
+{"qid": "t1-45", "type": "locate", "query": "purposes of the Administrative Conference", "expected": ["CFR:1-301.2"]}
+{"qid": "t1-46", "type": "id-lookup", "query": "1 CFR 51.9", "expected": ["CFR:1-51.9"]}
+{"qid": "t1-47", "type": "id-lookup", "query": "§ 18.12", "expected": ["CFR:1-18.12"]}
+{"qid": "t1-48", "type": "definition", "query": "what does Filing mean", "expected": ["CFR:1-1.1"]}
+{"qid": "t1-49", "type": "definition", "query": "definition of a document having general applicability and legal effect", "expected": ["CFR:1-1.1"]}
+{"qid": "t1-50", "type": "locate", "query": "publication policy of the Federal Register", "expected": ["CFR:1-5.1"]}

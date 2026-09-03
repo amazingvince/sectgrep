@@ -4,6 +4,13 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "sect-semantic: stub until milestone 4 (see GOAL.md section 5)"
+description = "Semantic layer: an embedding-provider trait, model2vec-rs (potion-retrieval-32M) behind it, and brute-force cosine over vectors.bin"
 
 [dependencies]
+model2vec-rs.workspace = true
+sect-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
