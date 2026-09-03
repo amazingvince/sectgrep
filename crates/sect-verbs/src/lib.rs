@@ -251,6 +251,10 @@ pub struct GrepArgs {
     /// Only search files of this source.
     #[arg(long, value_name = "NAME")]
     pub source: Option<String>,
+    /// Brute force: skip the n-gram prefilter and read every file.
+    #[arg(long)]
+    #[serde(default)]
+    pub no_index: bool,
 }
 
 #[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
@@ -273,6 +277,9 @@ pub struct IndexArgs {
     /// Embedding provider: `model2vec:<hub repo or local dir>` (default minishlab/potion-retrieval-32M), or `none`.
     #[arg(long, value_name = "SPEC")]
     pub embedding: Option<String>,
+    /// n-gram prefilter for grep: `on`, `off`, or `auto` (on at 200 MB and above; the default keeps what the index was built with).
+    #[arg(long, value_name = "on|off|auto", value_parser = ["on", "off", "auto"])]
+    pub ngram: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
@@ -411,8 +418,9 @@ pub fn grep(index: &Index, a: &GrepArgs) -> Result<Outcome> {
         count_only: a.count_only,
         max_hits: a.max_hits,
         only_paths: None,
+        files: None,
     };
-    let r = sect_query::grep(index, &opts, a.annotate, a.scope.as_deref(), a.source.as_deref())?;
+    let r = sect_query::grep(index, &opts, a.annotate, a.scope.as_deref(), a.source.as_deref(), a.no_index)?;
     outcome(&r, sect_format::grep_text(&r, !a.no_line_number), 0)
 }
 
@@ -424,12 +432,12 @@ pub fn status(index: &Index) -> Result<Outcome> {
 /// `index` builds or refreshes; `rebuild` is `index --full`.
 pub fn index(corpus: &Path, a: &IndexArgs) -> Result<Outcome> {
     let root = a.path.clone().unwrap_or_else(|| corpus.to_path_buf());
-    let rep = sect_index::build(&root, &BuildOptions { full: a.full, validate_only: a.validate_only, embedding: a.embedding.clone() })?;
+    let rep = sect_index::build(&root, &BuildOptions { full: a.full, validate_only: a.validate_only, embedding: a.embedding.clone(), ngram: a.ngram.clone() })?;
     Ok(Outcome { text: sect_format::build_text(&rep), json: serde_json::to_value(&rep)?, exit: if rep.errors() > 0 { 1 } else { 0 } })
 }
 
 pub fn rebuild(corpus: &Path, a: &RebuildArgs) -> Result<Outcome> {
-    index(corpus, &IndexArgs { path: None, full: true, validate_only: false, embedding: a.embedding.clone() })
+    index(corpus, &IndexArgs { path: None, full: true, validate_only: false, embedding: a.embedding.clone(), ngram: None })
 }
 
 /// Run one verb against a corpus: open the index under the freshness policy, then dispatch.

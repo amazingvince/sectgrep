@@ -41,11 +41,14 @@ pub struct GrepOptions {
     pub max_hits: usize,
     /// Restrict the search to these corpus-relative paths (for `--scope` / `--source`).
     pub only_paths: Option<Vec<String>>,
+    /// Search exactly these files (relative paths, in walk order) instead of walking the tree;
+    /// `globs` still apply. Set by the n-gram prefilter, whose list is the walk of a fresh index.
+    pub files: Option<Vec<String>>,
 }
 
 impl Default for GrepOptions {
     fn default() -> Self {
-        GrepOptions { patterns: vec![], ignore_case: false, word: false, fixed_strings: false, globs: vec![], before: 0, after: 0, count: false, files_with_matches: false, count_only: false, max_hits: DEFAULT_MAX_HITS, only_paths: None }
+        GrepOptions { patterns: vec![], ignore_case: false, word: false, fixed_strings: false, globs: vec![], before: 0, after: 0, count: false, files_with_matches: false, count_only: false, max_hits: DEFAULT_MAX_HITS, only_paths: None, files: None }
     }
 }
 
@@ -82,6 +85,8 @@ pub struct GrepOutput {
     pub total_matches: usize,
     pub truncated: bool,
     pub max_hits: usize,
+    /// Files the walk found before any path restriction.
+    pub files_total: usize,
 }
 
 pub fn build_matcher(opts: &GrepOptions) -> Result<RegexMatcher> {
@@ -99,13 +104,37 @@ fn rel(root: &Path, p: &Path) -> String {
 
 /// Files ripgrep would search under `root`: hidden and gitignored entries skipped, `-g` globs
 /// applied with gitignore semantics, siblings sorted by path (what `rg --sort path` does).
-pub fn list_files(root: &Path, globs: &[String]) -> Result<Vec<(String, PathBuf)>> {
+fn overrides_for(root: &Path, globs: &[String]) -> Result<ignore::overrides::Override> {
     let mut ob = OverrideBuilder::new(root);
     for g in globs {
         Glob::new(g.trim_start_matches('!')).map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
         ob.add(g).map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
     }
-    let overrides = ob.build().map_err(|e| SectError::Other(format!("globs: {e}")))?;
+    ob.build().map_err(|e| SectError::Other(format!("globs: {e}")))
+}
+
+/// The files to search: an explicit list filtered by the globs, or the walk.
+fn resolve_files(root: &Path, opts: &GrepOptions) -> Result<Vec<(String, PathBuf)>> {
+    let Some(list) = &opts.files else { return list_files(root, &opts.globs) };
+    let ov = overrides_for(root, &opts.globs)?;
+    Ok(list
+        .iter()
+        .filter(|rel| {
+            if ov.is_empty() {
+                return true;
+            }
+            match ov.matched(root.join(rel), false) {
+                ignore::Match::Whitelist(_) => true,
+                ignore::Match::Ignore(_) => false,
+                ignore::Match::None => ov.num_whitelists() == 0,
+            }
+        })
+        .map(|rel| (rel.clone(), root.join(rel)))
+        .collect())
+}
+
+pub fn list_files(root: &Path, globs: &[String]) -> Result<Vec<(String, PathBuf)>> {
+    let overrides = overrides_for(root, globs)?;
     let mut out = Vec::new();
     for entry in WalkBuilder::new(root).hidden(true).git_ignore(true).overrides(overrides).sort_by_file_path(|a, b| a.cmp(b)).build() {
         let entry = entry.map_err(|e| SectError::Other(format!("walk {}: {e}", root.display())))?;
@@ -174,9 +203,11 @@ pub fn grep(root: &Path, opts: &GrepOptions) -> Result<GrepOutput> {
     let mut out = GrepOutput { max_hits, ..Default::default() };
     // One more than the bound so we can tell "exactly max_hits" from "more than max_hits".
     let mut budget = max_hits + 1;
-    for (rel, abs) in list_files(root, &opts.globs)? {
-        if let Some(only) = &opts.only_paths {
-            if !only.iter().any(|p| p == &rel) {
+    let only: Option<std::collections::HashSet<&str>> = opts.only_paths.as_ref().map(|v| v.iter().map(|s| s.as_str()).collect());
+    for (rel, abs) in resolve_files(root, opts)? {
+        out.files_total += 1;
+        if let Some(only) = &only {
+            if !only.contains(rel.as_str()) {
                 continue;
             }
         }

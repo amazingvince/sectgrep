@@ -888,12 +888,16 @@ pub struct GrepResult {
     pub max_hits: usize,
     /// Set when the answer was bounded: what to do next.
     pub note: Option<String>,
+    /// What the n-gram prefilter did (absent when the layer is off or --no-index was given).
+    pub prefilter: Option<sect_ngram::Plan>,
+    /// Time in the matcher scan, after the prefilter.
+    pub scan_ms: f64,
 }
 
 /// `sect grep`: exhaustive exact/regex search, ripgrep-compatible, bounded by `--max-hits`.
 /// `--annotate` names the section and paragraph of every line; `--scope` limits the files to a
 /// subtree and `--source` to one source.
-pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope: Option<&str>, source: Option<&str>) -> Result<Response<GrepResult>> {
+pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope: Option<&str>, source: Option<&str>, no_index: bool) -> Result<Response<GrepResult>> {
     let mut opts = opts.clone();
     if scope.is_some() || source.is_some() {
         if let Some(s) = scope {
@@ -911,7 +915,24 @@ pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope
         }
         opts.only_paths = Some(allowed);
     }
+    // The prefilter narrows the files the matcher must read; it never decides a match, and it
+    // is not consulted when the index may be stale (a file added since the build would be missing
+    // from its list).
+    let mut prefilter: Option<sect_ngram::Plan> = None;
+    if !no_index && index.freshness.is_fresh() {
+        if let Some(pf) = index.prefilter() {
+            let plan = pf.plan(&opts.patterns, opts.fixed_strings, opts.ignore_case);
+            if let Some(c) = &plan.candidates {
+                // The candidates are the files to read, in walk order: no directory walk at all.
+                // A scope or source restriction stays in `only_paths` and still applies.
+                opts.files = Some(c.clone());
+            }
+            prefilter = Some(plan);
+        }
+    }
+    let t_scan = std::time::Instant::now();
     let raw = sect_exact::grep(&index.root, &opts)?;
+    let scan_ms = t_scan.elapsed().as_secs_f64() * 1000.0;
     let mode = if raw.truncated {
         "per-file-counts"
     } else if opts.count || opts.count_only {
@@ -964,10 +985,13 @@ pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope
         _ => raw.per_file.len(),
     };
     let mut extra = vec![("files-searched".to_string(), raw.files_searched), ("files-matched".to_string(), raw.files_matched), ("matching-lines".to_string(), raw.total_matches), ("max-hits".to_string(), raw.max_hits)];
+    if let Some(n) = prefilter.as_ref().and_then(|p| p.candidate_count) {
+        extra.push(("candidates".to_string(), n));
+    }
     if raw.truncated {
         extra.push(("over-max-hits".to_string(), 1));
     }
-    let result = GrepResult { patterns: opts.patterns.clone(), mode: mode.to_string(), scope: scope.map(str::to_string), source: source.map(str::to_string), lines, per_file: raw.per_file, files_searched: raw.files_searched, files_matched: raw.files_matched, total_matches: raw.total_matches, truncated: raw.truncated, max_hits: raw.max_hits, note };
+    let result = GrepResult { patterns: opts.patterns.clone(), mode: mode.to_string(), scope: scope.map(str::to_string), source: source.map(str::to_string), lines, per_file: raw.per_file, files_searched: raw.files_searched, files_matched: raw.files_matched, total_matches: raw.total_matches, truncated: raw.truncated, max_hits: raw.max_hits, note, prefilter, scan_ms };
     Ok(Response { header: header(index, shown, raw.total_matches, extra), result })
 }
 

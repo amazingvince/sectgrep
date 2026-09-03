@@ -55,6 +55,10 @@ pub struct BuildOptions {
     /// Embedding provider spec (`model2vec:<repo-or-path>`, a bare repo/path, or `none` to skip
     /// the semantic layer). None = the default potion-retrieval-32M.
     pub embedding: Option<String>,
+    /// n-gram prefilter: `on`, `off`, or `auto` (on when the corpus is at least the threshold,
+    /// spec B.4: 200 MB); None keeps what the index was built with (auto for a new index). An
+    /// explicit value rebuilds the layer.
+    pub ngram: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -126,6 +130,9 @@ pub struct Manifest {
     /// without the flag inherits it, so a background rebuild never switches models.
     #[serde(default)]
     pub embedding_spec: Option<String>,
+    /// The `--ngram` setting this index was built with: on, off, or auto.
+    #[serde(default)]
+    pub ngram_spec: Option<String>,
     #[serde(default)]
     pub edges: usize,
     #[serde(default)]
@@ -341,6 +348,19 @@ fn snapshot_dirs(root: &Path, files: &[sect_corpus::CorpusFile], sources: &BTree
             p = d.parent();
         }
     }
+    // Every directory grep's walk can reach is tracked too (ignore rules applied, hidden
+    // skipped), so a file added anywhere grep would look marks the index stale and the n-gram
+    // prefilter, whose file list is that walk, steps aside until the rebuild.
+    for entry in ignore::WalkBuilder::new(root).hidden(true).git_ignore(true).build().flatten() {
+        if entry.file_type().map(|t| t.is_dir()).unwrap_or(false) {
+            if let Ok(rel) = entry.path().strip_prefix(root) {
+                let s = rel.to_string_lossy().replace('\\', "/");
+                if !s.is_empty() {
+                    tracked.insert(s);
+                }
+            }
+        }
+    }
     let tracked: Vec<String> = tracked.into_iter().collect();
     tracked.par_iter().filter_map(|d| stat_file(&root.join(d)).ok().map(|(_, m)| (d.clone(), m))).collect()
 }
@@ -426,6 +446,14 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
         .unwrap_or_else(|| sect_semantic::DEFAULT_MODEL.to_string());
     let want_semantic = embedding_spec != "none";
     let semantic_spec_changed = want_semantic && prev_manifest.as_ref().map(|m| m.embedding_spec.as_deref() != Some(embedding_spec.as_str())).unwrap_or(true);
+    let ngram_spec: String = opts.ngram.clone().or_else(|| prev_manifest.as_ref().and_then(|m| m.ngram_spec.clone())).unwrap_or_else(|| "auto".into());
+    let corpus_bytes: u64 = store.files.values().map(|f| f.size).sum();
+    let want_ngram = match ngram_spec.as_str() {
+        "on" => true,
+        "off" => false,
+        _ => corpus_bytes >= sect_ngram::threshold_bytes(),
+    };
+    let ngram_changed = opts.ngram.is_some() || prev_manifest.as_ref().map(|m| m.layers.get("ngram").copied().unwrap_or(false) != want_ngram).unwrap_or(want_ngram);
     let mut report = BuildReport {
         mode: String::new(),
         files: files.len(),
@@ -451,7 +479,7 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
 
     // Nothing changed and every layer is on disk: no work (spec B.6, A.4 principle 3).
     let complete_cache = cache_hits == files.len();
-    if !opts.full && !opts.validate_only && added + changed + removed == 0 && complete_cache && artifacts_present(&dir, want_semantic) && !semantic_spec_changed {
+    if !opts.full && !opts.validate_only && added + changed + removed == 0 && complete_cache && artifacts_present(&dir, want_semantic) && !semantic_spec_changed && !ngram_changed {
         report.mode = "noop".into();
         if let Some(m) = &prev_manifest {
             report.works = m.works;
@@ -576,6 +604,24 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     };
     lap("semantic", &mut stage, &mut layer_ms);
 
+    // n-gram prefilter: rebuilt whole whenever anything changed (file ids are positions in the
+    // walk), only when wanted; removed otherwise.
+    let ngram_dir = dir.join(sect_ngram::DIR);
+    let ngram_built = if want_ngram {
+        // Exactly the files grep walks (every file under the root that ignore rules admit, not
+        // only the corpus sections), so the candidate list can never drop a file grep would read.
+        let list: Vec<(String, PathBuf)> = sect_exact::list_files(&root, &[])?;
+        let stats = sect_ngram::build(&list, &ngram_dir)?;
+        if timing {
+            eprintln!("timing: ngram {} grams, table {} bytes, postings {} bytes", stats.grams, stats.table_bytes, stats.postings_bytes);
+        }
+        true
+    } else {
+        let _ = std::fs::remove_dir_all(&ngram_dir);
+        false
+    };
+    lap("ngram", &mut stage, &mut layer_ms);
+
     // Caches and manifest.
     let mut cache_out = String::new();
     for d in &docs {
@@ -606,10 +652,11 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
             .values()
             .map(|s: &SourceConfig| SourceSummary { name: s.name.clone(), kind: s.kind.clone(), precedence: s.precedence, legal_status: s.legal_status.clone(), files: per_source.get(&s.name).copied().unwrap_or(0) })
             .collect(),
-        layers: [("structural", true), ("exact", true), ("ngram", false), ("lexical", true), ("semantic", semantic_built)].into_iter().map(|(k, v)| (k.to_string(), v)).collect(),
+        layers: [("structural", true), ("exact", true), ("ngram", ngram_built), ("lexical", true), ("semantic", semantic_built)].into_iter().map(|(k, v)| (k.to_string(), v)).collect(),
         chunks: chunk_list.len(),
         embedding: embedding_name,
         embedding_spec: Some(embedding_spec.clone()),
+        ngram_spec: Some(ngram_spec.clone()),
         edges: graph.edges.len(),
         actions: graph.actions.len(),
         terms: graph.terms.len(),
@@ -763,6 +810,16 @@ impl Index {
 
     pub fn lexical(&self) -> Result<sect_lexical::LexicalIndex> {
         sect_lexical::LexicalIndex::open(&self.dir().join(TANTIVY_DIR))
+    }
+
+    /// The n-gram prefilter, when the layer was built (spec B.4).
+    pub fn prefilter(&self) -> Option<sect_ngram::Prefilter> {
+        let dir = self.dir().join(sect_ngram::DIR);
+        if self.manifest.layers.get("ngram").copied().unwrap_or(false) && sect_ngram::Prefilter::exists(&dir) {
+            sect_ngram::Prefilter::open(&dir).ok()
+        } else {
+            None
+        }
     }
 
     pub fn has_semantic(&self) -> bool {

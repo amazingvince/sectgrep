@@ -11,7 +11,9 @@ use crate::cite::Resolver;
 use crate::walk::CorpusFile;
 
 static LINK_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\[([^\]]*)\]\(([^)\s]*)\)").unwrap());
-static LABEL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\(([a-z]{1,4}|\d{1,2})\)\s").unwrap());
+/// A run of markers opening one line, `(f)(1)(i) text`: each marker nests under the previous.
+static LABEL_RUN_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^((?:\((?:[a-z]{1,4}|\d{1,2})\))+)\s").unwrap());
+static LABEL_ONE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\(([a-z]{1,4}|\d{1,2})\)").unwrap());
 static ID_LIKE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[A-Z][A-Z0-9]*:").unwrap());
 const ROMAN: &[&str] = &["ii", "iii", "iv", "vi", "vii", "viii", "ix"];
 
@@ -152,30 +154,59 @@ pub fn split_front_matter(text: &str) -> Option<(&str, &str)> {
 
 /// Paragraph labels `(a)`, `(1)`, `(i)` become anchors `a`, `a-1`, `a-1-i`, with their line numbers.
 pub fn paragraph_anchors(body: &str) -> Vec<AnchorLine> {
+    // Every line that opens with a run of markers, `(f)` or `(f)(1)(i)`, with its labels.
+    let runs: Vec<(usize, Vec<String>)> = body
+        .lines()
+        .enumerate()
+        .filter_map(|(i, raw)| LABEL_RUN_RE.captures(raw.trim()).map(|m| (i + 1, LABEL_ONE_RE.captures_iter(&m[1]).map(|c| c[1].to_string()).collect())))
+        .collect();
     let mut anchors = Vec::new();
     let mut lvl1: Option<String> = None;
     let mut lvl2: Option<String> = None;
-    for (i, raw) in body.lines().enumerate() {
-        let line = raw.trim();
-        let Some(m) = LABEL_RE.captures(line) else { continue };
-        let lab = m[1].to_string();
-        let anchor = if lab.chars().all(|c| c.is_ascii_digit()) {
-            let a = match &lvl1 {
-                Some(a) => format!("{a}-{lab}"),
-                None => lab.clone(),
+    for (r, (line, labels)) in runs.iter().enumerate() {
+        let next_first = runs.get(r + 1).and_then(|(_, l)| l.first()).map(|s| s.as_str());
+        for (j, lab) in labels.iter().enumerate() {
+            let lab = lab.as_str();
+            let following = if j + 1 < labels.len() { Some(labels[j + 1].as_str()) } else { next_first };
+            let is_digits = lab.chars().all(|c| c.is_ascii_digit());
+            let is_roman = lvl2.is_some() && (ROMAN.contains(&lab) || (matches!(lab, "i" | "v" | "x") && ambiguous_marker_is_roman(lab, lvl1.as_deref(), following)));
+            let anchor = if is_digits {
+                let a = match &lvl1 {
+                    Some(a) => format!("{a}-{lab}"),
+                    None => lab.to_string(),
+                };
+                lvl2 = Some(lab.to_string());
+                a
+            } else if is_roman {
+                format!("{}-{}-{lab}", lvl1.clone().unwrap_or_default(), lvl2.clone().unwrap())
+            } else {
+                lvl1 = Some(lab.to_string());
+                lvl2 = None;
+                lab.to_string()
             };
-            lvl2 = Some(lab);
-            a
-        } else if ROMAN.contains(&lab.as_str()) && lvl2.is_some() {
-            format!("{}-{}-{lab}", lvl1.clone().unwrap_or_default(), lvl2.clone().unwrap())
-        } else {
-            lvl1 = Some(lab.clone());
-            lvl2 = None;
-            lab
-        };
-        anchors.push(AnchorLine { anchor, line: i + 1 });
+            // Every level the run opens is addressable: `(b)(2)(i)` answers to #b, #b-2, #b-2-i.
+            anchors.push(AnchorLine { anchor: anchor.clone(), line: *line });
+        }
     }
     anchors
+}
+
+/// `(i)`, `(v)`, `(x)` are letters or numerals. Inside a numbered paragraph, the next marker
+/// settles it when it can (`(ii)` or `(vi)` continues a numeral, `(j)` or `(w)` continues the
+/// alphabet); otherwise it is a numeral unless the enclosing letter is the one it would follow.
+fn ambiguous_marker_is_roman(lab: &str, lvl1: Option<&str>, following: Option<&str>) -> bool {
+    match (lab, following) {
+        ("i", Some("ii")) | ("v", Some("vi")) | ("x", Some("xi")) => true,
+        ("i", Some("j")) | ("v", Some("w")) | ("x", Some("y")) => false,
+        _ => {
+            let preceding_letter = match lab {
+                "i" => "h",
+                "v" => "u",
+                _ => "w",
+            };
+            lvl1 != Some(preceding_letter)
+        }
+    }
 }
 
 fn node_text<'a>(node: &'a AstNode<'a>) -> String {
@@ -373,5 +404,32 @@ mod tests {
     fn slugs() {
         assert_eq!(slug("Walking-working surface"), "walking-working-surface");
         assert_eq!(slug("physician or other licensed health care professional"), "physician-or-other-licensed-health-care-professional");
+    }
+}
+
+#[cfg(test)]
+mod compound_marker_tests {
+    use super::paragraph_anchors;
+
+    #[test]
+    fn a_run_of_markers_on_one_line_nests_in_order() {
+        let body = "(a) First.
+(b)(1) Opens b and b-1 together.
+(i) Under b-1.
+(2) Second under b.
+(c) Plain.";
+        let got: Vec<String> = paragraph_anchors(body).into_iter().map(|a| a.anchor).collect();
+        assert_eq!(got, vec!["a", "b", "b-1", "b-1-i", "b-2", "c"]);
+        // After (h)(1), a bare (i) followed by (j) is the letter i; followed by (ii) it is a numeral.
+        let got: Vec<String> = paragraph_anchors("(h) H.
+(1) One.
+(i) Letter.
+(j) J.").into_iter().map(|a| a.anchor).collect();
+        assert_eq!(got, vec!["h", "h-1", "i", "j"]);
+        let got: Vec<String> = paragraph_anchors("(h) H.
+(1) One.
+(i) Numeral.
+(ii) Two.").into_iter().map(|a| a.anchor).collect();
+        assert_eq!(got, vec!["h", "h-1", "h-1-i", "h-1-ii"]);
     }
 }

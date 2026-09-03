@@ -12,6 +12,7 @@ regex.workspace = true
 sect-core.workspace = true
 sect-corpus.workspace = true
 sect-exact.workspace = true
+sect-ngram.workspace = true
 sect-index.workspace = true
 sect-lexical.workspace = true
 sect-rank.workspace = true

@@ -4,6 +4,14 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "sect-ngram: stub until milestone 3b (see GOAL.md section 5)"
+description = "sect-ngram: sparse n-gram prefilter for grep with corpus-derived pair weights (spec B.4 exact, milestone 3b)"
 
 [dependencies]
+memmap2 = "0.9"
+roaring = "0.11"
+regex-syntax = "0.8"
+serde.workspace = true
+sect-core.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
