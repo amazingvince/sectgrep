@@ -1,0 +1,20 @@
+[package]
+name = "sect-verbs"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect-verbs: the seven verbs as one set of argument definitions shared by the CLI (clap) and the MCP server (JSON schema), and one runner both call (spec B.3)"
+
+[dependencies]
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+chrono.workspace = true
+sect-core.workspace = true
+sect-exact.workspace = true
+sect-struct.workspace = true
+sect-index.workspace = true
+sect-query.workspace = true
+sect-format.workspace = true

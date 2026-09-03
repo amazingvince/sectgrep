@@ -11,6 +11,10 @@ name = "sect"
 path = "src/main.rs"
 
 [dependencies]
+serde_json.workspace = true
+tokio.workspace = true
+sect-mcp.workspace = true
+sect-verbs.workspace = true
 chrono.workspace = true
 clap.workspace = true
 sect-core.workspace = true

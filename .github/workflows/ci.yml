@@ -25,6 +25,15 @@ jobs:
       - run: cargo test --workspace --locked
       - name: Fixture passes the B.2 contract check
         run: cargo run -p sect-cli --locked -- index --validate-only fixtures/corpus
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Pi and Claude Agent SDK examples call the seven verbs through the built binary
+        run: |
+          pnpm install --frozen-lockfile
+          SECT_BIN=$PWD/target/debug/sect pnpm -r --filter "./examples/*" test
       - name: Freshness stat at 10k files (spec B.6 reference number on Linux)
         run: |
           python3 eval/gen_synthetic.py --sections 10000 --out /tmp/syn
