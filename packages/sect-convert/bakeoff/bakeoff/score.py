@@ -40,6 +40,8 @@ RUNNING_HEADS = [
 ]
 DASHES = re.compile(r"[\u2010\u2011\u2012\u2013\u2014\u2212]")
 SECTION_HEAD = re.compile(r"(?:§|Sec\.?|Section)\s*(\d+\.\d+[a-z]?)", re.I)
+# Headings that end a section's span without being another section: appendices and subparts.
+OTHER_HEAD = re.compile(r"^#*\s*(Appendix|APPENDIX|Subpart|SUBPART|PART \d)", re.I)
 
 
 IMAGE_MD = re.compile(r"!\[[^\]]*\]\([^)]*\)")
@@ -61,13 +63,19 @@ def normalize(text: str) -> str:
         s = re.sub(r"<[^>]+>", " ", s)
         s = re.sub(r"§\s*", "§ ", s)
         s = DASHES.sub("-", s)
+        # Spacing around a dash is typography, not text: "systems -(1)" and "systems-(1)" agree.
+        s = re.sub(r"\s*-\s*", "-", s)
         out.append(s)
     return re.sub(r"\s+", " ", " ".join(out)).strip()
 
 
+FRONT_MATTER = re.compile(r"(?:^|\n)\s*---\s*\n(?:[a-z_]+:[^\n]*\n){1,8}---\s*\n", re.S)
+
+
 def strip_front_matter(text: str) -> str:
-    """olmOCR-style YAML front matter at the top of a page."""
-    return re.sub(r"\A\s*---\s*\n.*?\n---\s*\n", "", text, count=1, flags=re.S)
+    """olmOCR-style YAML front matter (primary_language, is_rotation_valid, ...) at the top of
+    every page; pages are joined, so every block goes, not only the first."""
+    return FRONT_MATTER.sub("\n", text)
 
 
 def clip_to_section(text: str, section: str | None) -> str:
@@ -88,6 +96,8 @@ def clip_to_section(text: str, section: str | None) -> str:
             h = SECTION_HEAD.search(t)
             if not h or h.group(1) != num:
                 continue
+            if any(p.search(t) for p in RUNNING_HEADS):
+                continue
             after = t[h.end():].strip(" .:-*")
             if want_title and len(after) < 4:
                 continue
@@ -101,6 +111,9 @@ def clip_to_section(text: str, section: str | None) -> str:
     end = len(lines)
     for j in range(start + 1, len(lines)):
         t = lines[j].strip()
+        if OTHER_HEAD.match(t) and len(t) < 120:
+            end = j
+            break
         h = SECTION_HEAD.search(t)
         if not h or h.group(1) == num:
             continue
@@ -113,6 +126,35 @@ def clip_to_section(text: str, section: str | None) -> str:
             end = j
             break
     return "\n".join(lines[start:end])
+
+
+def clip_to_golden(text: str, gold_lines: list[str]) -> str | None:
+    """Anchor the span on the golden text itself: the output line that best matches the golden's
+    first substantial block starts it, the line that best matches one of its last blocks ends it.
+    Independent of how a model wrote the heading. None when the anchors are not found."""
+    lines = text.splitlines()
+    nl = [normalize(l) for l in lines]
+
+    def best(probe: str, lo: int = 0) -> tuple[int, int] | None:
+        probe = probe[:120]
+        cands = [(fuzz.partial_ratio(probe, l) if len(l) >= 10 else 0, i) for i, l in enumerate(nl) if i >= lo]
+        if not cands:
+            return None
+        score, i = max(cands)
+        return (score, i) if score >= 75 else None
+
+    firsts = [normalize(g) for g in gold_lines if len(normalize(g)) >= 40][:3]
+    lasts = [normalize(g) for g in reversed(gold_lines) if len(normalize(g)) >= 40][:3]
+    if not firsts:
+        return None
+    # A model may drop the heading: anchor on the earliest of the first three blocks it did keep.
+    starts = [b for b in (best(g) for g in firsts) if b]
+    if not starts:
+        return None
+    start_i = min(i for _, i in starts)
+    ends = [b for b in (best(g, start_i) for g in lasts) if b]
+    end = max(i for _, i in ends) if ends else len(lines) - 1
+    return "\n".join(lines[start_i:end + 1])
 
 
 def text_edit(pred: str, gold_lines: list[str]) -> float:

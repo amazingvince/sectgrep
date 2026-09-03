@@ -104,7 +104,7 @@ if (cmd === "fetch") {
     }
     const r = await t.transcribePage(img, task);
     const out = arg("out");
-    const record = { pdf, page, transcriber: t.name, kind: r.kind, image: r.image, usage: r.usage ?? null, elapsedMs: r.elapsedMs, markdown: r.markdown };
+    const record = { pdf, page, transcriber: t.name, kind: r.kind, image: r.image, usage: r.usage ?? null, elapsedMs: r.elapsedMs, attempts: r.attempts ?? 1, degenerate: r.degenerate ?? false, markdown: r.markdown };
     if (out) {
       mkdirSync(dirname(out), { recursive: true });
       writeFileSync(out, JSON.stringify(record, null, 2) + "\n");

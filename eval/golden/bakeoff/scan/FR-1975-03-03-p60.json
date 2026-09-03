@@ -1,0 +1,1912 @@
+{
+  "doc": "FR-1975-03-03-p60",
+  "section": null,
+  "title": "FR-1975-03-03-p60 (scanned Federal Register page)",
+  "origin": "consensus: reference sdk-olmocr, agreement against ['api-olmocr', 'sdk-glmocr', 'api-glmocr', 'sdk-paddle', 'api-paddle', 'docling']; 85 of 272 lines unconfirmed, to be hand-checked against raw/bakeoff/fr/FR-1975-03-03.pdf page 60",
+  "blocks": [
+    {
+      "kind": "para",
+      "text": "<table>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>State</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>County</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>Location</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>Map No.</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>State map repository</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>Local map repository</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>Effective date of identification of areas which have special flood hazards</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Lowell, town of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230905 01 through H 230906 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Lowell, Maine 04106.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do:</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Piscataquis</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Atkinson, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230407 01 through H 230407 03</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Atkinson, Maine. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Aroostook</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Limeus, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230427 01 through H 230427 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Limeus, Maine. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td></td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Ludlow, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230429 01 through H 230429 02</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Ludlow, Maine. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Merrill, town of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230430 01 through H 230430 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Merrill, Maine. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>New Limerick, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230432 01 through H 230432 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, New Limerick, Maine 04761.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>New Sweden, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230433 01 through H 230433 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, New Sweden, Maine 04762.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>St. Agatha, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230435 01 through H 230435 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>First Selectman, Town Office, St. Agatha, Maine 04772.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Androscoggin</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Wales, town of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230439 01 through H 230439 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Office Bldg., Wales, Maine. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Aroostook</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Connor, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230451 01 through H 230451 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Maine Land Use Regulation Commission, State House, Township of Connor, Augusta, Maine 04330.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Silver Ridge, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230452 01 through H 230452 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Oxford</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Milton, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230453 01 through H 230453 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Fenobscot</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Argyle, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230460 01 through H 230460 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Maine Land Use Regulation Commission, State House, Township of Argyle, Augusta, Maine 04330.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Washington</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Brookton, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230464 01 through H 230464 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Maine Land Use Regulation Commission, State House, Township of Brookton, Augusta, Maine 04330.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Washington (T 01-RO 3 TS)</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Lambert Lake, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230472 01 through H 230472 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Massachusetts</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Berkshire</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Savoy, town of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 250940 01 through H 250940 12</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Division of Water Resources, Water Resources Commission, State Office Bldg., 100 Cambridge St., Boston, Mass. 02202.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, Town of Savoy, Savoy, Mass. 01258.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Franklin</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Shutesbury, town of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 250126 01 through H 250126 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, Town of Shutesbury, Shutesbury, Mass. 01072.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Monroe, town of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 250581 01 through H 250581 04</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Town Manager, Town Hall, Monroe, Mass. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Michigan</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Wayne</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Ecorse, city of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 206223A 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Water Resources Commission, Bureau of Water Management, Stevens T. Mason Bldg., Lansing, Mich. 48906. Michigan Insurance Bureau, 111 North Homer St., Lansing, Mich. 48901.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City Hall, City of Ecorse, 3869 West Jefferson, Ecorse, Mich. 48229.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>May 3, 1974.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Leelanau</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Cleveland, township of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 230902 01 through H 230902 11</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Supervisor's Office, Town of Cleveland, Cleveland, Mich. No ZIP.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Feb. 21, 1975.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Minnesota</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Otter Tail</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Elizabeth, city of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 270335A 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Division of Water, Soils, and Minerals, Department of Natural Resources, Department Office Bldg., St. Paul, Minn. 55101.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Elizabeth, Elizabeth, Minn. 56533.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Missouri</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Independent City</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>St. Louis, city of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 250883 01 through H 250883 19</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Department of Natural Resources, Division of Water Development, State of Missouri, 308 East High St., Jefferson, Mo. 65101. Division of Insurance, P.O. Box 600, Jefferson City, Mo. 65101.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>City Hall, Room 901, 1200 and Market St., St. Louis, Mo. 63102.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Carter</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Fremont, village of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200477 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Village Clerk, Village of Fremont, Fremont, Mo. 65041.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Newton</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Stella, city of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200488 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Stella, City Hall, Stella, Mo. 64897.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Jackson</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Unincorporated areas.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200492 01 through H 200492 21</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Jackson County Planning Commission, County Courthouse, 300 W. Kansas, Independence, Mo. 64050.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Union Star, City Hall, Union Star, Mo. 64890.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De Kalb</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Union Star, city of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200512 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Rockville, City Hall, Rockville, Mo. 64780.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Bates</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Rockville, city of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200518 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Southwest City, City Hall, Southwest City, Mo. 64843.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>McDonald</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Southwest City, city of.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200528 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Mayor, City of Hume, City Hall, Hume, Mo. 64782.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>De.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Bates</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Hume, city of...</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>H 200577 01</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Do.</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</table>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    }
+  ]
+}

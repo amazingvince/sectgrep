@@ -1,0 +1,897 @@
+{
+  "doc": "FR-1985-06-03-p6",
+  "section": null,
+  "title": "FR-1985-06-03-p6 (scanned Federal Register page)",
+  "origin": "consensus: reference sdk-olmocr, agreement against ['api-olmocr', 'sdk-glmocr', 'api-glmocr', 'sdk-paddle', 'api-paddle', 'docling', 'marker']; 7 of 127 lines unconfirmed, to be hand-checked against raw/bakeoff/fr/FR-1985-06-03.pdf page 6",
+  "blocks": [
+    {
+      "kind": "para",
+      "text": "Public utility holding companies:",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23287 Pilot electronic disclosure system; temporary rules and forms",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "NOTICES",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Applications, etc.:",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23368 Connecticut Light & Power Co.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23369 Connecticut Mutual Life Insurance Co. et al.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "National market system securities:",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23370 National Association of Securities Dealers, Inc.: summary effectiveness, etc.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Self-regulatory organizations; proposed rule changes:",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23370 Midwest Stock Exchange, Inc.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23371 New York Stock Exchange, Inc.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Surface Mining Reclamation and Enforcement Office",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "RULES",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Permanent program submission:",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23299 Texas",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Synthetic Fuels Corporation",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "NOTICES",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23380 Meetings; Sunshine Act",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Transportation Department",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "See also Coast Guard; Federal Aviation Administration.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "NOTICES",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Aviation proceedings; hearings, etc.;",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23373 Pan Aviation",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Treasury Department",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "See Alcohol, Tobacco and Firearms Bureau; Customs Service; Internal Revenue Service.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Western Area Power Administration",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "NOTICES",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23356 California-Oregon Transmission project; allocation criteria transfer capability among non-Federal public entities; inquiry",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Separate Parts in This Issue",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Part II",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23382 Environmental Protection Agency.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Part III",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "23390 Department of Education",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "CFR PARTS AFFECTED IN THIS ISSUE",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "A cumulative list of the parts affected this month can be found in the Reader Aids section at the end of this issue.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<table>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>3 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>26 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Proclamations:<br>5348...23267</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Proposed Rules:<br>301...23316</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>7 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>29 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>55...23269<br>56...23269<br>59...23269<br>70...23269</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>2610...23299<br>943...23299</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>Proposed Rules:<br>928...23312</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>30 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td></td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>199...23300</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>14 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>33 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>71 (3 documents)...23270-23272<br>95...23272</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>100 (2 documents)...23301, 23302<br>117 (3 documents)...23303-23305<br>165 (2 documents)...23306<br>Proposed Rules:<br>117...23316</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>15 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>34 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>399...23284</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Proposed Rules:<br>650...23390</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>16 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>36 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>13...23284<br>305...23285</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>212...23307</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>Proposed Rules:<br>13 (2 documents)...23313-23316</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>39 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td></td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>Proposed Rules:<br>111...23317</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>17 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>40 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>200 (2 documents)...23286, 23287<br>239...23287<br>250...23287<br>259...23287</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>133...23382</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>19 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>42 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>6...23292<br>24...23292</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>447...23307<br>64...23307</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>21 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>44 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>81...23294<br>178 (3 documents)...23295-23297<br>522...23298</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<td>Proposed Rules:<br>12...23318<br>552...23318</td>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>22 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<th>50 CFR</th>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>307...23299</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "<td>26...23309<br>655...23310</td>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "</table>",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Reader Aids",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Additional information, including a list of public laws, telephone numbers, and finding aids, appears in the Reader Aids section at the end of this issue",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    }
+  ]
+}

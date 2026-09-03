@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from .manifest import RAW, ROOT
-from .score import clip_to_section, reading_order, strip_front_matter, teds_for_doc, text_edit
+from .score import clip_to_golden, clip_to_section, reading_order, strip_front_matter, teds_for_doc, text_edit
 
 WORK = RAW / "work"
 
@@ -27,7 +27,13 @@ def score_one(arm: str, doc: dict) -> dict | None:
     gold_tables = [b["html"] for b in golden["blocks"] if b["kind"] == "table"]
     raw = md_path.read_text(encoding="utf-8")
     pred = strip_front_matter(raw)
-    pred = clip_to_section(pred, doc.get("section"))
+    if doc.get("section"):
+        # Two ways to isolate the section from the rest of the page: anchored on the golden text,
+        # or on the section headings. Keep the one that leaves less non-section text (the model's
+        # own text is never altered, only the span).
+        cands = [c for c in (clip_to_golden(pred, gold_lines), clip_to_section(pred, doc.get("section"))) if c]
+        if cands:
+            pred = min(cands, key=lambda c: text_edit(c, gold_lines))
     meta = json.loads((WORK / arm / f"{doc['doc']}.json").read_text(encoding="utf-8")) if (WORK / arm / f"{doc['doc']}.json").exists() else {}
     elapsed = meta.get("elapsed_s") or sum(p.get("elapsed_s", 0) for p in meta.get("pages", []))
     ro = reading_order(pred, gold_lines)

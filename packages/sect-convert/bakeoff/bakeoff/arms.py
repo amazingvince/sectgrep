@@ -29,8 +29,10 @@ SERVER = os.environ.get("SECT_VLLM", "http://127.0.0.1:8000/v1")
 
 MODELS = {
     "olmocr": {"repo": "allenai/olmOCR-2-7B-1025", "prompt_page": None, "long_side": 1288, "max_tokens": 8000, "vllm_args": ["--max-model-len", "16384"]},
-    "glmocr": {"repo": "zai-org/GLM-OCR", "prompt_page": "Text Recognition:", "prompt_table": "Table Recognition:", "long_side": 1540, "max_tokens": 8192, "vllm_args": ["--allowed-local-media-path", "/", "--max-model-len", "16384"]},
-    "paddle": {"repo": "PaddlePaddle/PaddleOCR-VL-1.5", "prompt_page": "OCR:", "prompt_table": "Table Recognition:", "long_side": 1540, "max_tokens": 8192, "vllm_args": ["--max-model-len", "16384"]},
+    # The GLM-OCR SDK asks the server for `glm-ocr`; vLLM answers to both names.
+    "glmocr": {"repo": "zai-org/GLM-OCR", "prompt_page": "Text Recognition:", "prompt_table": "Table Recognition:", "long_side": 1540, "max_tokens": 8192, "vllm_args": ["--allowed-local-media-path", "/", "--max-model-len", "16384", "--served-model-name", "zai-org/GLM-OCR", "glm-ocr"]},
+    # The PaddleOCR pipeline asks the server for `PaddleOCR-VL-1.5-0.9B`; vLLM answers to both names.
+    "paddle": {"repo": "PaddlePaddle/PaddleOCR-VL-1.5", "prompt_page": "OCR:", "prompt_table": "Table Recognition:", "long_side": 1540, "max_tokens": 8192, "vllm_args": ["--max-model-len", "16384", "--served-model-name", "PaddlePaddle/PaddleOCR-VL-1.5", "PaddleOCR-VL-1.5-0.9B"]},
 }
 OLMOCR_PROMPT = (
     "Attached is one page of a document that you must process. Just return the plain text representation of this document as if you were reading it naturally. "

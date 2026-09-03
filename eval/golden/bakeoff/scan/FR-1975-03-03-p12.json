@@ -1,0 +1,820 @@
+{
+  "doc": "FR-1975-03-03-p12",
+  "section": null,
+  "title": "FR-1975-03-03-p12 (scanned Federal Register page)",
+  "origin": "consensus: reference sdk-olmocr, agreement against ['api-olmocr', 'sdk-glmocr', 'api-glmocr', 'sdk-paddle', 'api-paddle', 'docling', 'marker']; 1 of 116 lines unconfirmed, to be hand-checked against raw/bakeoff/fr/FR-1975-03-03.pdf page 12",
+  "blocks": [
+    {
+      "kind": "para",
+      "text": "RULES AND REGULATIONS",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Park Drive, thence southwest along Central Park Drive to its junction with Rodney Street, thence southwest along a line projected from a point at the junction of Central Park Drive and Rodney Street to the east bank of Red River, thence northwest along said bank of the Red River to its intersection with the Kansas City Southern Railroad, thence northeast along the Kansas City Railroad to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Cicero Parish. Secs. 15, 16, 21, and 22, T. 8 S., R. 12 W.; secs. 31, 32, 33, 34, and 35, T. 8 S., R. 13 W.; secs. 2, 3, 4, 5, that portion of secs. 6, 7, 8, and 9 within the parish, and secs. 10 and 11, T. 9 S., R. 13 W.; that portion of sec. 36, T. 8 S., R. 14 W. within the parish; and that portion of sec. 1, T. 9 S., R. 14 W., within the parish.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Grant Parish. Sec. 16, T. 6 N., R. 1 W.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lafourche Parish. That portion of T. 15 S., R. 17 E., lying within the parish.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "West Feliciana Parish. Secs. 51, 52, 67, and 68, T. 3 S., R. 3 W., excluding that area lying within the corporate limits of the city of St. Francisville.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "MISSISSIPPI",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "(1) Generally infested area.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Adams County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Alcorn County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Amite County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Attala County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Benton County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Bolivar County. Sec. 3 and NW¼ T. 21 N., R. 5 W.; secs. 15, 16, 17, 18, 22, 27, and 34; SW¼, T. 22 N., R. 5 W.; secs. 8, 9, 16, 17, 20, and 21, T. 23 N., R. 5 W.; and secs. 10, 11, 15, and 16, T. 24 N., R. 8 W.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Calhoun County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Carroll County. T. 17 N., R. 5 E.; secs. 1, 12, and 13, T. 19 N., R. 3 E.; and NW¼ T. 19 N., R. 4 E.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Chickasaw County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Choctaw County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Claiborne County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Clarke County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Coahoma County. Secs. 18, 19, and 30, T. 27 N., R. 3 W.; and secs. 13, 14, 15, 22, 23, 24, 25, 26, and 27, T. 27 N., R. 4 W.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Copiah County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Covington County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "DeSoto County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Forrest County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Franklin County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "George County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Greene County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Grenada County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Hancock County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Harrison County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Hinds County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Holmes County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Huwawm County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "Jackson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Jasper County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Jefferson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Jefferson Davis County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Jones County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Kemper County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lafayette County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lamar County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lauderdale County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lawrence County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Leake County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lee County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lincoln County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Loudermilk County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Madison County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Marion County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Marshall County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Monroe County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Montgomery County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Neshoba County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Newton County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Noxubee County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Oktibbeha County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Panola County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Pearl River County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Perry County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Pike County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Pontotoc County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Prentiss County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Rankin County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Scott County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Simmons County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Smith County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Stone County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Sunflower County. W½, T. 21 N., R. 3 W.; W½, T. 22 N., R. 3 W.; SW¼, T. 25 N., R. 3 W.; SW¼, T. 21 N., R. 4 W.; and SW¼, T. 22 N., R. 4 W.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Tallahatchie County. Secs. 2 and 3, T. 24 N., R. 2 E.; secs. 34 and 35, T. 25 N., R. 2 E.; and NE¼ T. 25 N., R. 3 E.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Tate County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Tippah County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Tunica County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Union County. Secs. 42 and 33, T. 4 S., R. 11 W.; and secs. 4 and 5, T. 5 S., R. 11 W.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Union County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Walthall County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Warren County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Washington County. That area lying within the corporate limits of the city of Grenada.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Wayne County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Webster County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Wilkinson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Winston County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Yalobusha County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Yazoo County. E¼, T. 12 N., R. 2 W.; secs. 1, 2, and 3, T. 11 N., R. 2 W.; and that portion of T. 12 N., R. 3 E., lying within the county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "(2) Suppressive area. None.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "MISSOURI",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "(1) Generally infested area. None.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "(2) Suppressive area—Dunklin County. That portion of the county 10, Buffalo Twp., T. 16 N., R. 7 E.; that portion of the county west of Route 10 of Maddox lying east of Missouri Route 25 in secs. 10 and 15, Cotton Hill Twp., T. 22 N., R. 10 E.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "New Madrid County. That portion of the county lying within and bounded by the corporate limits of the city of Portageville.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "NORTH CAROLINA",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "(1) Generally infested area.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Anson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Cabarrus County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Carteret County. That portion of the county bounded by a line beginning at a point where the county lines of Jones, Carteret, and Onslow Counties meet; thence east along the Jones and Carteret County line to the intersection of said county line with State Secondary Road 1103; thence south along said road to its intersection with N.C. Highway 58; thence south and east along said highway to its junction with State Secondary Road 1113; thence south along said road to its junction with N.C. Highway 24; thence west along said highway to the junction of Carteret and Onslow County line; thence north along the Carteret and Onslow County line to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Craven County. That portion of the county bounded by a line beginning at a point where the Pitt, Craven, and Lenoir County lines junction in the Neuse River; thence west along said river to its junction with the Trent River; thence southwest along the Trent River to its junction with the Jones County line; thence southwest and west along the Jones and Craven County line to its junction with the Lenoir County line; thence north along the Lenoir and Craven County line to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Cumberland County. That area included within a circle having a 4½-mile radius and center at the Atlantic Coast Line Railroad depot in Hope Mills, including all of the town of Hope Mills and all of the communities of Cumberland and Boslin.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Duplin County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Edgecombe County. That portion of the city of Rocky Mount lying in Edgecombe County and that area included within the corporate limits of the city of Pinetops.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Greene County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Harnett County. An area 1 mile wide bounded on the north by the Harnett-Wake County line and extending south along U.S. Highway 401 and said highway as a center-line for a distance of 5 miles.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Hyde County. That area bounded by a line beginning at a point where U.S. 264 junctions with State Secondary Road 1132; thence east and northeast along said highway to its junction with State Secondary Road 1125; thence southeast along said road to its junction with State Secondary Road 1124; thence south, west, and southwest along said road to its junction with State Secondary Road 1132; thence northwest along said road to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Johnston County. That portion of the county lying west of the Neuse River.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Jones County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lenoir County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Lincoln County. That portion of the county lying within the corporate limits of the city of Lincolnton.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Mecklenburg County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Nash County. That area bounded by a line beginning at a point where North Carolina Highway 58 intersects the Franklin and Nash County lines; thence south along said highway to the junction of county road 1425; thence east along said road to its junction with North Carolina Highway 43; thence south and east along said highway to its intersection with the city limits of Rocky Mount; thence east along said city limits to its intersection with the Nash and Edgecombe County lines; thence south along the Nash and Edgecombe County line to a point where Nash, Edgecombe, and Wilson Counties meet; thence south and west along the Nash and Wilson County line to its junction with the Johnston County line; thence southwest along the Johnston, Nash, and Nash County line to a point where Johnson, Wake, Franklin, and Nash County lines meet; thence northeast along the Franklin and Nash County line to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "New Hanover County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Onslow County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Pender County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Pitt County. That portion of Pitt County lying south of Tar River.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Richmond County. That area of the city of Rockingham bounded by a line starting at a point where Rockingham Road crosses the North Fork of Falling Creek; thence westerly along said creek to its junction with Hitchcock; thence south and west along said creek for about 100 yards to the first westward branch (no name); thence west and north along said branch to its junction with Highway 74; thence east along said highway to its junction with State Secondary Road 405; thence south and east along said road to its junction with State Secondary Road 1400 and U.S. 1; thence east along said road to its junction with Rockingham Road; thence south and east along said road to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Robeson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Roveren County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Sampson County. The entire county.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    },
+    {
+      "kind": "para",
+      "text": "Scotland County. That area bounded by a line beginning at a point where Big Shoe Heel Creek intersects with State Secondary Road 1323; thence extending southeast along said road to the point where Robeson County line; thence southwest along said county line to its intersection with Big Shoe Heel Creek; thence northwest along said creek to the point of beginning.",
+      "page": 0,
+      "html": null,
+      "agreed": true
+    }
+  ]
+}

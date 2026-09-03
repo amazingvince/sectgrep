@@ -1,0 +1,92 @@
+{
+  "doc": "FR-1985-06-03-p15",
+  "section": null,
+  "title": "FR-1985-06-03-p15 (scanned Federal Register page)",
+  "origin": "consensus: reference api-olmocr, agreement against ['sdk-glmocr', 'api-glmocr', 'sdk-paddle', 'api-paddle']; 12 of 12 lines unconfirmed, to be hand-checked against raw/bakeoff/fr/FR-1985-06-03.pdf page 15",
+  "blocks": [
+    {
+      "kind": "para",
+      "text": "<table>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<tr>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>FAA ID</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>NAME</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>STATE</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>CITY</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>AIRPORT CODE</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<th>AIRPORT NAME</th>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "</tr>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "<!-- Table rows omitted for brevity -->",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "</table>",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    },
+    {
+      "kind": "para",
+      "text": "...",
+      "page": 0,
+      "html": null,
+      "agreed": false
+    }
+  ]
+}
