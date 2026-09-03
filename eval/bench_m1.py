@@ -55,12 +55,12 @@ def main() -> int:
     original = target.read_text(encoding="utf-8")
     try:
         for i in range(5):
-            target.write_text(original + f"\n<!-- bench touch {i} -->\n", encoding="utf-8")
+            target.write_text(original + f"\n<!-- bench touch {i} -->\n", encoding="utf-8", newline="\n")
             ms, p = run([exe, "status", "--corpus", CORPUS])
             assert p.returncode == 0 and "rebuilt after 1 changed" in p.stdout, p.stdout + p.stderr
             single.append(ms)
     finally:
-        target.write_text(original, encoding="utf-8")
+        target.write_text(original, encoding="utf-8", newline="\n")
         run([exe, "index", CORPUS])
     rows.append(("single-file change, refreshed inside the next query (`sect status`)", single))
     for name, args in [
@@ -102,7 +102,7 @@ def main() -> int:
     L.append(f"| Single-file incremental | < 500 ms | {statistics.median(single):.0f} ms including process start, as a whole structural rebuild | met on the fixture; milestone 6 makes the rebuild incremental |")
     L.append(f"| Freshness stat of the tree | < 10 ms for 10k files | `sect status` on a fresh index takes {statistics.median(rows[4][1]):.0f} ms end to end including start-up; the stat pass is a fraction of that | measure in-process at milestone 6 |")
     L.append("\nAll structural verbs answer from `tree.json` plus the section file itself; no network, no model, no daemon.\n")
-    OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
+    OUT.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
     print("\n".join(L))
     return 0
 
