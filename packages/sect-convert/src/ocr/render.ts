@@ -52,7 +52,54 @@ export interface PageGeometry {
 }
 
 /** Page sizes from `pdfinfo -f 1 -l N` (poppler). */
+/** Poppler is the fast path; without it (Windows, a slim container) pdfjs renders through @napi-rs/canvas. */
+let popplerPresent: boolean | null = null;
+export async function hasPoppler(): Promise<boolean> {
+  if (popplerPresent !== null) return popplerPresent;
+  try {
+    await run("pdftoppm", ["-v"]);
+    popplerPresent = true;
+  } catch (e) {
+    popplerPresent = (e as NodeJS.ErrnoException).code !== "ENOENT";
+  }
+  return popplerPresent;
+}
+
+async function pdfjsDoc(pdf: string) {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const data = new Uint8Array(await readFile(pdf));
+  const task = pdfjs.getDocument({ data, useSystemFonts: true });
+  const doc = await task.promise;
+  return { doc, close: () => task.destroy() };
+}
+
+async function pageGeometryPdfjs(pdf: string): Promise<PageGeometry[]> {
+  const { doc, close } = await pdfjsDoc(pdf);
+  const out: PageGeometry[] = [];
+  for (let p = 1; p <= doc.numPages; p++) {
+    const v = (await doc.getPage(p)).getViewport({ scale: 1 });
+    out.push({ page: p, widthPt: v.width, heightPt: v.height });
+  }
+  await close();
+  return out;
+}
+
+export async function renderPagePdfjs(pdf: string, page: number, dpi: number): Promise<Buffer> {
+  const { createCanvas } = await import("@napi-rs/canvas");
+  const { doc, close } = await pdfjsDoc(pdf);
+  const pg = await doc.getPage(page);
+  const viewport = pg.getViewport({ scale: dpi / 72 });
+  const canvas = createCanvas(Math.round(viewport.width), Math.round(viewport.height));
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  await pg.render({ canvas, canvasContext: ctx, viewport } as unknown as Parameters<typeof pg.render>[0]).promise;
+  await close();
+  return canvas.toBuffer("image/png");
+}
+
 export async function pageGeometry(pdf: string): Promise<PageGeometry[]> {
+  if (!(await hasPoppler())) return pageGeometryPdfjs(pdf);
   const { stdout } = await run("pdfinfo", ["-f", "1", "-l", "100000", pdf]);
   const out: PageGeometry[] = [];
   for (const m of stdout.matchAll(/Page\s+(\d+)\s+size:\s+([\d.]+)\s+x\s+([\d.]+)/g)) {
@@ -61,16 +108,21 @@ export async function pageGeometry(pdf: string): Promise<PageGeometry[]> {
   return out;
 }
 
-/** Render one page to PNG with `pdftoppm` at the policy's DPI. */
+/** Render one page to PNG at the policy's DPI: `pdftoppm` when present, else pdfjs. */
 export async function renderPage(pdf: string, page: number, policy: ScalePolicy = DEFAULT_POLICY, geometry?: PageGeometry): Promise<PageImage> {
   const geo = geometry ?? (await pageGeometry(pdf)).find((g) => g.page === page);
   if (!geo) throw new Error(`${pdf}: no page ${page}`);
   const dpi = chooseDpi(geo.widthPt, geo.heightPt, policy);
-  const prefix = path.join(tmpdir(), `sect-page-${process.pid}-${page}-${Date.now()}`);
-  await run("pdftoppm", ["-r", String(dpi), "-f", String(page), "-l", String(page), "-png", "-singlefile", pdf, prefix]);
-  const file = `${prefix}.png`;
-  const png = await readFile(file);
-  await rm(file, { force: true });
+  let png: Buffer;
+  if (await hasPoppler()) {
+    const prefix = path.join(tmpdir(), `sect-page-${process.pid}-${page}-${Date.now()}`);
+    await run("pdftoppm", ["-r", String(dpi), "-f", String(page), "-l", String(page), "-png", "-singlefile", pdf, prefix]);
+    const file = `${prefix}.png`;
+    png = await readFile(file);
+    await rm(file, { force: true });
+  } else {
+    png = await renderPagePdfjs(pdf, page, dpi);
+  }
   const { width, height } = pngSize(png);
   return { png, page, widthPx: width, heightPx: height, dpi };
 }

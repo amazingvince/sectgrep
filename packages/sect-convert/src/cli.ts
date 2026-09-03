@@ -3,9 +3,13 @@
  * sect-convert: `fetch` pulls eCFR bulk XML into raw/<source>/<date>/; `ecfr` converts one title
  * into the sect corpus contract under a corpus root.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { convertEcfr } from "./ecfr.js";
+import { FR_SOURCE_YAML, convertFr } from "./fr.js";
+import { extract, readSourcePattern } from "./extract.js";
+import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { PRESETS, presetFor } from "./ocr/presets.js";
 import { pageGeometry, pngSize, renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber } from "./ocr/transcriber.js";
@@ -46,7 +50,17 @@ function convert(): void {
     mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p, f.text, "utf8");
   }
-  console.log(`converted Title ${title} (${r.titleName}): ${r.sections} sections, ${r.nodes} nodes, effective ${r.effective} -> ${out}/cfr-title-${title}/ (${r.files.length} files)`);
+  // EFFDNOT and CROSSREF records (spec B.2) are candidates for WS3, not corpus files: they go
+  // under the hidden .work/ directory, which the corpus walker skips.
+  const workDir = join(out, ".work", `cfr-title-${title}`);
+  mkdirSync(workDir, { recursive: true });
+  const counts: Record<string, number> = { effdnot: 0, crossref: 0 };
+  for (const kind of ["effdnot", "crossref"] as const) {
+    const rows = r.candidates.filter((c) => c.kind === kind);
+    counts[kind] = rows.length;
+    writeFileSync(join(workDir, `${kind}.jsonl`), rows.map((c) => JSON.stringify(c)).join("\n") + (rows.length ? "\n" : ""), "utf8");
+  }
+  console.log(`converted Title ${title} (${r.titleName}): ${r.sections} sections, ${r.nodes} nodes, effective ${r.effective} -> ${out}/cfr-title-${title}/ (${r.files.length} files; ${counts.effdnot} effdnot, ${counts.crossref} crossref candidates -> ${workDir})`);
 }
 
 const cmd = process.argv[2];
@@ -57,6 +71,80 @@ if (cmd === "fetch") {
   });
 } else if (cmd === "ecfr") {
   convert();
+} else if (cmd === "fr-fetch") {
+  // Federal Register rules by document number, or the newest rules touching a CFR title/part,
+  // into raw/fr/<year>/<docnum>.xml with a sidecar of the API metadata.
+  const rawRoot = arg("out", "raw")!;
+  (async () => {
+    const nums = (arg("docnum") ?? "").split(",").filter(Boolean);
+    const found: Array<{ document_number: string; publication_date: string; full_text_xml_url: string; title: string }> = [];
+    if (nums.length) {
+      for (const n of nums) {
+        const meta = (await (await fetch(`https://www.federalregister.gov/api/v1/documents/${n}.json?fields[]=document_number&fields[]=publication_date&fields[]=full_text_xml_url&fields[]=title`)).json()) as (typeof found)[number];
+        found.push(meta);
+      }
+    } else {
+      const title = arg("title")!;
+      const part = arg("part");
+      const per = arg("count", "5")!;
+      const url = `https://www.federalregister.gov/api/v1/documents.json?conditions[type][]=RULE&conditions[cfr][title]=${title}${part ? `&conditions[cfr][part]=${part}` : ""}&order=newest&per_page=${per}&fields[]=document_number&fields[]=publication_date&fields[]=full_text_xml_url&fields[]=title`;
+      const res = (await (await fetch(url)).json()) as { results: typeof found };
+      found.push(...res.results);
+    }
+    for (const d of found) {
+      const year = d.publication_date.slice(0, 4);
+      const dir = join(rawRoot, "fr", year);
+      mkdirSync(dir, { recursive: true });
+      const file = join(dir, `${d.document_number}.xml`);
+      if (!existsSync(file)) {
+        const xml = await (await fetch(d.full_text_xml_url)).text();
+        writeFileSync(file, xml);
+      }
+      writeFileSync(join(dir, `${d.document_number}.json`), JSON.stringify(d, null, 2) + "\n");
+      console.log(`${d.document_number} ${d.publication_date} ${d.title.slice(0, 80)} -> ${file}`);
+    }
+  })().catch((e) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+} else if (cmd === "fr") {
+  // One rule XML (or every XML under a directory) into notice files under <out>/fr/<year>/.
+  const input = arg("xml")!;
+  const out = arg("out")!;
+  const files = input.endsWith(".xml") ? [input] : readdirSync(input, { recursive: true }).map(String).filter((f) => f.endsWith(".xml")).map((f) => join(input, f));
+  let total = 0;
+  for (const file of files) {
+    const xml = readFileSync(file, "utf-8");
+    const metaFile = file.replace(/\.xml$/, ".json");
+    const meta = existsSync(metaFile) ? (JSON.parse(readFileSync(metaFile, "utf-8")) as { document_number?: string; publication_date?: string }) : {};
+    const rel = file.replace(/\\/g, "/").replace(/^.*?(raw\/)/, "$1");
+    const n = convertFr(xml, { docnum: meta.document_number ?? arg("docnum"), published: meta.publication_date ?? arg("published"), raw: rel, rawSha256: createHash("sha256").update(xml).digest("hex") });
+    const year = (n.published ?? n.effective).slice(0, 4);
+    const dir = join(out, "fr", year);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, `${n.docnum}.md`), n.frontMatter + n.markdown);
+    if (!existsSync(join(out, "fr", "_source.yaml"))) writeFileSync(join(out, "fr", "_source.yaml"), FR_SOURCE_YAML);
+    total += n.actions.length;
+    console.log(`${n.id} effective ${n.effective}: ${n.actions.length} action candidate(s) [${n.actions.map((a) => `${a.kind} ${a.target_id}${a.target_anchor ? "#" + a.target_anchor : ""}`).join("; ")}] -> ${join(dir, n.docnum + ".md")}`);
+  }
+  console.log(`${files.length} notice(s), ${total} action candidate(s)`);
+} else if (cmd === "extract") {
+  // One raw document into work/<sha256>/ (elements, report, images, grids, C.4 pass outputs).
+  const input = arg("input")!;
+  const work = arg("work", "work")!;
+  const sourceYaml = arg("source-yaml");
+  extract({
+    input, work,
+    ocrServer: arg("ocr-server"), ocrSecondaryServer: arg("ocr-secondary-server"), ocrPrimary: arg("ocr-primary"), ocrSecondary: arg("ocr-secondary"), apiKey: process.env.SECT_OCR_API_KEY,
+    pattern: sourceYaml ? readSourcePattern(sourceYaml) : null, homeTitle: arg("title"), images: process.argv.includes("--images"), force: process.argv.includes("--force"),
+  })
+    .then(({ report, dir, fromCache }) => {
+      console.log(JSON.stringify({ ...report, dir, fromCache }));
+    })
+    .catch((e) => {
+      console.error(e instanceof Error ? e.stack ?? e.message : String(e));
+      process.exit(1);
+    });
 } else if (cmd === "render") {
   // Render one page at the scale a model expects; prints the geometry and writes the PNG.
   const pdf = arg("pdf")!;
@@ -117,6 +205,6 @@ if (cmd === "fetch") {
     process.exit(1);
   });
 } else {
-  console.error("usage: sect-convert fetch --title N [--out raw] | sect-convert ecfr --xml <file> --title N --out <corpus root> | sect-convert render --pdf F --page N [--model M] [--out png] | sect-convert ocr (--pdf F --page N | --png IMG) --server URL/v1 --model M [--task page|table|text] [--out json]");
+  console.error("usage: sect-convert fetch --title N [--out raw] | sect-convert ecfr --xml <file> --title N --out <corpus root> | sect-convert fr-fetch (--docnum A,B | --title N [--part P] [--count K]) [--out raw] | sect-convert fr --xml <file or dir> --out <corpus root> | sect-convert extract --input F [--work DIR] [--source-yaml Y --title N] [--ocr-server URL/v1 --ocr-primary M --ocr-secondary M --ocr-secondary-server URL/v1] [--images] [--force] | sect-convert render --pdf F --page N [--model M] [--out png] | sect-convert ocr (--pdf F --page N | --png IMG) --server URL/v1 --model M [--task page|table|text] [--out json]");
   process.exit(2);
 }

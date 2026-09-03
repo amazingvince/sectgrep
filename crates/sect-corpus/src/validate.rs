@@ -180,10 +180,19 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
                 }
             }
         }
+        let kind = d.front.kind.clone().unwrap_or_else(|| src.kind.clone());
         for l in &d.links {
             let Some(tgt) = cx.current(&l.target) else {
                 if l.via == crate::document::Via::Prose {
                     cx.warn(d, format!("prose reference `{}` (line {}) does not resolve", l.target, l.line));
+                } else if !cx.sources.values().any(|s| !s.id_prefix.is_empty() && l.target.starts_with(&s.id_prefix)) {
+                    // A link into a title or standard this corpus does not hold (a notice that amends
+                    // three CFR titles, say) is a warning: nothing here can check it.
+                    cx.warn(d, format!("link target `{}` is outside this corpus's sources", l.target));
+                } else if kind == "notice" {
+                    // A notice describes the text before its own amendments; a section it removes
+                    // is gone from the post-amendment snapshot, which lint's Action integrity covers.
+                    cx.warn(d, format!("notice link target `{}` does not resolve (amended text may no longer exist)", l.target));
                 } else {
                     cx.err(d, format!("link target `{}` does not resolve", l.target));
                 }
@@ -191,8 +200,17 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
             };
             if let Some(a) = &l.anchor {
                 if !tgt.anchors().contains(a) {
-                    cx.err(d, format!("link anchor `{}#{a}` not found (anchors: {})", l.target, tgt.anchors().join(", ")));
+                    if l.via == crate::document::Via::Prose {
+                        cx.warn(d, format!("prose reference `{}#{a}` (line {}): anchor not found", l.target, l.line));
+                    } else {
+                        cx.err(d, format!("link anchor `{}#{a}` not found (anchors: {})", l.target, tgt.anchors().join(", ")));
+                    }
                 }
+            }
+            // A notice links to the text it amends; with a snapshot-dated base (one effective date
+            // per title) that target is dated after the notice, so activity is lint's question there.
+            if kind == "notice" {
+                continue;
             }
             if let (Some(eff), Some(_)) = (d.front.effective, tgt.front.effective) {
                 let active = cx.by_id.get(l.target.as_str()).map(|v| v.iter().any(|x| x.front.effective.map(|e| e <= eff).unwrap_or(false))).unwrap_or(false);
@@ -215,7 +233,6 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
         if sim >= 0.8 {
             cx.err(d, format!("context prefix paraphrases the body (similarity {sim:.2} >= 0.8)"));
         }
-        let kind = d.front.kind.clone().unwrap_or_else(|| src.kind.clone());
         if kind == "notice" && d.front.actions.is_empty() {
             cx.err(d, "notice without Action records");
         }
@@ -223,8 +240,10 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
             if a.action_id.is_empty() || a.target_id.is_empty() || a.kind.is_empty() || a.effective.is_none() || a.text.is_none() {
                 cx.err(d, "Action missing one of action_id, target_id, kind, effective, text");
             }
+            // Spec B.6 lists a missing Action target under lint: a `remove` names text the
+            // post-amendment snapshot no longer holds, and a notice may amend titles not here.
             if !cx.by_id.contains_key(a.target_id.as_str()) {
-                cx.err(d, format!("Action target `{}` does not resolve", a.target_id));
+                cx.warn(d, format!("Action target `{}` does not resolve", a.target_id));
             }
         }
         let _ = split_expr(&id);

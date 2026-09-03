@@ -6,6 +6,7 @@
  * the hierarchy and what it refers to; WS3 rewrites it (spec D.2 step 4).
  */
 import { createHash } from "node:crypto";
+import { paragraphAnchors } from "./anchors.js";
 import { attr, children, child, Elem, inlineMd, parseXml, squash, textOf } from "./xml.js";
 
 export interface ConvertOptions {
@@ -165,7 +166,7 @@ function definedTerms(body: string): string[] {
 
 /** Link "§ X.Y", "§§ X.Y and X.Z", "part N" to Works that exist in this title. */
 function linkRefs(body: string, title: number, ids: Set<string>, selfId: string, refs: string[]): string {
-  const sec = /§§?\s*(\d{1,3})\.(\d{1,4}[a-z]?(?:-\d+)?)((?:\s*\([a-z0-9]{1,4}\))*)/g;
+  const sec = /§§?\s*(\d{1,4})\.(\d{1,4}[a-z]?(?:-\d+)?)((?:\s*\([a-z0-9]{1,4}\))*)/g;
   let out = body.replace(sec, (m, part: string, num: string) => {
     const id = `CFR:${title}-${part}.${num}`;
     if (!ids.has(id) || id === selfId) return m;
@@ -173,7 +174,7 @@ function linkRefs(body: string, title: number, ids: Set<string>, selfId: string,
     return `[${m.trim()}](${id})`;
   });
   // A "§§ 1.1 and 1.2" continuation: the second number has no § in front.
-  out = out.replace(/\]\((CFR:\d+-\d+\.[^)]+)\)\s+(and|through|or|to)\s+(\d{1,3})\.(\d{1,4}[a-z]?)(?![\w.])/g, (m, _prev: string, _conj: string, part: string, num: string) => {
+  out = out.replace(/\]\((CFR:\d+-\d+\.[^)]+)\)\s+(and|through|or|to)\s+(\d{1,4})\.(\d{1,4}[a-z]?)(?![\w.])/g, (m, _prev: string, _conj: string, part: string, num: string) => {
     const id = `CFR:${title}-${part}.${num}`;
     if (!ids.has(id) || id === selfId) return m;
     if (!refs.includes(id)) refs.push(id);
@@ -232,7 +233,16 @@ function contextFor(n: NodeRec, byId: Map<string, NodeRec>, titleName: string, t
   return words.length > 110 ? words.slice(0, 110).join(" ") : words.join(" ");
 }
 
-export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string } {
+export interface Candidate {
+  kind: "effdnot" | "crossref";
+  /** Nearest enclosing node id. */
+  scope: string;
+  node: string;
+  text: string;
+  dates: string[];
+}
+
+export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string; candidates: Candidate[] } {
   const doc = parseXml(xml);
   const root = doc.documentElement;
   const amd = textOf(child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") && (child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") as Elem).getElementsByTagName("AMDDATE")[0]);
@@ -242,6 +252,8 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
   const t = opts.title;
   const nodes: NodeRec[] = [];
   const byId = new Map<string, NodeRec>();
+  const childCount = new Map<string, number>();
+  const candidates: Candidate[] = [];
   let titleName = "";
 
   function walk(el: Elem, parent: NodeRec | null, dir: string, order: number, partAuth: string | null, partSource: string | null): void {
@@ -302,7 +314,10 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     const source = srcEl ? textOf(child(srcEl, "PSPACE") ?? srcEl).replace(/^Source:\s*/i, "") : partSource;
     const cita = level === "section" ? textOf(child(el, "CITA")).replace(/^\[|\]$/g, "") : "";
     const nodeDir = dir ? `${dir}/${subdir}` : subdir;
-    const rec: NodeRec = {
+    // GovInfo splits a title into volumes, each a DIV1 with its own copy of the subtitle and
+    // chapter containers; the same id from a later volume reuses the record already built.
+    const existing = byId.get(id);
+    const rec: NodeRec = existing ?? {
       id,
       node: attr(el, "NODE"),
       level,
@@ -318,26 +333,43 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
       citation: cita || source || null,
       refs: [],
     };
-    if (level === "title") rec.file = `${t}.md`;
-    nodes.push(rec);
-    byId.set(id, rec);
-    let i = 0;
+    if (!existing) {
+      if (level === "title") rec.file = `${t}.md`;
+      nodes.push(rec);
+      byId.set(id, rec);
+    }
+    for (const c of children(el)) {
+      if (c.tagName === "EFFDNOT" || c.tagName === "CROSSREF") {
+        const text = textOf(c).replace(/\s+/g, " ").replace(/^(Effective Date Note|Cross Reference):\s*/i, "").trim();
+        const dates = Array.from(text.matchAll(/([A-Z][a-z]+\.? \d{1,2}, \d{4})/g)).map((m) => m[1]);
+        candidates.push({ kind: c.tagName === "EFFDNOT" ? "effdnot" : "crossref", scope: id, node: attr(el, "NODE"), text, dates });
+      }
+    }
+    let i = childCount.get(id) ?? 0;
     for (const c of children(el)) {
       if (/^DIV\d$/.test(c.tagName) && LEVELS[attr(c, "TYPE")]) {
         i += 1;
-        walk(c, rec, nodeDir, i, level === "part" ? authority : partAuth, level === "part" ? source : partSource);
+        walk(c, rec, rec.dir, i, level === "part" ? authority : partAuth, level === "part" ? source : partSource);
       }
     }
+    childCount.set(id, i);
   }
 
-  const div1 = root.getElementsByTagName("DIV1")[0];
-  if (!div1) throw new Error("no DIV1 (title) element in the XML");
-  walk(div1 as Elem, null, "", 1, null, null);
+  const volumes = Array.from(root.getElementsByTagName("DIV1"));
+  if (!volumes.length) throw new Error("no DIV1 (title) element in the XML");
+  for (const v of volumes) walk(v as Elem, null, "", 1, null, null);
 
   const ids = new Set(nodes.map((n) => n.id));
   for (const n of nodes) {
     if (n.level === "section") {
       n.body = linkRefs(n.body, t, ids, n.id, n.refs);
+    }
+  }
+  const anchorsOf = new Map<string, Set<string>>();
+  for (const n of nodes) if (n.level === "section") anchorsOf.set(n.id, new Set(paragraphAnchors(n.body).map((a) => a.anchor)));
+  for (const n of nodes) {
+    if (n.level === "section") {
+      n.body = n.body.replace(/\]\((CFR:[^)#]+)#([a-z0-9-]+)\)/g, (m, id: string, anchor: string) => (anchorsOf.get(id)?.has(anchor) ? m : `](${id})`));
       n.defines = definedTerms(n.body);
     }
   }
@@ -395,7 +427,7 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     'publisher: "Office of the Federal Register; GPO eCFR bulk XML (not the official legal edition)"',
     "precedence: 100",
     `id_prefix: ${q(`CFR:${t}-`)}`,
-    `id_pattern: ${q(`(?i)(?:\\b${t}\\s*C\\.?F\\.?R\\.?\\s*(?:§\\s*)?|§\\s*|\\bsection\\s+)(?P<part>\\d{1,3})\\.(?P<section>\\d{1,4}[a-z]?)(?:\\s*\\((?P<p1>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?(?:\\s*\\((?P<p2>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?`)}`,
+    `id_pattern: ${q(`(?i)(?:\\b${t}\\s*C\\.?F\\.?R\\.?\\s*(?:§\\s*)?|§\\s*|\\bsection\\s+)(?P<part>\\d{1,4})\\.(?P<section>\\d{1,4}[a-z]?(?:-\\d+)?)(?:\\s*\\((?P<p1>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?(?:\\s*\\((?P<p2>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?`)}`,
     `id_template: ${q(`CFR:${t}-{part}.{section}`)}`,
     'anchor_template: "{p1}-{p2}"',
     "legal_status: unofficial-xml",
@@ -404,5 +436,5 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     "",
   ].join("\n");
   files.push({ path: `cfr-title-${t}/_source.yaml`, text: sourceYaml });
-  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName };
+  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName, candidates };
 }

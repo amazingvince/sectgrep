@@ -149,6 +149,8 @@ impl Resolver {
                 out.push(c);
             }
         }
+        // "20 CFR part 655" names another title before the part: not a bare citation of the home one.
+        let other_title = Regex::new(r"(?i)(\d+)\s*C\.?F\.?R\.?$").unwrap();
         for (source, re, prefix) in &self.part_patterns {
             let is_home = home.map(|h| h == source).unwrap_or(self.part_patterns.len() == 1);
             if !is_home {
@@ -159,6 +161,12 @@ impl Resolver {
             let home_title: String = prefix.chars().filter(|c| c.is_ascii_digit()).collect();
             for caps in re.captures_iter(text) {
                 let m = caps.get(0).unwrap();
+                let before = text[..m.start()].trim_end();
+                if let Some(t) = other_title.captures(before).and_then(|c| c.get(1)) {
+                    if t.as_str() != home_title {
+                        continue;
+                    }
+                }
                 let after = text[m.end()..].trim_start().to_lowercase();
                 if let Some(rest) = after.strip_prefix("of title ").or_else(|| after.strip_prefix("of subtitle ")) {
                     let num: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
