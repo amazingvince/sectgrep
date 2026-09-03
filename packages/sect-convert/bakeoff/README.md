@@ -39,3 +39,11 @@ uv run bakeoff report                  # eval/results/c0.md
 ## Scoring
 
 `bakeoff/score.py`: the model output is clipped to the section's span (a printed page carries neighbouring sections and running heads), markdown syntax and tables are stripped on both sides, and TextEdit is the normalized Levenshtein distance. Reading order locates each golden block in the output by fuzzy partial match and takes the normalized edit distance between the emitted order and the golden order. TEDS pairs tables in document order and uses APTED with cell-text rename costs.
+
+## What the environment required (recorded so the next run is not a rediscovery)
+
+- vLLM 0.28 on WSL2: it disables pinned host memory when it detects WSL and then fails to build its UVA buffers ("UVA is not available"). Pinned memory works on this kernel (6.18), and vLLM's own switch `VLLM_WSL2_ENABLE_PIN_MEMORY=1` turns it back on; the harness sets it.
+- The FlashInfer top-k/top-p sampler is compiled just-in-time for the RTX 5090; greedy decoding never needs it, so `VLLM_USE_FLASHINFER_SAMPLER=0` keeps start-up under a minute. The GPU is pinned by `CUDA_DEVICE_ORDER=PCI_BUS_ID` because CUDA's default order lists the 4090 first.
+- Marker 2.0's balanced mode drives Surya's VLM through a Docker-spawned vLLM; the arm runs `--mode fast --disable_multiprocessing` with a 600 s timeout per document (the multiprocess path hung on one granule). Docker Desktop's WSL integration was enabled part-way through the milestone; the environments stayed as `uv` venvs.
+- Docling's markdown export inlines page images as base64; the scorer strips them.
+- PaddleOCR-VL-1.5 given a whole page and the "OCR:" prompt loops on table cells until the token cap (13 of 30 documents on the first pass). Its recognition head expects element crops from its layout stage, which is what the `sdk-paddle` arm does. The `api` arms and the converter's transcriber carry a repetition guard: a degenerate reply is retried once with `frequency_penalty` 0.5 and a 4096-token cap and flagged if it persists.

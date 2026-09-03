@@ -21,6 +21,27 @@ export interface Transcription {
   usage?: { promptTokens?: number; completionTokens?: number };
   /** Wall-clock milliseconds for the request. */
   elapsedMs: number;
+  /** True when the reply looked like a repetition loop even after the retry; the page needs
+   * the other transcriber or a layout-driven crop rather than a whole-page prompt. */
+  degenerate?: boolean;
+  /** Number of requests made (2 when the first reply was degenerate). */
+  attempts?: number;
+}
+
+/**
+ * A VLM that loses the page repeats one cell or line until the token cap. Detect it so the
+ * caller retries with a frequency penalty and a lower cap, and flags the page if it persists.
+ */
+export function looksDegenerate(text: string, completionTokens: number | undefined, maxTokens: number): boolean {
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length >= 20) {
+    const counts = new Map<string, number>();
+    for (const l of lines) counts.set(l, (counts.get(l) ?? 0) + 1);
+    const top = Math.max(...counts.values());
+    if (top >= 8 && counts.size / lines.length < 0.5) return true;
+  }
+  const unique = new Set(lines).size;
+  return completionTokens !== undefined && completionTokens >= maxTokens && unique < Math.max(3, Math.floor(lines.length / 4));
 }
 
 export interface Transcriber {
@@ -62,35 +83,49 @@ export class OpenAICompatibleTranscriber implements Transcriber {
   async transcribePage(image: PageImage, task: TranscribeTask = "page"): Promise<Transcription> {
     const prompt = this.o.prompts[task] ?? this.o.prompts.page;
     if (!prompt) throw new Error(`no prompt for task ${task} on ${this.o.model}`);
-    const body = {
-      model: this.o.model,
-      temperature: this.o.temperature,
-      max_tokens: this.o.maxTokens,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "image_url", image_url: { url: `data:image/png;base64,${image.png.toString("base64")}` } },
-            { type: "text", text: prompt },
-          ],
-        },
-      ],
-    };
     const headers: Record<string, string> = { "content-type": "application/json", ...(this.o.headers ?? {}) };
     if (this.o.apiKey) headers.authorization = `Bearer ${this.o.apiKey}`;
     const t0 = Date.now();
-    const res = await fetch(`${this.o.baseUrl}/chat/completions`, { method: "POST", headers, body: JSON.stringify(body), signal: AbortSignal.timeout(this.o.timeoutMs) });
-    if (!res.ok) throw new Error(`${this.name}: HTTP ${res.status} ${await res.text().catch(() => "")}`.slice(0, 500));
-    const data = (await res.json()) as { choices?: Array<{ message?: { content?: string | Array<{ type: string; text?: string }> } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
-    const content = data.choices?.[0]?.message?.content;
-    const markdown = typeof content === "string" ? content : (content ?? []).map((c) => c.text ?? "").join("");
+    let markdown = "";
+    let usage: Transcription["usage"];
+    let degenerate = false;
+    let attempts = 0;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      attempts++;
+      const maxTokens = attempt === 0 ? this.o.maxTokens : Math.min(this.o.maxTokens, 4096);
+      const body: Record<string, unknown> = {
+        model: this.o.model,
+        temperature: this.o.temperature,
+        max_tokens: maxTokens,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "image_url", image_url: { url: `data:image/png;base64,${image.png.toString("base64")}` } },
+              { type: "text", text: prompt },
+            ],
+          },
+        ],
+      };
+      if (attempt > 0) body.frequency_penalty = 0.5;
+      const res = await fetch(`${this.o.baseUrl}/chat/completions`, { method: "POST", headers, body: JSON.stringify(body), signal: AbortSignal.timeout(this.o.timeoutMs) });
+      if (!res.ok) throw new Error(`${this.name}: HTTP ${res.status} ${await res.text().catch(() => "")}`.slice(0, 500));
+      const data = (await res.json()) as { choices?: Array<{ message?: { content?: string | Array<{ type: string; text?: string }> } }>; usage?: { prompt_tokens?: number; completion_tokens?: number } };
+      const content = data.choices?.[0]?.message?.content;
+      markdown = (typeof content === "string" ? content : (content ?? []).map((c) => c.text ?? "").join("")).trim();
+      usage = data.usage ? { promptTokens: data.usage.prompt_tokens, completionTokens: data.usage.completion_tokens } : undefined;
+      degenerate = looksDegenerate(markdown, usage?.completionTokens, maxTokens);
+      if (!degenerate) break;
+    }
     return {
-      markdown: markdown.trim(),
+      markdown,
       model: this.o.model,
       kind: this.kind,
       image: { widthPx: image.widthPx, heightPx: image.heightPx, dpi: image.dpi },
-      usage: data.usage ? { promptTokens: data.usage.prompt_tokens, completionTokens: data.usage.completion_tokens } : undefined,
+      usage,
       elapsedMs: Date.now() - t0,
+      degenerate,
+      attempts,
     };
   }
 }

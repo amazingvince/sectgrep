@@ -114,14 +114,20 @@ def run_docling(doc: dict) -> None:
 
 
 def run_marker(doc: dict) -> None:
+    # Marker 2.0's balanced mode drives Surya's VLM through a Docker-spawned vLLM, which this WSL2
+    # cannot do; fast mode uses the classic Surya layout and OCR models locally.
     pdf = doc_pdf(doc)
     out = WORK / "marker" / "raw" / doc["doc"]
     out.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
     force = ["--force_ocr"] if doc["group"] == "scan" else []
-    r = sh([str(VENVS / "marker" / "bin" / "marker_single"), str(pdf), "--output_dir", str(out), "--output_format", "markdown", *force], env=layout_env())
+    try:
+        r = sh([str(VENVS / "marker" / "bin" / "marker_single"), str(pdf), "--output_dir", str(out), "--output_format", "markdown", "--mode", "fast", "--disable_multiprocessing", *force], env=layout_env(), timeout=600)
+        rc, err = r.returncode, r.stderr[-800:]
+    except subprocess.TimeoutExpired:
+        rc, err = "timeout", "marker_single exceeded 600 s"
     md = next(out.rglob("*.md"), None)
-    write_result("marker", doc["doc"], md.read_text(encoding="utf-8") if md else "", {"elapsed_s": time.time() - t0, "rc": r.returncode, "stderr": r.stderr[-800:]})
+    write_result("marker", doc["doc"], md.read_text(encoding="utf-8") if md else "", {"elapsed_s": time.time() - t0, "rc": rc, "stderr": err})
 
 
 # ---- vLLM server --------------------------------------------------------------------------------
@@ -140,7 +146,12 @@ def start_server(model_key: str, port: int = 8000) -> subprocess.Popen:
     log = open(HOME / "bakeoff" / f"vllm-{model_key}.log", "w")
     cmd = [str(VENVS / "vllm" / "bin" / "vllm"), "serve", m["repo"], "--port", str(port), "--host", "0.0.0.0", "--gpu-memory-utilization", "0.85", "--trust-remote-code", *m["vllm_args"]]
     # PCI bus order so index 0 is the RTX 5090 (32 GB) whatever CUDA's default enumeration says.
-    env = dict(os.environ, CUDA_DEVICE_ORDER="PCI_BUS_ID", CUDA_VISIBLE_DEVICES=os.environ.get("SECT_GPU", "0"))
+    # vLLM 0.28 needs pinned host memory (UVA buffers) and disables it on WSL2 by default; this
+    # kernel (6.18) supports it and the official switch turns it back on.
+    # The FlashInfer sampler would be compiled just-in-time for this Blackwell card; greedy
+    # decoding never needs it, so the native sampler is used. The venv's bin goes on the PATH so
+    # any other JIT step finds ninja.
+    env = dict(os.environ, CUDA_DEVICE_ORDER="PCI_BUS_ID", CUDA_VISIBLE_DEVICES=os.environ.get("SECT_GPU", "0"), VLLM_WSL2_ENABLE_PIN_MEMORY="1", VLLM_USE_FLASHINFER_SAMPLER="0", PATH=f"{VENVS / 'vllm' / 'bin'}:{os.environ.get('PATH', '')}")
     p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, env=env)
     for _ in range(600):
         if server_up(f"http://127.0.0.1:{port}/v1"):
@@ -154,23 +165,44 @@ def start_server(model_key: str, port: int = 8000) -> subprocess.Popen:
 
 # ---- the api arm: the converter's transcriber boundary, mirrored in Python ----------------------
 
+def looks_degenerate(text: str, completion_tokens: int | None, max_tokens: int) -> bool:
+    """A VLM that loses the page repeats a cell or a line until the token cap. Mirror of
+    packages/sect-convert/src/ocr/transcriber.ts looksDegenerate."""
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    if len(lines) >= 20:
+        counts: dict[str, int] = {}
+        for l in lines:
+            counts[l] = counts.get(l, 0) + 1
+        if max(counts.values()) >= 8 and len(counts) / len(lines) < 0.5:
+            return True
+    return bool(completion_tokens) and completion_tokens >= max_tokens and len(set(lines)) < max(3, len(lines) // 4)
+
+
 def chat_page(model_key: str, png: Path, prompt: str, server: str = SERVER) -> tuple[str, dict, float]:
     m = MODELS[model_key]
-    body = {
-        "model": m["repo"], "temperature": 0, "max_tokens": m["max_tokens"],
-        "messages": [{"role": "user", "content": [
-            {"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(png.read_bytes()).decode()}},
-            {"type": "text", "text": prompt},
-        ]}],
-    }
-    req = urllib.request.Request(f"{server}/chat/completions", data=json.dumps(body).encode(), headers={"content-type": "application/json"})
+    image = {"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(png.read_bytes()).decode()}}
     t0 = time.time()
-    with urllib.request.urlopen(req, timeout=900) as r:
-        data = json.load(r)
-    content = data["choices"][0]["message"]["content"]
-    if isinstance(content, list):
-        content = "".join(c.get("text", "") for c in content)
-    return content.strip(), data.get("usage", {}), time.time() - t0
+    attempts = []
+    for attempt in range(2):
+        body = {
+            "model": m["repo"], "temperature": 0, "max_tokens": m["max_tokens"] if attempt == 0 else min(m["max_tokens"], 4096),
+            "messages": [{"role": "user", "content": [image, {"type": "text", "text": prompt}]}],
+        }
+        if attempt:
+            body["frequency_penalty"] = 0.5
+        req = urllib.request.Request(f"{server}/chat/completions", data=json.dumps(body).encode(), headers={"content-type": "application/json"})
+        with urllib.request.urlopen(req, timeout=900) as r:
+            data = json.load(r)
+        content = data["choices"][0]["message"]["content"]
+        if isinstance(content, list):
+            content = "".join(c.get("text", "") for c in content)
+        usage = data.get("usage", {}) or {}
+        degenerate = looks_degenerate(content, usage.get("completion_tokens"), body["max_tokens"])
+        attempts.append({"attempt": attempt, "degenerate": degenerate, "completion_tokens": usage.get("completion_tokens")})
+        if not degenerate:
+            break
+    usage = dict(usage, attempts=attempts, degenerate=degenerate)
+    return content.strip(), usage, time.time() - t0
 
 
 def run_api(model_key: str, doc: dict, long_side: int | None = None, tag: str | None = None) -> None:
@@ -223,10 +255,9 @@ def run_sdk_glmocr(doc: dict) -> None:
     pdf = doc_pdf(doc)
     out = WORK / "sdk-glmocr" / "raw" / doc["doc"]
     out.mkdir(parents=True, exist_ok=True)
-    cfg = WORK / "sdk-glmocr" / "config.yaml"
-    if not cfg.exists():
-        cfg.write_text("pipeline:\n  maas:\n    enabled: false\n  ocr_api:\n    api_host: 127.0.0.1\n    api_port: 8000\n", encoding="utf-8")
+    host, port = SERVER.split("//", 1)[1].split("/")[0].split(":")
     t0 = time.time()
-    r = sh([str(VENVS / "glmocr" / "bin" / "glmocr"), "parse", str(pdf), "--output", str(out), "--layout-device", "cpu", "--config", str(cfg)])
+    # The SDK's self-hosted mode: its PP-DocLayoutV3 layout model on CPU, recognition on our vLLM.
+    r = sh([str(VENVS / "glmocr" / "bin" / "glmocr"), "parse", str(pdf), "--output", str(out), "--mode", "selfhosted", "--layout-device", "cpu", "--set", "pipeline.ocr_api.api_host", host, "--set", "pipeline.ocr_api.api_port", port, "--no-layout-vis"])
     mds = sorted(out.rglob("*.md"))
     write_result("sdk-glmocr", doc["doc"], "\n\n".join(m.read_text(encoding="utf-8") for m in mds), {"elapsed_s": time.time() - t0, "rc": r.returncode, "stderr": r.stderr[-800:]})

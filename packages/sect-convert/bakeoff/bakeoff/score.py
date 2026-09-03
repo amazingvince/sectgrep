@@ -28,28 +28,39 @@ from rapidfuzz.distance import Levenshtein
 RUNNING_HEADS = [
     re.compile(r"^\s*\d{1,4}\s*$"),
     re.compile(r"29 CFR Ch\. XVII", re.I),
-    re.compile(r"^Occupational Safety and Health Admin", re.I),
-    re.compile(r"^§\s*\d+\.\d+\s*$"),
+    re.compile(r"^#*\s*Occu\.? ?(pational)? Safety and Health Admin", re.I),
+    re.compile(r"^#*\s*§\s*\d+\.\d+[a-z]?\s*$"),
     re.compile(r"\(7-1-2\d Edition\)", re.I),
     re.compile(r"^VerDate|^Jkt \d|^PO 0000|^Frm \d|^Sfmt \d|^Fmt \d", re.I),
+    # GPO typesetting margin text that extractors read off the page edge.
+    re.compile(r"on DSK\w+ with CFR|[A-Z]:\\SGML\\|\.XXX \d{5,}", re.I),
+    # The GPO authenticity banner at the top of every GovInfo page (models misread it in ways).
+    re.compile(r"AUTHENTICATED U.S. GOVERNMENT INFORMATION|^GPO$|^#+ ?GPO$", re.I),
     re.compile(r"^---\s*$"),
 ]
+DASHES = re.compile(r"[\u2010\u2011\u2012\u2013\u2014\u2212]")
 SECTION_HEAD = re.compile(r"(?:§|Sec\.?|Section)\s*(\d+\.\d+[a-z]?)", re.I)
+
+
+IMAGE_MD = re.compile(r"!\[[^\]]*\]\([^)]*\)")
 
 
 def normalize(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
+    # Embedded images (Docling's markdown export inlines them as base64) are not text.
+    text = IMAGE_MD.sub(" ", text)
     out = []
     for line in text.splitlines():
         s = line.strip()
-        if not s or s.startswith("|") or re.match(r"^<\s*/?\s*(table|tr|td|th|thead|tbody)\b", s, re.I):
+        if not s or s.startswith("|") or "data:image" in s or re.match(r"^<\s*/?\s*(table|tr|td|th|thead|tbody|img)\b", s, re.I):
             continue
         if any(p.search(s) for p in RUNNING_HEADS):
             continue
         s = re.sub(r"^#{1,6}\s+", "", s)
         s = re.sub(r"[*_`]{1,3}", "", s)
         s = re.sub(r"<[^>]+>", " ", s)
-        s = s.replace("§", "§")
+        s = re.sub(r"§\s*", "§ ", s)
+        s = DASHES.sub("-", s)
         out.append(s)
     return re.sub(r"\s+", " ", " ".join(out)).strip()
 
@@ -69,19 +80,36 @@ def clip_to_section(text: str, section: str | None) -> str:
     num = m.group(1)
     lines = text.splitlines()
     start = None
-    for i, line in enumerate(lines):
-        h = SECTION_HEAD.search(line)
-        if h and h.group(1) == num and not re.match(r"^\s*\d{1,4}\s*$", line):
-            # A heading, not a cross-reference in running prose: short line or starts with the marker.
-            if len(line.strip()) < 160 or line.strip().startswith(("§", "Sec", "#")):
+    # The section's own heading carries its title after the number; a bare "§ 1910.34" line is
+    # the running head at the top of a page. Prefer the former, fall back to the latter.
+    for want_title in (True, False):
+        for i, line in enumerate(lines):
+            t = line.strip()
+            h = SECTION_HEAD.search(t)
+            if not h or h.group(1) != num:
+                continue
+            after = t[h.end():].strip(" .:-*")
+            if want_title and len(after) < 4:
+                continue
+            if len(t) < 160 or t.startswith(("§", "Sec", "#")):
                 start = i
                 break
+        if start is not None:
+            break
     if start is None:
         return text
     end = len(lines)
     for j in range(start + 1, len(lines)):
-        h = SECTION_HEAD.search(lines[j].strip())
-        if h and h.group(1) != num and (lines[j].strip().startswith(("§", "#", "Sec")) or len(lines[j].strip()) < 80) and not re.search(r"paragraph|see|of this|under|in §|to §|and §|or §", lines[j], re.I):
+        t = lines[j].strip()
+        h = SECTION_HEAD.search(t)
+        if not h or h.group(1) == num:
+            continue
+        # A bare "§ 1910.28" is the running head of a continuation page, not the next section;
+        # the real heading carries the section's title after the number.
+        after = t[h.end():].strip(" .:-")
+        if len(after) < 4:
+            continue
+        if (t.startswith(("§", "#", "Sec")) or len(t) < 80) and not re.search(r"paragraph|see|of this|under|in §|to §|and §|or §", t, re.I):
             end = j
             break
     return "\n".join(lines[start:end])
