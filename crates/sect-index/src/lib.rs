@@ -122,6 +122,10 @@ pub struct Manifest {
     pub chunks: usize,
     #[serde(default)]
     pub embedding: Option<String>,
+    /// The `--embedding` setting this index was built with (`none` or a provider spec); a rebuild
+    /// without the flag inherits it, so a background rebuild never switches models.
+    #[serde(default)]
+    pub embedding_spec: Option<String>,
     #[serde(default)]
     pub edges: usize,
     #[serde(default)]
@@ -176,10 +180,27 @@ impl Store {
             dirs: f.dirs.into_iter().map(|(k, m)| (k.into_owned(), m)).collect(),
         }
     }
+    /// Layout is fixed: one JSON array per line inside `files` and `dirs`, which `parse_store_fast`
+    /// relies on; the whole file stays valid JSON for everyone else.
     fn save(&self, dir: &Path) -> Result<()> {
         let path = dir.join(FINGERPRINTS);
         let tmp = dir.join("fingerprints.json.tmp");
-        std::fs::write(&tmp, serde_json::to_string(&self.to_file())?).map_err(|e| SectError::io(&tmp, e))?;
+        let f = self.to_file();
+        let mut out = String::with_capacity(160 * (f.files.len() + f.dirs.len()) + 128);
+        out.push_str("{\"columns\":");
+        out.push_str(&serde_json::to_string(&f.columns)?);
+        out.push_str(",\n\"files\":[\n");
+        for (i, row) in f.files.iter().enumerate() {
+            out.push_str(&serde_json::to_string(row)?);
+            out.push_str(if i + 1 < f.files.len() { ",\n" } else { "\n" });
+        }
+        out.push_str("],\n\"dirs\":[\n");
+        for (i, row) in f.dirs.iter().enumerate() {
+            out.push_str(&serde_json::to_string(row)?);
+            out.push_str(if i + 1 < f.dirs.len() { ",\n" } else { "\n" });
+        }
+        out.push_str("]}\n");
+        std::fs::write(&tmp, out).map_err(|e| SectError::io(&tmp, e))?;
         std::fs::rename(&tmp, &path).map_err(|e| SectError::io(&path, e))
     }
 }
@@ -202,6 +223,28 @@ pub fn absolutize(root: &Path) -> PathBuf {
     } else {
         std::env::current_dir().map(|c| c.join(root)).unwrap_or_else(|_| root.to_path_buf())
     }
+}
+
+/// Split the store written by `Store::save` into its file and directory lines without parsing
+/// them; the stat pass parses each line on the thread that stats it. None when the layout is not
+/// the expected one (a hand-edited or older file), in which case the caller rebuilds.
+fn store_lines(bytes: &[u8]) -> Option<(Vec<&str>, Vec<&str>)> {
+    let text = std::str::from_utf8(bytes).ok()?;
+    let fs = text.find("\n\"files\":[\n")? + "\n\"files\":[\n".len();
+    let fe = fs + text[fs..].find("\n],\n\"dirs\":[\n")?;
+    let ds = fe + "\n],\n\"dirs\":[\n".len();
+    let de = ds + text[ds..].find("\n]}")?;
+    let files: Vec<&str> = if fe > fs { text[fs..fe].split('\n').collect() } else { Vec::new() };
+    let dirs: Vec<&str> = if de > ds { text[ds..de].split('\n').collect() } else { Vec::new() };
+    Some((files, dirs))
+}
+
+/// The stat pass runs on a pool of up to 16 threads: measured at 10k files, 16 threads stat in
+/// 3.7 ms on ext4 (8: 5.2 ms, 32: 3.4 to 5.8 ms with the extra spawn cost) and in 75 ms on NTFS
+/// (8: 104 ms, 32: 68 ms). `SECT_STAT_THREADS` overrides it.
+fn stat_pool() -> rayon::ThreadPool {
+    let n = std::env::var("SECT_STAT_THREADS").ok().and_then(|v| v.parse().ok()).unwrap_or_else(|| std::thread::available_parallelism().map(|p| p.get()).unwrap_or(4).clamp(2, 16));
+    rayon::ThreadPoolBuilder::new().num_threads(n).build().expect("stat thread pool")
 }
 
 fn load_store(dir: &Path) -> Store {
@@ -376,9 +419,13 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     }
     lap("walk", &mut stage, &mut layer_ms);
 
-    let embedding_spec = opts.embedding.clone().unwrap_or_else(|| sect_semantic::DEFAULT_MODEL.to_string());
+    let embedding_spec = opts
+        .embedding
+        .clone()
+        .or_else(|| prev_manifest.as_ref().and_then(|m| m.embedding_spec.clone()))
+        .unwrap_or_else(|| sect_semantic::DEFAULT_MODEL.to_string());
     let want_semantic = embedding_spec != "none";
-    let semantic_spec_changed = prev_manifest.as_ref().map(|m| m.embedding.as_deref() != Some(&format!("model2vec:{}", embedding_spec.strip_prefix("model2vec:").unwrap_or(&embedding_spec))) && want_semantic).unwrap_or(want_semantic);
+    let semantic_spec_changed = want_semantic && prev_manifest.as_ref().map(|m| m.embedding_spec.as_deref() != Some(embedding_spec.as_str())).unwrap_or(true);
     let mut report = BuildReport {
         mode: String::new(),
         files: files.len(),
@@ -562,6 +609,7 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
         layers: [("structural", true), ("exact", true), ("ngram", false), ("lexical", true), ("semantic", semantic_built)].into_iter().map(|(k, v)| (k.to_string(), v)).collect(),
         chunks: chunk_list.len(),
         embedding: embedding_name,
+        embedding_spec: Some(embedding_spec.clone()),
         edges: graph.edges.len(),
         actions: graph.actions.len(),
         terms: graph.terms.len(),
@@ -613,50 +661,60 @@ pub fn check(root: &Path) -> Result<CheckResult> {
     let timing = std::env::var("SECT_TIMING").is_ok();
     let t_manifest = t0.elapsed().as_micros();
     let bytes = std::fs::read(dir.join(FINGERPRINTS)).unwrap_or_default();
-    let store: StoreFile = serde_json::from_slice(&bytes).unwrap_or(StoreFile { columns: vec![], files: vec![], dirs: vec![] });
+    let Some((file_lines, dir_lines)) = store_lines(&bytes) else {
+        return Ok(CheckResult { check: Check::Stale { files: manifest.files, changed: manifest.files.max(1) }, manifest: Some(manifest), stat_ms: t0.elapsed().as_millis() as u64 });
+    };
+    let (nfiles, ndirs) = (file_lines.len(), dir_lines.len());
     let t_store = t0.elapsed().as_micros();
-    let changed: usize = store
-        .files
-        .par_iter()
-        .map(|(rel, size, mtime, hash)| match stat_file(&root.join(rel.as_ref())) {
-            Err(_) => 1,
-            Ok((s, m)) => {
-                if s == *size && m == *mtime {
-                    0
-                } else {
-                    match fingerprint_file(&root.join(rel.as_ref())) {
-                        Ok(f) if f.blake3 == hash.as_ref() => 0,
-                        _ => 1,
-                    }
-                }
-            }
-        })
-        .sum();
-    let t_files = t0.elapsed().as_micros();
-    let dir_changed = store.dirs.is_empty() || store.dirs.par_iter().any(|(rel, m)| stat_file(&root.join(rel.as_ref())).map(|(_, mt)| mt != *m).unwrap_or(true));
-    let t_dirs = t0.elapsed().as_micros();
+    // One parallel pass; each line is parsed on the thread that stats it: (changed files,
+    // changed directories, unparsable lines).
+    let file_check = |line: &&str| -> (usize, usize, usize) {
+        let Ok((rel, size, mtime, hash)) = serde_json::from_str::<(Cow<str>, u64, u64, Cow<str>)>(line.trim_end_matches(',')) else { return (0, 0, 1) };
+        match stat_file(&root.join(rel.as_ref())) {
+            Err(_) => (1, 0, 0),
+            Ok((s, m)) if s == size && m == mtime => (0, 0, 0),
+            Ok(_) => match fingerprint_file(&root.join(rel.as_ref())) {
+                Ok(f) if f.blake3 == hash.as_ref() => (0, 0, 0),
+                _ => (1, 0, 0),
+            },
+        }
+    };
+    let dir_check = |line: &&str| -> (usize, usize, usize) {
+        let Ok((rel, m)) = serde_json::from_str::<(Cow<str>, u64)>(line.trim_end_matches(',')) else { return (0, 0, 1) };
+        match stat_file(&root.join(rel.as_ref())) {
+            Ok((_, mt)) if mt == m => (0, 0, 0),
+            _ => (0, 1, 0),
+        }
+    };
+    let (changed, dirs_changed, bad) = stat_pool().install(|| {
+        file_lines.par_iter().map(file_check).chain(dir_lines.par_iter().map(dir_check)).reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
+    });
+    let dir_changed = ndirs == 0 || dirs_changed > 0;
+    let t_stat = t0.elapsed().as_micros();
     if timing {
-        eprintln!("timing: check manifest {} us, store {} us, files {} us ({}), dirs {} us ({}), dir_changed {}", t_manifest, t_store - t_manifest, t_files - t_store, store.files.len(), t_dirs - t_files, store.dirs.len(), dir_changed);
+        eprintln!("timing: check manifest {} us, store {} us, stat {} us ({} files, {} dirs), dir_changed {}", t_manifest, t_store - t_manifest, t_stat - t_store, nfiles, ndirs, dir_changed);
+    }
+    if bad > 0 {
+        return Ok(CheckResult { check: Check::Stale { files: nfiles, changed: bad }, manifest: Some(manifest), stat_ms: t0.elapsed().as_millis() as u64 });
     }
     let mut added = 0usize;
     if dir_changed {
         let sources = load_sources(&root)?;
         let files = walk_corpus(&root, &sources)?;
+        let store: StoreFile = serde_json::from_slice(&bytes).unwrap_or(StoreFile { columns: vec![], files: vec![], dirs: vec![] });
         let known: HashSet<&str> = store.files.iter().map(|(rel, ..)| rel.as_ref()).collect();
         added = files.iter().filter(|f| !known.contains(f.rel.as_str())).count();
         if added == 0 && changed == 0 && files.len() == store.files.len() && !lock_held(&root) {
             let mut owned = Store::from_file(store);
             owned.dirs = snapshot_dirs(&root, &files, &sources);
             let _ = owned.save(&dir);
-            let files = owned.files.len();
             let stat_ms = t0.elapsed().as_millis() as u64;
-            return Ok(CheckResult { check: Check::Fresh { files }, manifest: Some(manifest), stat_ms });
+            return Ok(CheckResult { check: Check::Fresh { files: nfiles }, manifest: Some(manifest), stat_ms });
         }
     }
     let total = changed + added;
-    let files = store.files.len();
     let stat_ms = t0.elapsed().as_millis() as u64;
-    Ok(CheckResult { check: if total == 0 { Check::Fresh { files } } else { Check::Stale { files, changed: total } }, manifest: Some(manifest), stat_ms })
+    Ok(CheckResult { check: if total == 0 { Check::Fresh { files: nfiles } } else { Check::Stale { files: nfiles, changed: total } }, manifest: Some(manifest), stat_ms })
 }
 
 fn sync_limit() -> usize {
