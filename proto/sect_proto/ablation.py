@@ -110,5 +110,5 @@ def run(corpus: Corpus, qdir: Path, out: Path) -> None:
     L.append("\nReading: a static embedder averages token vectors, so a prefix shared by every chunk (the breadcrumb) moves every vector toward one common direction and cosine stops discriminating; "
              "subtracting the corpus mean removes that direction. BM25 without stemming misses `exits` vs `exit`, `firefighters` vs `firefighting`, `hazard` vs `hazardous`.\n")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
     print("\n".join(L))

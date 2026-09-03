@@ -239,7 +239,7 @@ def run(corpus: Corpus, qdir: Path, out: Path, gate: float, filter_rank: int, fl
             metric = f"recall5={pct(r.get('recall5'))}" if r.get("recall5") is not None else f"exact={r.get('exact')}"
             L.append(f"| {r['qid']} | {r['type']} | {r['query'][:90]} | {', '.join(r.get('top', []))} | {metric} |")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("\n".join(L) + "\n", encoding="utf-8")
+    out.write_text("\n".join(L) + "\n", encoding="utf-8", newline="\n")
     print("\n".join(L[:12]))
     print(f"\nWrote {out}")
     return passed
