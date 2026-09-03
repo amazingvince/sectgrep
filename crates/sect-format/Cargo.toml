@@ -11,5 +11,7 @@ sect-core.workspace = true
 sect-corpus.workspace = true
 sect-index.workspace = true
 sect-query.workspace = true
+sect-struct.workspace = true
+chrono.workspace = true
 serde.workspace = true
 serde_json.workspace = true

@@ -85,6 +85,8 @@ def run(corpus: Corpus, qdir: Path, out: Path, gate: float, filter_rank: int, fl
 
     for q in questions:
         typ = q["type"]
+        if typ not in TYPE_ORDER:
+            continue  # structural-only files (refs.jsonl, define.jsonl) are scored by the Rust verbs, eval/eval_m2.py
         kept = not (typ == "cross-ref" and q.get("filter") and not q["filter"]["kept"])
         keys = ([typ] if kept else []) + ([XREF_ALL] if typ == "cross-ref" else [])
         rec = {"qid": q["qid"], "type": typ, "query": q.get("query", "")}

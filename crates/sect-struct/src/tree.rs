@@ -218,6 +218,39 @@ impl Tree {
         Some((node, expr))
     }
 
+    /// Snap to the nearest published Expression on or before `date` (spec B.4 `--as-of`).
+    pub fn as_of(&self, work: &str, date: NaiveDate) -> Option<&ExprInfo> {
+        let node = self.nodes.get(work)?;
+        node.expressions.iter().filter(|e| e.effective.map(|d| d <= date).unwrap_or(false)).last()
+    }
+
+    /// Is this Expression the active text of its Work at `date`? With `include_superseded`,
+    /// any Expression already published by `date` counts.
+    pub fn active_at(&self, expr: &str, date: NaiveDate, include_superseded: bool) -> bool {
+        let (work, _) = sect_core::split_expr(expr);
+        match self.resolve(expr) {
+            Some((_, e)) => {
+                let published = e.effective.map(|d| d <= date).unwrap_or(false);
+                if include_superseded {
+                    published
+                } else {
+                    self.as_of(work, date).map(|s| s.expr == e.expr).unwrap_or(false)
+                }
+            }
+            None => false,
+        }
+    }
+
+    /// Is the Work active at `date` at all (some Expression published by then)?
+    pub fn work_active_at(&self, work: &str, date: NaiveDate) -> bool {
+        self.as_of(work, date).is_some()
+    }
+
+    /// The scope (or the node itself) is on the ancestor chain of `id`.
+    pub fn within(&self, id: &str, scope: &str) -> bool {
+        id == scope || self.ancestors(id).iter().any(|a| a.id == scope)
+    }
+
     pub fn ancestors(&self, id: &str) -> Vec<&Node> {
         let mut out = Vec::new();
         let mut cur = self.nodes.get(id);

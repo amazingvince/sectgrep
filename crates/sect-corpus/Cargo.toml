@@ -9,6 +9,7 @@ description = "Corpus walker, front-matter and body parsing, blake3 fingerprints
 [dependencies]
 blake3.workspace = true
 chrono.workspace = true
+comrak.workspace = true
 ignore.workspace = true
 regex.workspace = true
 sect-core.workspace = true

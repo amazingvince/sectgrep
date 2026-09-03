@@ -2,8 +2,8 @@
 //! parse, rebuild the structural files, write `manifest.json` and append `log.jsonl`. Every query
 //! stats the tree first and either answers `fresh`, rebuilds, or answers `possibly_stale`.
 //!
-//! Milestone 1 rebuilds the structural layer whole when anything changed; milestone 6 makes the
-//! rebuild incremental and moves large rebuilds to the background.
+//! Milestones 1-2 rebuild the structural layer whole when anything changed; milestone 6 makes
+//! the rebuild incremental and moves large rebuilds to the background.
 
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -14,15 +14,16 @@ use chrono::{SecondsFormat, Utc};
 use sect_core::{Freshness, Result, SectError, SourceConfig, INDEX_DIR, SCHEMA_VERSION, VERSION};
 use sect_corpus::{
     fingerprint_file, load_sources, parse_document, split_front_matter, stat_file, validate, walk_corpus, Document,
-    Fingerprint, Issue, Level,
+    Fingerprint, Issue, Level, Resolver,
 };
-use sect_struct::{build_tree, Tree};
+use sect_struct::{build_graph, build_tree, Edge, Graph, Tree};
 use serde::{Deserialize, Serialize};
 
 pub const MANIFEST: &str = "manifest.json";
 pub const FINGERPRINTS: &str = "fingerprints.json";
 pub const TREE: &str = "tree.json";
 pub const LOG: &str = "log.jsonl";
+pub const STRUCTURAL_FILES: &[&str] = &["tree.json", "xrefs.jsonl", "actions.jsonl", "terms.json", "tables.jsonl"];
 
 #[derive(Debug, Clone, Default)]
 pub struct BuildOptions {
@@ -41,6 +42,11 @@ pub struct BuildReport {
     pub sources: usize,
     /// Files added, removed, or with changed content since the previous build.
     pub changed: usize,
+    pub edges: usize,
+    pub actions: usize,
+    pub terms: usize,
+    pub tables: usize,
+    pub unresolved_refs: usize,
     pub issues: Vec<Issue>,
     pub elapsed_ms: u128,
     pub validate_only: bool,
@@ -79,7 +85,18 @@ pub struct Manifest {
     pub sources: Vec<SourceSummary>,
     /// Which index layers exist on disk: structural now; lexical, semantic, ngram at later milestones.
     pub layers: BTreeMap<String, bool>,
+    #[serde(default)]
+    pub edges: usize,
+    #[serde(default)]
+    pub actions: usize,
+    #[serde(default)]
+    pub terms: usize,
+    #[serde(default)]
+    pub tables: usize,
     pub warnings: Vec<Issue>,
+    /// Cross-references whose target does not resolve (spec B.4: reported by `status`).
+    #[serde(default)]
+    pub unresolved: Vec<Edge>,
     pub unresolved_refs: usize,
     pub build_ms: u128,
 }
@@ -123,6 +140,7 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     let root = absolutize(root);
     let dir = index_dir(&root);
     let sources = load_sources(&root)?;
+    let resolver = Resolver::new(&sources);
     let files = walk_corpus(&root, &sources)?;
 
     let prev = if opts.full { BTreeMap::new() } else { load_fingerprints(&dir) };
@@ -151,14 +169,16 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
     let mut issues: Vec<Issue> = Vec::new();
     let mut docs: Vec<Document> = Vec::new();
     for f in &files {
-        match parse_document(f) {
+        match parse_document(f, &resolver) {
             Ok(d) => docs.push(d),
             Err(e) => issues.push(Issue { level: Level::Error, path: f.rel.clone(), message: e.to_string() }),
         }
     }
     issues.extend(validate(&docs, &sources));
     let tree = build_tree(&docs, &sources);
+    let graph = build_graph(&docs, &tree);
     let (works, expressions, superseded) = tree.counts();
+    let unresolved: Vec<Edge> = graph.unresolved().into_iter().cloned().collect();
     let mut report = BuildReport {
         files: files.len(),
         works,
@@ -166,6 +186,11 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
         superseded,
         sources: sources.len(),
         changed,
+        edges: graph.edges.len(),
+        actions: graph.actions.len(),
+        terms: graph.terms.len(),
+        tables: graph.tables.len(),
+        unresolved_refs: unresolved.len(),
         issues,
         elapsed_ms: 0,
         validate_only: opts.validate_only,
@@ -182,6 +207,7 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
 
     std::fs::create_dir_all(&dir).map_err(|e| SectError::io(&dir, e))?;
     tree.save(&dir.join(TREE))?;
+    graph.save(&dir)?;
     let fp_path = dir.join(FINGERPRINTS);
     std::fs::write(&fp_path, serde_json::to_string_pretty(&fps)?).map_err(|e| SectError::io(&fp_path, e))?;
     let mut per_source: BTreeMap<String, usize> = BTreeMap::new();
@@ -212,8 +238,13 @@ pub fn build(root: &Path, opts: &BuildOptions) -> Result<BuildReport> {
             .into_iter()
             .map(|(k, v)| (k.to_string(), v))
             .collect(),
+        edges: graph.edges.len(),
+        actions: graph.actions.len(),
+        terms: graph.terms.len(),
+        tables: graph.tables.len(),
         warnings: report.issues.iter().filter(|i| i.level == Level::Warning).cloned().collect(),
-        unresolved_refs: 0,
+        unresolved_refs: unresolved.len(),
+        unresolved,
         build_ms: report.elapsed_ms,
     };
     let m_path = dir.join(MANIFEST);
@@ -239,6 +270,9 @@ pub fn check(root: &Path) -> Result<(Check, Option<Manifest>)> {
         Ok(m) => m,
         Err(_) => return Ok((Check::Missing, None)),
     };
+    if STRUCTURAL_FILES.iter().any(|f| !dir.join(f).is_file()) {
+        return Ok((Check::Missing, None));
+    }
     let sources = load_sources(&root)?;
     let files = walk_corpus(&root, &sources)?;
     let fps = load_fingerprints(&dir);
@@ -259,11 +293,12 @@ pub fn check(root: &Path) -> Result<(Check, Option<Manifest>)> {
     Ok((if changed == 0 { Check::Fresh { files } } else { Check::Stale { files, changed } }, Some(manifest)))
 }
 
-/// An opened index: manifest, tree, and the freshness the caller must report first.
+/// An opened index: manifest, tree, graph, and the freshness the caller must report first.
 pub struct Index {
     pub root: PathBuf,
     pub manifest: Manifest,
     pub tree: Tree,
+    pub graph: Graph,
     pub freshness: Freshness,
     pub sources: BTreeMap<String, SourceConfig>,
 }
@@ -313,6 +348,7 @@ pub fn open(root: &Path, refresh: bool) -> Result<Index> {
         (_, None) => unreachable!("check returns a manifest unless the index is missing"),
     };
     let tree = Tree::load(&dir.join(TREE))?;
+    let graph = Graph::load(&dir)?;
     let sources = load_sources(&root)?;
-    Ok(Index { root, manifest, tree, freshness, sources })
+    Ok(Index { root, manifest, tree, graph, freshness, sources })
 }

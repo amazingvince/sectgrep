@@ -8,6 +8,7 @@ description = "Deterministic structural index: tree.json (milestone 1); xrefs, A
 
 [dependencies]
 chrono.workspace = true
+regex.workspace = true
 sect-core.workspace = true
 sect-corpus.workspace = true
 serde.workspace = true

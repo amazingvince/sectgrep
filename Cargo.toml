@@ -19,6 +19,7 @@ serde_yaml_ng = "0.10"
 blake3 = "1"
 ignore = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
+comrak = { version = "0.54", default-features = false }
 regex = "1"
 clap = { version = "4", features = ["derive", "env"] }
 tempfile = "3"

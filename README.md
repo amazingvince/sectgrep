@@ -2,7 +2,7 @@
 
 `sect` is a single-binary search and navigation tool over a structured markdown corpus of rules and guidelines, built for AI agents: exact, lexical, semantic, and structural retrieval behind seven verbs (`search`, `grep`, `read`, `refs`, `define`, `map`, `status`) over CLI and MCP. This repository also holds `sect-convert` (preprocessing and validators) and the ingest harness that fills a corpus without ever writing to it directly.
 
-**Status:** milestones 0, 0.5, and 1 done (2026-09-03). The milestone-0 gate passed (locate Recall@5 0.95, definition 1.00, see [eval/results/m0.md](eval/results/m0.md)); the fork-or-borrow decision is in [docs/decisions.md](docs/decisions.md) 15a; the Rust skeleton builds, tests, and runs `index`, `read`, `map`, and `status` on the fixture (timings in [eval/results/m1.md](eval/results/m1.md)). Next: milestone 2 (structure: xrefs, Actions, terms, tables, `--as-of`, `refs`, `define`) and C0 (OCR bake-off). Nothing is published yet.
+**Status:** milestones 0, 0.5, 1, and 2 done (2026-09-03). The milestone-0 gate passed (locate Recall@5 0.95, definition 1.00, [eval/results/m0.md](eval/results/m0.md)); the fork-or-borrow decision is in [docs/decisions.md](docs/decisions.md) 15a; the Rust binary indexes the fixture into `tree.json`, `xrefs.jsonl`, `actions.jsonl`, `terms.json`, and `tables.jsonl`, and answers `read`, `map`, `refs`, `define`, and `status`, with `--as-of` snapping, `--history`, `map --complete`, and overlay markers inline. Exact-match on the fixture is 1.00 for refs, define, as-of, and map --complete ([eval/results/m2.md](eval/results/m2.md)). Next: milestones 3 and 4 (`grep`, then lexical and semantic `search`), C0 and C1 on the converter track. Nothing is published yet.
 
 ## Build and run
 
@@ -13,6 +13,12 @@ target/release/sect read CFR:99-2.7 --corpus fixtures/corpus --ancestors
 target/release/sect map --scope CFR:99-2 --depth 1 --corpus fixtures/corpus
 target/release/sect status --corpus fixtures/corpus
 target/release/sect index --validate-only fixtures/corpus
+target/release/sect refs CFR:99-2.8 --direction in --corpus fixtures/corpus
+target/release/sect refs CFR:99-2.7 --direction in --type references --as-of 2025-06-01 --corpus fixtures/corpus
+target/release/sect define "qualified person" --usages --scope CFR:99-2 --corpus fixtures/corpus
+target/release/sect map --complete --scope "CFR:99-2.13#c" --corpus fixtures/corpus
+target/release/sect read CFR:99-2.7 --history --as-of 2025-06-01 --corpus fixtures/corpus
+target/release/sect read "CFR:99-1.4#b" --corpus fixtures/corpus
 ```
 
 Every answer starts with a freshness line and a counts line. `--json` puts `freshness` and `counts` first. A query on a changed corpus rebuilds the index first and says so; `--no-refresh` answers from the index as it is and says `possibly_stale`.

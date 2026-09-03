@@ -182,7 +182,11 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
         }
         for l in &d.links {
             let Some(tgt) = cx.current(&l.target) else {
-                cx.err(d, format!("link target `{}` does not resolve", l.target));
+                if l.via == crate::document::Via::Prose {
+                    cx.warn(d, format!("prose reference `{}` (line {}) does not resolve", l.target, l.line));
+                } else {
+                    cx.err(d, format!("link target `{}` does not resolve", l.target));
+                }
                 continue;
             };
             if let Some(a) = &l.anchor {

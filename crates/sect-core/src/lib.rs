@@ -10,7 +10,7 @@ pub mod source;
 
 pub use error::{Result, SectError};
 pub use front::{Action, FrontMatter, Narrow, NoteSource, Provenance};
-pub use ids::{expr_id, split_expr};
+pub use ids::{expr_id, split_anchor, split_expr};
 pub use response::{Counts, Freshness, Header, Response};
 pub use source::SourceConfig;
 

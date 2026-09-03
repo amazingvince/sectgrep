@@ -357,7 +357,15 @@ class Corpus:
         if anchor:
             return [a for a in s.paragraph_anchors if a.startswith(f"{anchor}-")]
         if wid in self.children:
-            return [c.id for c in self.children[wid]]
+            out: list[str] = []
+
+            def rec(i: str) -> None:
+                for c in self.children.get(i, []):
+                    out.append(c.id)
+                    rec(c.id)
+
+            rec(wid)
+            return out
         return [a for a in s.paragraph_anchors if "-" not in a]
 
     def history(self, wid: str) -> list[str]:
