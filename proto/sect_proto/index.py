@@ -26,9 +26,24 @@ from semble.tokens import tokenize  # noqa: E402
 from semble.types import Chunk  # noqa: E402
 from vicinity.backends.basic import BasicArgs  # noqa: E402
 
-from .corpus import Corpus, Section, content_words, words  # noqa: E402
+import Stemmer  # noqa: E402
+
+from .corpus import STOPWORDS, Corpus, Section, content_words, words  # noqa: E402
 
 MODEL = os.environ.get("SECT_PROTO_MODEL", "minishlab/potion-retrieval-32M")
+STEM = os.environ.get("SECT_PROTO_STEM", "1") != "0"
+_STEMMER = Stemmer.Stemmer("english")
+
+
+def text_tokens(text: str) -> list[str]:
+    """BM25 tokens for text fields: semble's tokenizer, minus stopwords, Porter-stemmed.
+
+    Stopwords must go: in a short field such as a title, `a` (as in "Subchapter A") or `part`
+    is rare and gets a large IDF, so a natural-language query full of function words ranks
+    structural nodes above the section it is about.
+    """
+    toks = [t for t in tokenize(text) if t not in STOPWORDS]
+    return _STEMMER.stemWords(toks) if STEM else toks
 RRF_K = 60
 CANDIDATES = 100
 MAX_CHUNK_TOKENS = 2000
@@ -141,7 +156,7 @@ class Searcher:
         for f in FIELD_WEIGHTS:
             b = BM25()
             for c in self.chunks:
-                toks = cite_tokens(c.fields[f]) if f == "citations" else tokenize(c.fields[f])
+                toks = cite_tokens(c.fields[f]) if f == "citations" else text_tokens(c.fields[f])
                 b.add_document(str(c.idx), toks)
             b.set_doc_order(ids)
             self.bm25[f] = b
@@ -178,7 +193,7 @@ class Searcher:
         if not fielded:
             return np.asarray(self.bm25_all.get_scores(tokenize(query)), dtype=np.float32)
         total = np.zeros(self.n, dtype=np.float32)
-        qt = tokenize(query)
+        qt = text_tokens(query)
         qc = cite_tokens(query)
         for f, w in FIELD_WEIGHTS.items():
             toks = qc if f == "citations" else qt

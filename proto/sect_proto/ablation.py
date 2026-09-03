@@ -16,7 +16,7 @@ from semble.index.bm25 import BM25
 from semble.index.dense import load_model
 from semble.tokens import tokenize
 
-from .corpus import Corpus
+from .corpus import STOPWORDS, Corpus
 from .evaluate import load_questions, recall_at_k
 from .index import MODEL, RRF_K
 
@@ -69,20 +69,23 @@ def run(corpus: Corpus, qdir: Path, out: Path) -> None:
             vec_rankers[center] = scores_vec
             rows.append((f"vector | {variant} | {'mean-centered' if center else 'raw'}", recall(lambda q, f=scores_vec: [ids[i] for i in np.argsort(-f(q))[:10]])))
         bm_rankers = {}
-        for stem in (False, True):
+        treatments = {"raw": (False, False), "stemmed": (True, False), "stemmed, stopwords removed": (True, True)}
+        for name, (stem, stop) in treatments.items():
+            def toks_of(text, stem=stem, stop=stop):
+                toks = [t for t in tokenize(text) if not (stop and t in STOPWORDS)]
+                return stemmer.stemWords(toks) if stem else toks
+
             b = BM25()
             for i, t in enumerate(texts):
-                toks = tokenize(t)
-                b.add_document(str(i), stemmer.stemWords(toks) if stem else toks)
+                b.add_document(str(i), toks_of(t))
             b.set_doc_order([str(i) for i in range(len(texts))])
 
-            def scores_bm(q, b=b, stem=stem):
-                toks = tokenize(q)
-                return np.asarray(b.get_scores(stemmer.stemWords(toks) if stem else toks), dtype=np.float32)
+            def scores_bm(q, b=b, toks_of=toks_of):
+                return np.asarray(b.get_scores(toks_of(q)), dtype=np.float32)
 
-            bm_rankers[stem] = scores_bm
-            rows.append((f"bm25 | {variant} | {'stemmed' if stem else 'raw'}", recall(lambda q, f=scores_bm: [ids[i] for i in np.argsort(-f(q))[:10] if f(q)[i] > 0])))
-        for stem, center in ((False, False), (True, True)):
+            bm_rankers[name] = scores_bm
+            rows.append((f"bm25 | {variant} | {name}", recall(lambda q, f=scores_bm: [ids[i] for i in np.argsort(-f(q))[:10] if f(q)[i] > 0])))
+        for stem, center in (("raw", False), ("stemmed, stopwords removed", False), ("stemmed, stopwords removed", True)):
             fb, fv = bm_rankers[stem], vec_rankers[center]
 
             def rank_hybrid(q, fb=fb, fv=fv):
@@ -95,7 +98,7 @@ def run(corpus: Corpus, qdir: Path, out: Path) -> None:
                     fused[i] += 1 / (RRF_K + r)
                 return [ids[i] for i in np.argsort(-fused)[:10]]
 
-            rows.append((f"hybrid RRF | {variant} | bm25 {'stemmed' if stem else 'raw'} + vector {'mean-centered' if center else 'raw'}", recall(rank_hybrid)))
+            rows.append((f"hybrid RRF | {variant} | bm25 {stem} + vector {'mean-centered' if center else 'raw'}", recall(rank_hybrid)))
 
     L = ["# Milestone 0 ablation: chunk text, stemming, and mean-centering\n",
          f"Generated {dt.datetime.now().isoformat(timespec='seconds')}. Recall@5 on the fixture question set, current Expressions only; "

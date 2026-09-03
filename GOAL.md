@@ -1,7 +1,7 @@
 # Goal: Implement `sectgrep` (Engineering Spec v0.4)
 
 **Source of truth:** `sectgrep-spec-v0.4.md` in this directory. Where this goal and the spec disagree, the spec wins. Where the spec is silent, decide, record the decision in `docs/decisions.md`, and continue.
-**Status:** Not started. The directory is not yet a git repository.
+**Status:** Bootstrap and milestone 0 complete (2026-09-03, gate passed: locate 0.95, definition 1.00). Next: milestone 0.5, then 1. The name decision (`docs/decisions.md` 14a) is still waiting on a human.
 **Written:** 2026-09-03
 
 ---
@@ -67,9 +67,9 @@ Carry these into every milestone. They come from A.3, A.4, A.5, and B.1.
 
 ### Bootstrap (before milestone 0; not in the spec but required)
 
-- [ ] `git init`; add `LICENSE` (Apache-2.0), `README.md` stub, `.gitignore` (`target/`, `node_modules/`, `corpus/**/.sect/`, `work/`, `staging/`, `raw/` except fixtures).
-- [ ] **Name check.** Run `cargo search sectgrep`, `cargo search sect`, `npm view sectgrep`, `npm view sect`, and check PyPI and Homebrew for both. Record the result in `docs/decisions.md`. If either collides, fall back to `regsift`. **Do not publish to any registry** in this phase.
-- [ ] Repo layout:
+- [x] `git init`; add `LICENSE` (Apache-2.0), `README.md` stub, `.gitignore` (`target/`, `node_modules/`, `corpus/**/.sect/`, `work/`, `staging/`, `raw/` except fixtures).
+- [x] **Name check.** Run `cargo search sectgrep`, `cargo search sect`, `npm view sectgrep`, `npm view sect`, and check PyPI and Homebrew for both. Record the result in `docs/decisions.md`. If either collides, fall back to `regsift`. **Do not publish to any registry** in this phase.
+- [x] Repo layout:
   ```
   crates/            sect-core sect-corpus sect-struct sect-exact sect-ngram sect-lexical
                      sect-semantic sect-rank sect-index sect-query sect-format sect-cli sect-mcp
@@ -80,7 +80,7 @@ Carry these into every milestone. They come from A.3, A.4, A.5, and B.1.
   corpus/ raw/ staging/ work/ review/ lint/   (gitignored except fixtures)
   docs/              decisions.md  spec-changes.md  SKILL.md  SKILL-ingest.md
   ```
-- [ ] CI (GitHub Actions, Linux): `cargo test --workspace`, `pnpm -r test`, `sect index --validate-only fixtures/corpus`, validators (C.5) on the fixture.
+- [x] CI (GitHub Actions, Linux): `cargo metadata` until the first crate lands, then `cargo test --workspace`; `pnpm -r test` from C1; `sect-proto validate` and the milestone-0 eval on the fixture now, `sect index --validate-only` and the C.5 validators once they exist.
 
 ### Milestones (from F.1, in single-track order)
 

@@ -181,7 +181,9 @@ def run(corpus: Corpus, qdir: Path, out: Path, gate: float, filter_rank: int, fl
     L.append(f"- Corpus: `{corpus.root}`: {st['sources']} sources, {st['works']} Works, {st['expressions']} Expressions ({st['superseded']} superseded), "
              f"{st['actions']} Actions, {st['terms']} defined terms, {st['edges']} graph edges, {st['tables']} tables; {S.n} chunks (one per section file, split only above 2,000 tokens).")
     L.append(f"- Library: semble {_semble_version()} (BM25 index, model loading, chunk embedding, tokenizer, RRF baseline) + model2vec `{S.model_name}` (static embeddings, brute-force cosine).")
-    L.append(f"- Chunk text: breadcrumb + `context` prefix + body (+ flattened table rows). Field weights for BM25: title 3, path 2, context 1.5, body 1, citations 3, terms_defined 4.")
+    L.append(f"- Chunk text: breadcrumb + `context` prefix + body (+ flattened table rows). Field weights for BM25: title 3, path 2, context 1.5, body 1, citations 3, terms_defined 4. "
+             f"Text-field tokens: semble tokenizer, stopwords removed, Porter-stemmed (decisions #18); `citations` and `terms_defined` exact.")
+    L.append("- Ablation over chunk text, stemming, stopwords, and mean-centering: `eval/results/m0-ablation.md`.")
     L.append(f"- Fusion: BM25 top-{100} + vector top-{100}, RRF k=60, lexical weight x2 for ID/term-like queries, then: citation short-circuit, definition resolution, title/path +0.10, hub boost log(1+refs_in)x0.02 (cap 0.10), notes -0.2, superseded filtered at as-of. Abstain when lexical overlap < {floor_lex} and cosine < {floor_sem}, or cosine < {floor_hard}.")
     L.append(f"- Index build (both arms, incl. model load): {index_ms:.0f} ms.\n")
     L.append("## Per-type results (prototype pipeline)\n")

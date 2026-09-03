@@ -1,0 +1,5 @@
+# Linux is the reference platform (GOAL.md section 4); keep LF in the repository on every OS.
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+*.bin binary

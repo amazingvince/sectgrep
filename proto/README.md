@@ -2,7 +2,7 @@
 
 Throwaway Python prototype for spec milestone 0 (F.1): validate the chunking and ranking design of spec B.4 on the fixture corpus **before any Rust is written**. It is never shipped or published. The only Python in the program.
 
-Gate: **Recall@5 >= 0.85 on locate and definition questions.** Results: [`eval/results/m0.md`](../eval/results/m0.md).
+Gate: **Recall@5 >= 0.85 on locate and definition questions.** Result on 2026-09-03: **locate 0.95, definition 1.00, gate passed.** Full report: [`eval/results/m0.md`](../eval/results/m0.md); ablation: [`eval/results/m0-ablation.md`](../eval/results/m0-ablation.md).
 
 ## Run
 
@@ -29,6 +29,7 @@ uv run --project proto sect-proto history fixtures/corpus CFR:99-2.7
 uv run --project proto sect-proto define fixtures/corpus "first aid"
 uv run --project proto sect-proto crossref-candidates fixtures/corpus --out eval/questions/crossref.candidates.jsonl
 uv run --project proto sect-proto filter fixtures/corpus --questions eval/questions --rank 3
+uv run --project proto sect-proto ablation --corpus fixtures/corpus --questions eval/questions --out eval/results/m0-ablation.md
 ```
 
 ## What is borrowed from semble and what is local
@@ -39,7 +40,7 @@ The spec names [`semble`](https://github.com/MinishLab/semble) (MinishLab, MIT) 
 |---|---|
 | BM25 inverted index (`semble.index.bm25.BM25`), one per field | semble |
 | Model loading and chunk embedding (`semble.index.dense`), model2vec `potion-retrieval-32M` | semble, model2vec |
-| Tokenizer for text fields (`semble.tokens.tokenize`) | semble |
+| Tokenizer for text fields (`semble.tokens.tokenize`), then stopword removal and Porter stemming (PyStemmer); see decisions #18 | semble + local |
 | Plain hybrid baseline arm (`semble.search.search`, RRF k=60, no code reranking) | semble |
 | Chunk text = breadcrumb + `context` + body (+ flattened table rows); split only above 2,000 tokens at paragraph labels | local (spec B.2, B.4) |
 | Field weights: title 3, path 2, context 1.5, body 1, citations 3, terms_defined 4; citation tokenizer that keeps `2.8`, `am-1`, `2026-00001` whole | local (spec B.4) |
@@ -49,7 +50,15 @@ The spec names [`semble`](https://github.com/MinishLab/semble) (MinishLab, MIT) 
 | Abstention: below a lexical-overlap and cosine floor, answer "not found" with the nearest scope | local (spec B.3) |
 | CRAwLeR cross-ref candidates and adversarial filter | local (spec E.1) |
 
-`bm25s` and `PyStemmer` are listed as dependencies for experiments but the reported pipeline uses semble's BM25 so the lexical leg matches what `semble_rs` offers for the fork-or-borrow decision at milestone 0.5.
+The lexical leg stays on semble's BM25 so that it matches what `semble_rs` offers for the fork-or-borrow decision at milestone 0.5. `SECT_PROTO_STEM=0` turns stemming off to reproduce the raw-token numbers.
+
+## Findings worth carrying into the Rust design
+
+1. **Stopwords and stemming in the lexical leg are not optional.** Raw tokens on short boosted fields let function words dominate (decisions #18, spec-changes #6).
+2. **The signal table needs a score scale.** Flat +0.10 boosts and a x2 lexical weight that fires on any query mentioning a defined word cost up to 0.10 Recall@5 (decisions #20, spec-changes #7).
+3. **The static embedder is fine with the full prefix.** Breadcrumb + context + body embeds as well as body alone on this corpus; mean-centering does not help (decisions #19).
+4. **Structural verbs are exact.** `map --complete`, `--as-of` snapping, `read --history`, `refs --type amends`, overlay flags, and table row lookup all score 1.00 from front matter alone, with no ranking involved.
+5. **Abstention is the weak spot.** No-gold controls abstain (1.00) but two near-topic wrong-corpus controls do not (0.60). A static embedder gives similar cosines for hard valid questions and off-corpus ones; the Rust implementation should add a score-margin or agreement feature before relying on the floors.
 
 ## Layout
 

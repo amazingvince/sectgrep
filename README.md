@@ -2,7 +2,7 @@
 
 `sect` is a single-binary search and navigation tool over a structured markdown corpus of rules and guidelines, built for AI agents: exact, lexical, semantic, and structural retrieval behind seven verbs (`search`, `grep`, `read`, `refs`, `define`, `map`, `status`) over CLI and MCP. This repository also holds `sect-convert` (preprocessing and validators) and the ingest harness that fills a corpus without ever writing to it directly.
 
-**Status:** bootstrap. Milestone 0 (eval fixture and Python ranking prototype) is in progress. Nothing is published yet.
+**Status:** bootstrap and milestone 0 done (2026-09-03). The milestone-0 gate passed: locate Recall@5 0.95, definition 1.00 on the fixture (threshold 0.85), see [eval/results/m0.md](eval/results/m0.md). Next: milestone 0.5 (fork-or-borrow) and milestone 1 (Rust skeleton). Nothing is published yet.
 
 - Roadmap and definition of done: [GOAL.md](GOAL.md)
 - Specification: [sectgrep-spec-v0.4.md](sectgrep-spec-v0.4.md)
