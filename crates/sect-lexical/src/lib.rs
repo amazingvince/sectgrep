@@ -245,6 +245,43 @@ pub fn build(dir: &Path, docs: &[LexDoc]) -> Result<()> {
     Ok(())
 }
 
+/// Incremental update: drop every chunk of the given Expressions, then add the new chunks.
+/// A single commit, so a query never sees the half-way state.
+pub fn update(dir: &Path, remove_exprs: &[String], add: &[LexDoc]) -> Result<()> {
+    let index = Index::open_in_dir(dir).map_err(err)?;
+    register(&index);
+    let (_, f) = schema();
+    let mut writer = index.writer(50_000_000).map_err(err)?;
+    for e in remove_exprs {
+        writer.delete_term(Term::from_field_text(f.expr, e));
+    }
+    for d in add {
+        let date = d.effective.map(|dt| DateTime::from_timestamp_secs(dt.and_hms_opt(0, 0, 0).unwrap().and_utc().timestamp()));
+        let mut document = doc!(
+            f.chunk_id => d.chunk_id.as_str(),
+            f.expr => d.expr.as_str(),
+            f.id => d.id.as_str(),
+            f.node => d.node.clone().unwrap_or_default(),
+            f.title => d.title.as_str(),
+            f.path => d.path.as_str(),
+            f.context => d.context.as_str(),
+            f.body => d.body.as_str(),
+            f.citations => d.citations.join(" "),
+            f.self_id => d.id.as_str(),
+            f.terms_defined => d.terms_defined.join(" "),
+            f.source => Facet::from(&format!("/{}", d.source)),
+            f.kind => Facet::from(&format!("/{}", d.kind)),
+            f.superseded => d.superseded,
+        );
+        if let Some(dt) = date {
+            document.add_date(f.effective, dt);
+        }
+        writer.add_document(document).map_err(err)?;
+    }
+    writer.commit().map_err(err)?;
+    Ok(())
+}
+
 pub struct LexicalIndex {
     index: Index,
     fields: Fields,
@@ -383,5 +420,14 @@ mod tests {
         let hits = lx.search("guardrail", &Filter { exprs: Some(only), ..Default::default() }, 10).unwrap();
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].id, "CFR:99-2.4");
+        // Incremental update: replace one Expression's chunks, remove another's.
+        let mut changed = doc("CFR:99-2.8", "Guardrail systems", "The top rail shall be 48 inches now.", "base");
+        changed.chunk_id = "CFR:99-2.8@2024-01-01#c0".into();
+        update(tmp.path(), &["CFR:99-2.8@2024-01-01".to_string(), "NOTE:x@2024-01-01".to_string()], &[changed]).unwrap();
+        let lx = LexicalIndex::open(tmp.path()).unwrap();
+        let hits = lx.search("48 inches", &Filter::default(), 10).unwrap();
+        assert_eq!(hits[0].id, "CFR:99-2.8");
+        assert!(lx.search("42", &Filter::default(), 10).unwrap().is_empty(), "old text gone");
+        assert!(lx.search("guardrail", &Filter { kind: Some("note".into()), ..Default::default() }, 10).unwrap().is_empty(), "removed Expression gone");
     }
 }

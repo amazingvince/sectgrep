@@ -1858,6 +1858,8 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml_ng",
+ "tempfile",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1893,6 +1895,7 @@ name = "sect-index"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "rayon",
  "sect-core",
  "sect-corpus",
  "sect-lexical",

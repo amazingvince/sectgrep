@@ -8,6 +8,7 @@ description = "Index build (walk, fingerprint, validate, structural files, manif
 
 [dependencies]
 chrono.workspace = true
+rayon.workspace = true
 sect-core.workspace = true
 sect-corpus.workspace = true
 sect-lexical.workspace = true

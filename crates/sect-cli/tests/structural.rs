@@ -73,7 +73,7 @@ impl Tally {
 fn structural_verbs_match_the_question_set_exactly() {
     let tmp = tempfile::tempdir().unwrap();
     copy_dir(&repo().join("fixtures/corpus"), tmp.path());
-    let index = sect_index::open(tmp.path(), true).unwrap();
+    let index = sect_index::open(tmp.path(), sect_core::Refresh::Auto).unwrap();
     assert_eq!(index.manifest.unresolved_refs, 0, "unresolved: {:?}", index.manifest.unresolved);
 
     // map --complete (subtree-completeness)
@@ -174,7 +174,7 @@ fn check_refs(index: &sect_index::Index, q: &Value, t: &mut Tally) {
 fn read_shows_overlay_markers_inline_and_slices_anchors() {
     let tmp = tempfile::tempdir().unwrap();
     copy_dir(&repo().join("fixtures/corpus"), tmp.path());
-    let index = sect_index::open(tmp.path(), true).unwrap();
+    let index = sect_index::open(tmp.path(), sect_core::Refresh::Auto).unwrap();
     let r = sect_query::read(&index, "CFR:99-1.4", &ReadOptions::default()).unwrap();
     let body = r.result.body;
     let marker_line = body.lines().position(|l| l.starts_with("> narrowed-by CITY:AM-2#b")).expect("marker present");

@@ -135,12 +135,14 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
             },
         );
     }
-    // children, overrides, narrows
+    // children, overrides, narrows (one map from Expression to document; a scan per node was
+    // quadratic and cost 13 s at 10k sections)
+    let by_expr: std::collections::HashMap<String, &Document> = docs.iter().filter_map(|d| d.expr().map(|e| (e, d))).collect();
     let ids: Vec<String> = nodes.keys().cloned().collect();
     for id in &ids {
         let (parent, overrides, narrows) = {
             let n = &nodes[id];
-            let d = docs.iter().find(|d| d.expr().as_deref() == Some(n.current.as_str()));
+            let d = by_expr.get(n.current.as_str()).copied();
             (n.parent.clone(), d.map(|d| d.front.overrides.clone()).unwrap_or_default(), d.map(|d| d.front.narrows.clone()).unwrap_or_default())
         };
         if let Some(p) = parent {

@@ -314,16 +314,21 @@ pub fn status_text(r: &Response<StatusResult>) -> String {
 pub fn build_text(rep: &BuildReport) -> String {
     let freshness = if rep.validate_only {
         "freshness: validate-only (index not written)".to_string()
+    } else if rep.mode == "noop" {
+        format!("freshness: fresh (nothing changed; {} files indexed; no work done)", rep.files)
     } else if rep.written {
-        Freshness::Fresh { files: rep.files, built_at: "now".into(), rebuilt: Some(rep.changed) }.line()
+        Freshness::Fresh { files: rep.files, built_at: "now".into(), rebuilt: Some((rep.changed_total(), rep.elapsed_ms as u64)), stat_ms: 0 }.line()
     } else {
         format!("freshness: not written ({} error(s) block the index; fix them or see --validate-only)", rep.errors())
     };
     let mut s = format!(
-        "{freshness}\ncounts: {} files, {} works, {} expressions ({} superseded), {} sources; {} changed; errors {}, warnings {}\n",
-        rep.files, rep.works, rep.expressions, rep.superseded, rep.sources, rep.changed, rep.errors(), rep.warnings()
+        "{freshness}\ncounts: {} files, {} works, {} expressions ({} superseded), {} sources; {} added, {} changed, {} removed; errors {}, warnings {}\n",
+        rep.files, rep.works, rep.expressions, rep.superseded, rep.sources, rep.added, rep.changed, rep.removed, rep.errors(), rep.warnings()
     );
     s.push_str(&format!("structure: {} edges, {} actions, {} terms, {} tables; {} unresolved refs\n", rep.edges, rep.actions, rep.terms, rep.tables, rep.unresolved_refs));
+    if !rep.layer_ms.is_empty() {
+        s.push_str(&format!("mode: {}; timings: {}\n", rep.mode, rep.layer_ms.iter().map(|(k, v)| format!("{k} {v} ms")).collect::<Vec<_>>().join(", ")));
+    }
     for i in &rep.issues {
         let lvl = match i.level {
             Level::Error => "error",

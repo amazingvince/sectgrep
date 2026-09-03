@@ -11,7 +11,7 @@ pub mod source;
 pub use error::{Result, SectError};
 pub use front::{Action, FrontMatter, Narrow, NoteSource, Provenance};
 pub use ids::{expr_id, split_anchor, split_expr};
-pub use response::{Counts, Freshness, Header, Response};
+pub use response::{Counts, Freshness, Header, Refresh, Response};
 pub use source::SourceConfig;
 
 /// Version of the on-disk index layout under `.sect/`.

@@ -21,6 +21,10 @@ struct Cli {
     /// Answer from the index as it is, even if files changed (the answer says `possibly_stale`).
     #[arg(long, global = true)]
     no_refresh: bool,
+    /// What a query does with a stale index: `auto` refreshes small change sets now and large
+    /// ones in the background, `wait` always refreshes first, `no` answers as-is.
+    #[arg(long, global = true, default_value = "auto", value_parser = ["auto", "wait", "no"])]
+    freshness: String,
     /// With --as-of: treat every Expression published by the date as active, not just the snapped one.
     #[arg(long, global = true)]
     include_superseded: bool,
@@ -210,9 +214,10 @@ fn main() {
 
 fn run() -> Result<i32> {
     let cli = Cli::parse();
+    let policy = if cli.no_refresh { sect_core::Refresh::No } else { sect_core::Refresh::parse(&cli.freshness).unwrap_or(sect_core::Refresh::Auto) };
     match cli.cmd {
         Cmd::Search { query, fts, vector, fuse, scope, source, kind, as_of, limit, expand, seed, budget } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let mode = match (fts, vector, fuse) {
                 (true, false, false) => sect_query::SearchMode::Fts,
                 (false, true, false) => sect_query::SearchMode::Vector,
@@ -234,34 +239,34 @@ fn run() -> Result<i32> {
             Ok(if rep.errors() > 0 { 1 } else { 0 })
         }
         Cmd::Read { id, ancestors, children, tables, history, as_of, version } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let opts = ReadOptions { ancestors, children, tables, history, as_of: parse_date(&as_of)?, version, include_superseded: cli.include_superseded };
             let r = sect_query::read(&index, &id, &opts)?;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::read_text(&r) });
             Ok(0)
         }
         Cmd::Map { scope, depth, budget, complete } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let r = sect_query::map(&index, scope.as_deref(), depth, budget, complete)?;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::map_text(&r) });
             Ok(0)
         }
         Cmd::Refs { id, direction, kind, depth, as_of } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let dir = Direction::parse(&direction).unwrap_or(Direction::Out);
             let r = sect_query::refs(&index, &id, dir, kind.as_deref(), depth, parse_date(&as_of)?, cli.include_superseded)?;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::refs_text(&r) });
             Ok(0)
         }
         Cmd::Define { term, usages, scope, as_of } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let r = sect_query::define(&index, &term, usages, scope.as_deref(), parse_date(&as_of)?)?;
             let defined = r.result.defined;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::define_text(&r) });
             Ok(if defined { 0 } else { 1 })
         }
         Cmd::Grep { pattern, regexp, ignore_case, word, fixed_strings, glob, line_number: _, no_line_number, count, files_with_matches, after, before, context, annotate, count_only, max_hits, scope, source } => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let mut patterns = regexp;
             if let Some(p) = pattern {
                 patterns.insert(0, p);
@@ -276,7 +281,7 @@ fn run() -> Result<i32> {
             Ok(0)
         }
         Cmd::Status => {
-            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let index = sect_index::open(&cli.corpus, policy)?;
             let r = sect_query::status(&index)?;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::status_text(&r) });
             Ok(0)

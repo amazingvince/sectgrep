@@ -42,6 +42,8 @@ target/release/sect search "ladders and fall protection" --seed --budget 600 --c
 target/release/sect search "respirator fit testing" --corpus fixtures/corpus     # abstains, names the nearest scope
 ```
 
+Every verb stats the corpus before answering (parallel stat of the tracked files plus the directory mtimes that reveal additions and removals). A fresh index answers at once; a small change set is re-indexed inside the query; a large one is answered `possibly_stale (N changed)` while a detached `sect index` rebuilds it. `--freshness wait` always rebuilds first, `--freshness no` (or `--no-refresh`) answers as-is, and `SECT_SYNC_LIMIT` moves the small/large boundary (default 20 files). `sect index` itself is incremental: it re-parses only files whose blake3 changed, replaces their chunks in tantivy and `vectors.bin`, and does nothing at all when nothing changed. `--full` rebuilds everything.
+
 `--expand refs` appends the sections each hit references so a cross-reference answer is complete in one call; `--expand ancestors` appends the chain above each hit. `--seed --budget N` returns a lexical-heavy top-k as a compact block under N tokens for one-time injection at the start of an agent session. When nothing clears the confidence floor the answer says so, gives the nearest scope, and marks the hits as candidates rather than an answer.
 
 ## Converting a real title (WS2, eCFR XML)

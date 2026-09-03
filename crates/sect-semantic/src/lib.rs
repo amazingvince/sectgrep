@@ -198,6 +198,38 @@ impl VectorIndex {
         self.ids.len()
     }
 
+    /// Drop the rows whose id satisfies `pred` (incremental rebuild: chunks of changed or removed
+    /// Expressions).
+    pub fn retain<F: Fn(&str) -> bool>(&mut self, keep: F) {
+        let dim = self.dim.max(1);
+        let mut ids = Vec::with_capacity(self.ids.len());
+        let mut data = Vec::with_capacity(self.data.len());
+        for (i, id) in self.ids.iter().enumerate() {
+            if keep(id) {
+                ids.push(id.clone());
+                data.extend_from_slice(&self.data[i * dim..(i + 1) * dim]);
+            }
+        }
+        self.ids = ids;
+        self.data = data;
+    }
+
+    /// Append freshly embedded rows (normalized here).
+    pub fn append(&mut self, provider: &dyn EmbeddingProvider, ids: Vec<String>, texts: &[String]) -> Result<()> {
+        if ids.is_empty() {
+            return Ok(());
+        }
+        if provider.dim() != self.dim {
+            return Err(SectError::Other(format!("embedding dimension {} != index dimension {}", provider.dim(), self.dim)));
+        }
+        for mut v in provider.embed(texts)? {
+            normalize(&mut v);
+            self.data.extend_from_slice(&v);
+        }
+        self.ids.extend(ids);
+        Ok(())
+    }
+
     pub fn is_empty(&self) -> bool {
         self.ids.is_empty()
     }
@@ -300,5 +332,13 @@ mod tests {
         let hits = back.search(&q, 2, Some(&allowed));
         assert_eq!(hits[0].0, 2);
         assert!(provider_for("remote:https://example.invalid").is_err());
+        // Incremental: drop one row, append one.
+        let mut inc = back.clone();
+        inc.retain(|id| id != "y#c0");
+        inc.append(&Fake, vec!["w#c0".to_string()], &["aab".to_string()]).unwrap();
+        assert_eq!(inc.ids, vec!["x#c0", "z#c0", "w#c0"]);
+        assert_eq!(inc.data.len(), 9);
+        let hits = inc.search(&q, 1, None);
+        assert_eq!(inc.ids[hits[0].0], "x#c0");
     }
 }

@@ -71,8 +71,9 @@ pub struct Definition {
     pub text: String,
 }
 
-/// A parsed section file.
-#[derive(Debug, Clone)]
+/// A parsed section file. Serializable so the index can cache parses and re-parse only what
+/// changed (spec B.6 incremental builds).
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Document {
     pub rel: String,
     pub source: String,
