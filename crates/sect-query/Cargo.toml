@@ -10,6 +10,7 @@ description = "The seven verbs over an opened index; milestone 1 ships read, map
 chrono.workspace = true
 sect-core.workspace = true
 sect-corpus.workspace = true
+sect-exact.workspace = true
 sect-index.workspace = true
 sect-struct.workspace = true
 serde.workspace = true

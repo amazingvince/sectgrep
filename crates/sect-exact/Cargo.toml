@@ -4,6 +4,13 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "sect-exact: stub until milestone 3 (see GOAL.md section 5)"
+description = "Exhaustive exact and regex search on ripgrep's crates (grep-regex, grep-searcher, grep-matcher, ignore, globset); never shells out"
 
 [dependencies]
+globset.workspace = true
+grep-matcher.workspace = true
+grep-regex.workspace = true
+grep-searcher.workspace = true
+ignore.workspace = true
+sect-core.workspace = true
+serde.workspace = true

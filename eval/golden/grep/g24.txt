@@ -1,0 +1,15 @@
+cfr-title-99/I/A/2/2.6/99-2.6.md:42:| Special duty | IAA | 375 pounds (170 kg) |
+cfr-title-99/I/A/2/2.6/99-2.6.md:43:| Extra heavy duty | IA | 300 pounds (136 kg) |
+cfr-title-99/I/A/2/2.6/99-2.6.md:44:| Heavy duty | I | 250 pounds (113 kg) |
+cfr-title-99/I/A/2/2.6/99-2.6.md:45:| Medium duty | II | 225 pounds (102 kg) |
+cfr-title-99/I/A/2/2.6/99-2.6.md:46:| Light duty | III | 200 pounds (91 kg) |
+cfr-title-99/I/A/2/2.8/99-2.8.md:40:(c) *Strength.* A guardrail system shall be capable of withstanding, without failure, a force of at least 200 pounds (890 N) applied in a downward or outward direction within 2 inches (5 cm) of the top edge, at any point along the top rail. Midrails, screens, mesh, and intermediate members shall be capable of withstanding a force of at least 150 pounds (667 N).
+cfr-title-99/I/A/2/2.9/99-2.9.md:40:| Office space | 50 pounds per square foot (2.4 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:41:| Corridors and exit access above the first floor | 80 pounds per square foot (3.8 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:42:| Light manufacturing | 125 pounds per square foot (6.0 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:43:| Heavy manufacturing | 250 pounds per square foot (12.0 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:44:| Light storage (warehouse) | 125 pounds per square foot (6.0 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:45:| Heavy storage (warehouse) | 250 pounds per square foot (12.0 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:46:| Elevated platforms and mezzanines | 125 pounds per square foot (6.0 kPa) |
+cfr-title-99/I/A/2/2.9/99-2.9.md:48:(b) *Concentrated loads.* In addition to the loads in paragraph (a) of this section, a floor in a manufacturing or storage occupancy shall support a concentrated load of 2,000 pounds (8.9 kN) on any area 2.5 feet (0.76 m) square, placed where it produces the greatest effect.
+city-amendments/AM-1.md:42:(c) *Strength.* A guardrail system shall be capable of withstanding, without failure, a force of at least 300 pounds (1,335 N) applied in a downward or outward direction at any point along the top rail. Midrails and intermediate members shall be capable of withstanding a force of at least 200 pounds (890 N).

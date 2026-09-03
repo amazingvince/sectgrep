@@ -1,0 +1,28 @@
+{"id": "g01", "args": ["guardrail"], "note": "plain regex"}
+{"id": "g02", "args": ["-i", "GUARDRAIL system"], "note": "-i"}
+{"id": "g03", "args": ["-w", "rail"], "note": "-w word boundaries"}
+{"id": "g04", "args": ["-F", "(a)"], "note": "-F literal with regex metacharacters"}
+{"id": "g05", "args": ["-e", "ladder", "-e", "cage"], "note": "several -e patterns"}
+{"id": "g06", "args": ["-g", "*2.7*", "fall protection"], "note": "-g include glob"}
+{"id": "g07", "args": ["-c", "employer"], "note": "-c per-file counts"}
+{"id": "g08", "args": ["-l", "toeboard"], "note": "-l files with matches"}
+{"id": "g09", "args": ["-A", "1", "Top rail height"], "note": "-A after context"}
+{"id": "g10", "args": ["-B", "2", "Midrails"], "note": "-B before context"}
+{"id": "g11", "args": ["-C", "1", "phase-out"], "note": "-C both, across files"}
+{"id": "g12", "args": ["-n", "Special duty"], "note": "-n explicit"}
+{"id": "g13", "args": ["\\b\\d{2} inches\\b"], "note": "regex classes and boundaries"}
+{"id": "g14", "args": ["^\\(c\\)"], "note": "anchored regex"}
+{"id": "g15", "args": ["[Ee]xit route[s]?"], "note": "character classes"}
+{"id": "g16", "args": ["-i", "-w", "exit"], "note": "-i with -w"}
+{"id": "g17", "args": ["-F", "-i", "NOT AN EXIT"], "note": "-F with -i"}
+{"id": "g18", "args": ["supersedes:"], "note": "front matter lines"}
+{"id": "g19", "args": ["id: CFR:99-2\\."], "note": "escaped dot"}
+{"id": "g20", "args": ["-g", "!*.md", "precedence"], "note": "-g exclude glob (only the yaml files remain)"}
+{"id": "g21", "args": ["-e", "§ 2\\.8", "-e", "§ 2\\.4"], "note": "non-ASCII patterns"}
+{"id": "g22", "args": ["-c", "-i", "fire"], "note": "-c with -i"}
+{"id": "g23", "args": ["-w", "-i", "-A", "1", "-B", "1", "cage"], "note": "context with -w -i"}
+{"id": "g24", "args": ["(\\d+) pounds"], "note": "capture group"}
+{"id": "g25", "args": ["the"], "rg_extra": ["-c"], "note": "over --max-hits: sect answers per-file counts, which must equal rg -c"}
+{"id": "g26", "args": ["-g", "*.yaml", "kind:"], "note": "-g restricted to yaml"}
+{"id": "g27", "args": ["-i", "-c", "employee"], "note": "-i -c"}
+{"id": "g28", "args": ["-A", "2", "^\\(6\\)"], "note": "after context at end of file"}

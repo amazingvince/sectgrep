@@ -1,0 +1,15 @@
+cfr-title-99/I/A/2/2.7/99-2.7.md-22-  permanently attached to structures: the 24-foot threshold for a fall protection system, the
+cfr-title-99/I/A/2/2.7/99-2.7.md:23:  phase-out schedule for cages and wells, landing platform spacing, and the guardrail rule of
+cfr-title-99/I/A/2/2.7/99-2.7.md-24-  § 2.8 at the top. Replaces the 2024 Expression of this section.
+--
+fr/2026/2026-00001.md-36-  effective January 1, 2026. Removes cages and wells as an accepted means of fall protection on
+fr/2026/2026-00001.md:37:  fixed ladders taller than 24 feet, with a phase-out running to the end of 2036, and leaves the
+fr/2026/2026-00001.md-38-  general ladder rules of § 2.5 and the guardrail criteria of § 2.8 untouched.
+--
+fr/2026/2026-00001.md-58-
+fr/2026/2026-00001.md:59:**SUMMARY:** The Fixture Safety Administration is revising the fall protection requirement for fixed ladders in Title 99. The rule removes cages and wells from the list of accepted means of fall protection on fixed ladders that extend more than 24 feet above a lower level, requires a personal fall arrest system or a ladder safety system on new and replaced ladders, and allows existing cages and wells to remain in use for a phase-out period ending December 31, 2036.
+fr/2026/2026-00001.md-60-
+--
+fr/2026/2026-00001.md-66-
+fr/2026/2026-00001.md:67:The Administration considered and rejected an immediate removal requirement. Replacing every existing cage would impose a large cost with little benefit where the ladder is rarely climbed. A ten-year phase-out lets employers replace cages and wells as part of normal maintenance, while ensuring that no new cage or well is installed as a substitute for a fall arrest system.
+fr/2026/2026-00001.md-68-

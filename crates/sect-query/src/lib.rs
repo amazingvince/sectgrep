@@ -406,6 +406,124 @@ pub fn define(index: &Index, term: &str, usages: bool, scope: Option<&str>, as_o
     Ok(Response { header: header(index, shown, shown, vec![]), result })
 }
 
+/// Where a matched line sits in the corpus: the Work, the Expression, and the nearest paragraph.
+#[derive(Debug, Clone, Serialize)]
+pub struct Annotation {
+    pub id: String,
+    pub expr: String,
+    pub anchor: Option<String>,
+    pub label: String,
+    pub title: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct GrepLineOut {
+    pub path: String,
+    pub line: u64,
+    pub kind: sect_exact::LineKind,
+    pub text: String,
+    pub break_before: bool,
+    pub annotation: Option<Annotation>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct GrepResult {
+    pub patterns: Vec<String>,
+    /// lines | counts | files | per-file-counts
+    pub mode: String,
+    pub scope: Option<String>,
+    pub source: Option<String>,
+    pub lines: Vec<GrepLineOut>,
+    pub per_file: Vec<sect_exact::FileCount>,
+    pub files_searched: usize,
+    pub files_matched: usize,
+    pub total_matches: usize,
+    pub truncated: bool,
+    pub max_hits: usize,
+    /// Set when the answer was bounded: what to do next.
+    pub note: Option<String>,
+}
+
+/// `sect grep`: exhaustive exact/regex search, ripgrep-compatible, bounded by `--max-hits`.
+/// `--annotate` names the section and paragraph of every line; `--scope` limits the files to a
+/// subtree and `--source` to one source.
+pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope: Option<&str>, source: Option<&str>) -> Result<Response<GrepResult>> {
+    let mut opts = opts.clone();
+    if scope.is_some() || source.is_some() {
+        if let Some(s) = scope {
+            if index.tree.get(s).is_none() {
+                return Err(SectError::NotFound(s.to_string()));
+            }
+        }
+        let mut allowed: Vec<String> = Vec::new();
+        for n in index.tree.nodes.values() {
+            let ok_scope = scope.map(|s| index.tree.within(&n.id, s)).unwrap_or(true);
+            let ok_source = source.map(|s| n.source == s).unwrap_or(true);
+            if ok_scope && ok_source {
+                allowed.extend(n.expressions.iter().map(|e| e.path.clone()));
+            }
+        }
+        opts.only_paths = Some(allowed);
+    }
+    let raw = sect_exact::grep(&index.root, &opts)?;
+    let mode = if raw.truncated {
+        "per-file-counts"
+    } else if opts.count || opts.count_only {
+        "counts"
+    } else if opts.files_with_matches {
+        "files"
+    } else {
+        "lines"
+    };
+    let mut path_to_expr: BTreeMap<&str, (&Node, &sect_struct::ExprInfo)> = BTreeMap::new();
+    if annotate {
+        for n in index.tree.nodes.values() {
+            for e in &n.expressions {
+                path_to_expr.insert(e.path.as_str(), (n, e));
+            }
+        }
+    }
+    let mut offsets: BTreeMap<String, (usize, Vec<sect_corpus::AnchorLine>)> = BTreeMap::new();
+    let mut lines = Vec::with_capacity(raw.lines.len());
+    for l in raw.lines {
+        let annotation = if annotate {
+            path_to_expr.get(l.path.as_str()).map(|(n, e)| {
+                let (offset, anchors) = offsets.entry(l.path.clone()).or_insert_with(|| {
+                    let text = std::fs::read_to_string(index.root.join(&l.path)).unwrap_or_default();
+                    let body = sect_corpus::split_front_matter(&text).map(|(_, b)| b).unwrap_or("");
+                    let offset = text[..text.len() - body.len()].matches('\n').count();
+                    (offset, paragraph_anchors(body))
+                });
+                let body_line = l.line as i64 - *offset as i64;
+                let anchor = if body_line < 1 {
+                    Some("front-matter".to_string())
+                } else {
+                    anchors.iter().filter(|a| a.line as i64 <= body_line).last().map(|a| a.anchor.clone())
+                };
+                Annotation { id: n.id.clone(), expr: e.expr.clone(), anchor, label: n.label.clone(), title: n.title.clone() }
+            })
+        } else {
+            None
+        };
+        lines.push(GrepLineOut { path: l.path, line: l.line, kind: l.kind, text: l.text, break_before: l.break_before, annotation });
+    }
+    let note = if raw.truncated {
+        Some(format!("{} matching lines across {} files exceed --max-hits {}; per-file counts follow. Narrow the pattern, add -g, --scope, or --source, or raise --max-hits.", raw.total_matches, raw.files_matched, raw.max_hits))
+    } else {
+        None
+    };
+    let shown = match mode {
+        "lines" => lines.len(),
+        _ => raw.per_file.len(),
+    };
+    let mut extra = vec![("files-searched".to_string(), raw.files_searched), ("files-matched".to_string(), raw.files_matched), ("matching-lines".to_string(), raw.total_matches), ("max-hits".to_string(), raw.max_hits)];
+    if raw.truncated {
+        extra.push(("over-max-hits".to_string(), 1));
+    }
+    let result = GrepResult { patterns: opts.patterns.clone(), mode: mode.to_string(), scope: scope.map(str::to_string), source: source.map(str::to_string), lines, per_file: raw.per_file, files_searched: raw.files_searched, files_matched: raw.files_matched, total_matches: raw.total_matches, truncated: raw.truncated, max_hits: raw.max_hits, note };
+    Ok(Response { header: header(index, shown, raw.total_matches, extra), result })
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct StatusResult {
     pub corpus_root: String,

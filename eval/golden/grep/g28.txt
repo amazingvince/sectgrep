@@ -1,0 +1,7 @@
+cfr-title-99/I/A/2/2.13/99-2.13.md:52:(6) The name or job title of every employee who may be contacted by employees who need more information about the plan or an explanation of their duties under the plan.
+cfr-title-99/I/A/2/2.13/99-2.13.md-53-
+cfr-title-99/I/A/2/2.13/99-2.13.md-54-(d) *Employee alarm system.* An employer shall have and maintain an employee alarm system. The alarm system shall use a distinctive signal for each purpose and shall comply with [§ 2.12(e)](CFR:99-2.12#e).
+--
+cfr-title-99/I/A/3/3.7/99-3.7.md:48:(6) Any other illness, if the employee voluntarily requests that the name not be entered on the log.
+cfr-title-99/I/A/3/3.7/99-3.7.md-49-
+cfr-title-99/I/A/3/3.7/99-3.7.md-50-(b) *Confidential list.* The employer shall keep a separate, confidential list of the case numbers and employee names for the privacy concern cases, so that the cases can be updated and the information can be provided to the Administration on request.

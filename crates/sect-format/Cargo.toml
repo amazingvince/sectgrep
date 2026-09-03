@@ -9,6 +9,7 @@ description = "Text and JSON rendering of verb responses; the header (freshness,
 [dependencies]
 sect-core.workspace = true
 sect-corpus.workspace = true
+sect-exact.workspace = true
 sect-index.workspace = true
 sect-query.workspace = true
 sect-struct.workspace = true

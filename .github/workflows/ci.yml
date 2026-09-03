@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Install ripgrep for live grep parity (the goldens cover the case where it is absent)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep && rg --version
       - run: cargo build --workspace --locked
       - run: cargo test --workspace --locked
       - name: Fixture passes the B.2 contract check

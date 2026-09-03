@@ -1,0 +1,4 @@
+cfr-title-99/_source.yaml:2:kind: base
+city-amendments/_source.yaml:2:kind: overlay
+fr/_source.yaml:2:kind: notice
+notes/_source.yaml:2:kind: note

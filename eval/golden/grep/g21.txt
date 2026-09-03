@@ -1,0 +1,27 @@
+cfr-title-99/I/A/1/1.4/99-1.4.md:22:  § 2.4 and the recording criteria in § 3.2 are specific applications of these duties. The
+cfr-title-99/I/A/2/2.11/99-2.11.md:21:  training duty in § 1.4(b) requires and that the fall protection duty in § 2.4 makes a
+cfr-title-99/I/A/2/2.11/99-2.11.md:36:(a) *Fall hazards.* Before any employee is exposed to a fall hazard covered by [§ 2.4](CFR:99-2.4), the employer shall train the employee to recognize the fall hazards of the work, the procedures to be followed to minimize those hazards, and the correct procedures for installing, inspecting, operating, maintaining, and disassembling the personal fall protection systems the employee uses.
+cfr-title-99/I/A/2/2.2/99-2.2.md:21:  that the fall protection duty in § 2.4, the ladder sections § 2.5 to § 2.7, the guardrail
+cfr-title-99/I/A/2/2.2/99-2.2.md:22:  criteria in § 2.8, and the exit route design rules in § 2.10 all depend on. Title-wide terms
+cfr-title-99/I/A/2/2.4/99-2.4.md:23:  criteria in § 2.8, and requires the training that § 2.11 describes.
+cfr-title-99/I/A/2/2.4/99-2.4.md:34:# § 2.4 Duty to have fall protection
+cfr-title-99/I/A/2/2.4/99-2.4.md:36:(a) *Unprotected sides and edges.* The employer shall ensure that each employee on a walking-working surface with an unprotected side or edge, as defined in [§ 2.2](CFR:99-2.2#unprotected-sides-and-edges), that is 4 feet (1.2 m) or more above a lower level is protected from falling by one or more of the following: a guardrail system meeting [§ 2.8](CFR:99-2.8); a safety net system; or a personal fall protection system.
+cfr-title-99/I/A/2/2.7/99-2.7.md:24:  § 2.8 at the top. Replaces the 2024 Expression of this section.
+cfr-title-99/I/A/2/2.7/99-2.7.md:47:(d) *Top of ladder.* The side rails of a through or side-step fixed ladder shall extend at least 42 inches (1.1 m) above the top of the access level or landing platform, and the landing shall be protected by a guardrail system meeting [§ 2.8](CFR:99-2.8) except at the ladder opening.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:23:  platform spacing, and the guardrail rule of § 2.8 at the top. Superseded on January 1, 2026
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:43:(d) *Top of ladder.* The side rails of a through or side-step fixed ladder shall extend at least 42 inches (1.1 m) above the top of the access level or landing platform, and the landing shall be protected by a guardrail system meeting [§ 2.8](CFR:99-2.8) except at the ladder opening.
+cfr-title-99/I/A/2/2.8/99-2.8.md:21:  guardrail systems that the fall protection duty in § 2.4 accepts at unprotected sides and
+cfr-title-99/I/A/2/2.8/99-2.8.md:34:# § 2.8 Guardrail systems
+cfr-title-99/I/A/2/99-2.md:21:  fall protection in § 2.4, the ladder sections, guardrail criteria, floor load ratings, the exit
+cfr-title-99/I/A/2/99-2.md:38:- [§ 2.4 Duty to have fall protection](CFR:99-2.4)
+cfr-title-99/I/A/2/99-2.md:42:- [§ 2.8 Guardrail systems](CFR:99-2.8)
+cfr-title-99/_source.yaml:8:# and anchor_template (spec-changes #1). Matches "99 CFR 2.8", "§ 2.8", "section 2.8(b)(1)".
+city-amendments/AM-1.md:5:title: Guardrail systems (local amendment to § 2.8)
+city-amendments/AM-1.md:20:  City of Fixture amendment that replaces § 2.8 of Title 99 (guardrail systems) in its entirety
+city-amendments/AM-1.md:22:  requirement, and makes toeboards mandatory, while leaving the fall protection duty of § 2.4
+city-amendments/AM-1.md:34:# AM-1 Guardrail systems (local amendment to § 2.8)
+city-amendments/AM-1.md:36:Within the City of Fixture, [§ 2.8](CFR:99-2.8) of Title 99 is replaced by the following:
+city-amendments/AM-1.md:46:(e) *Other criteria.* Paragraphs (e) and (f) of § 2.8 of Title 99 (construction, and openings around holes) apply within the city unchanged.
+city-amendments/AM-1.md:48:(f) *Applicability.* This amendment applies to a guardrail system installed or substantially altered on or after March 1, 2025. A guardrail system that complied with § 2.8 of Title 99 before that date may remain in service until it is replaced.
+fr/2026/2026-00001.md:38:  general ladder rules of § 2.5 and the guardrail criteria of § 2.8 untouched.
+fr/2026/2026-00001.md:69:The rule does not change the general ladder requirements of [§ 2.5](CFR:99-2.5), the landing platform spacing where a cage remains in use, or the guardrail requirement of [§ 2.8](CFR:99-2.8) at the top of a ladder.

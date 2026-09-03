@@ -98,6 +98,57 @@ enum Cmd {
         #[arg(long, value_name = "DATE")]
         as_of: Option<String>,
     },
+    /// Exhaustive exact/regex search with ripgrep-compatible flags and output, bounded by --max-hits.
+    Grep {
+        /// Pattern (regex by default; -F for a literal). Use -e for several.
+        #[arg(value_name = "PATTERN")]
+        pattern: Option<String>,
+        /// A pattern to search for; may be repeated.
+        #[arg(short = 'e', long = "regexp", value_name = "PATTERN")]
+        regexp: Vec<String>,
+        #[arg(short = 'i', long = "ignore-case")]
+        ignore_case: bool,
+        #[arg(short = 'w', long = "word-regexp")]
+        word: bool,
+        #[arg(short = 'F', long = "fixed-strings")]
+        fixed_strings: bool,
+        /// Include or exclude files by glob (gitignore semantics; `!` excludes). May be repeated.
+        #[arg(short = 'g', long = "glob", value_name = "GLOB")]
+        glob: Vec<String>,
+        /// Show line numbers (the default).
+        #[arg(short = 'n', long = "line-number")]
+        line_number: bool,
+        /// Suppress line numbers.
+        #[arg(short = 'N', long = "no-line-number", conflicts_with = "line_number")]
+        no_line_number: bool,
+        /// Only print the count of matching lines per file.
+        #[arg(short = 'c', long = "count")]
+        count: bool,
+        /// Only print the paths of files with at least one match.
+        #[arg(short = 'l', long = "files-with-matches")]
+        files_with_matches: bool,
+        #[arg(short = 'A', long = "after-context", value_name = "NUM", default_value_t = 0)]
+        after: usize,
+        #[arg(short = 'B', long = "before-context", value_name = "NUM", default_value_t = 0)]
+        before: usize,
+        #[arg(short = 'C', long = "context", value_name = "NUM")]
+        context: Option<usize>,
+        /// Name the section and paragraph of every matched line.
+        #[arg(long)]
+        annotate: bool,
+        /// Total and per-file counts only.
+        #[arg(long)]
+        count_only: bool,
+        /// Beyond this many matching lines the answer is per-file counts (default 200).
+        #[arg(long, default_value_t = sect_exact::DEFAULT_MAX_HITS)]
+        max_hits: usize,
+        /// Only search files of Works under this id.
+        #[arg(long, value_name = "ID")]
+        scope: Option<String>,
+        /// Only search files of this source.
+        #[arg(long, value_name = "NAME")]
+        source: Option<String>,
+    },
     /// Freshness, counts, warnings, unresolved refs, and the legal-status summary of the corpus.
     Status,
 }
@@ -159,6 +210,21 @@ fn run() -> Result<i32> {
             let defined = r.result.defined;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::define_text(&r) });
             Ok(if defined { 0 } else { 1 })
+        }
+        Cmd::Grep { pattern, regexp, ignore_case, word, fixed_strings, glob, line_number: _, no_line_number, count, files_with_matches, after, before, context, annotate, count_only, max_hits, scope, source } => {
+            let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
+            let mut patterns = regexp;
+            if let Some(p) = pattern {
+                patterns.insert(0, p);
+            }
+            let (before, after) = match context {
+                Some(c) => (c.max(before), c.max(after)),
+                None => (before, after),
+            };
+            let opts = sect_exact::GrepOptions { patterns, ignore_case, word, fixed_strings, globs: glob, before, after, count, files_with_matches, count_only, max_hits, only_paths: None };
+            let r = sect_query::grep(&index, &opts, annotate, scope.as_deref(), source.as_deref())?;
+            print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::grep_text(&r, !no_line_number) });
+            Ok(0)
         }
         Cmd::Status => {
             let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;

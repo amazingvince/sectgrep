@@ -1,0 +1,5 @@
+cfr-title-99/I/A/2/2.8/99-2.8.md:36:(a) *Top rail height.* The top edge height of a top rail, or equivalent guardrail system member, shall be 42 inches (107 cm), plus or minus 3 inches (8 cm), above the walking-working surface. The top edge height may exceed 45 inches (114 cm), provided the guardrail system meets all other criteria of this section.
+cfr-title-99/I/A/2/2.8/99-2.8.md-37-
+--
+city-amendments/AM-1.md:38:(a) *Top rail height.* The top edge height of a top rail, or equivalent guardrail system member, shall be 48 inches (122 cm), plus or minus 2 inches (5 cm), above the walking-working surface.
+city-amendments/AM-1.md-39-

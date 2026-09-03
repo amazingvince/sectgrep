@@ -4,7 +4,8 @@
 use sect_core::{Freshness, Response};
 use sect_corpus::Level;
 use sect_index::BuildReport;
-use sect_query::{DefineResult, MapResult, ReadResult, RefsResult, StatusResult};
+use sect_exact::LineKind;
+use sect_query::{DefineResult, GrepResult, MapResult, ReadResult, RefsResult, StatusResult};
 use sect_struct::{Direction, HistoryEntry};
 use serde::Serialize;
 
@@ -170,6 +171,47 @@ pub fn define_text(r: &Response<DefineResult>) -> String {
         s.push_str(&format!("usages{}: {}\n", x.scope.as_ref().map(|sc| format!(" within {sc}")).unwrap_or_default(), x.usages.len()));
         for u in &x.usages {
             s.push_str(&format!("  {} {} [{}]  x{}\n", u.label, u.title, u.id, u.count));
+        }
+    }
+    s
+}
+
+/// ripgrep-compatible: `path:line:text`, context as `path-line-text`, `--` between groups,
+/// `path:count` in count modes, bare paths for `-l`. With `--annotate`, a tab and `[id#anchor label title]`.
+pub fn grep_text(r: &Response<GrepResult>, line_numbers: bool) -> String {
+    let x = &r.result;
+    let mut s = header(r);
+    if let Some(n) = &x.note {
+        s.push_str(&format!("note: {n}\n"));
+    }
+    match x.mode.as_str() {
+        "lines" => {
+            for l in &x.lines {
+                if l.break_before {
+                    s.push_str("--\n");
+                }
+                let sep = if l.kind == LineKind::Match { ':' } else { '-' };
+                if line_numbers {
+                    s.push_str(&format!("{}{sep}{}{sep}{}", l.path, l.line, l.text));
+                } else {
+                    s.push_str(&format!("{}{sep}{}", l.path, l.text));
+                }
+                if let Some(a) = &l.annotation {
+                    let anchor = a.anchor.as_ref().map(|an| format!("#{an}")).unwrap_or_default();
+                    s.push_str(&format!("\t[{}{anchor} {} {}]", a.id, a.label, a.title));
+                }
+                s.push('\n');
+            }
+        }
+        "files" => {
+            for f in &x.per_file {
+                s.push_str(&format!("{}\n", f.path));
+            }
+        }
+        _ => {
+            for f in &x.per_file {
+                s.push_str(&format!("{}:{}\n", f.path, f.matches));
+            }
         }
     }
     s

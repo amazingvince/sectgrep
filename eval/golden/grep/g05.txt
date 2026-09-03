@@ -1,0 +1,73 @@
+cfr-title-99/I/A/2/2.1/99-2.1.md:22:  emergency ladders, and directs readers to the part-specific definitions in § 2.2 and the
+cfr-title-99/I/A/2/2.1/99-2.1.md:36:(a) This part applies to all general industry workplaces covered by [§ 1.3](CFR:99-1.3). It covers all walking-working surfaces, including floors, stairs, ladders, ramps, scaffolds, elevated walkways, dockboards, and roofs, and all exit routes, unless a provision of this part states otherwise.
+cfr-title-99/I/A/2/2.1/99-2.1.md:44:(3) A ladder used in emergency operations such as firefighting or rescue, or a ladder that is an integral part of a machine or equipment.
+cfr-title-99/I/A/2/2.11/99-2.11.md:40:(c) *Equipment.* Each employee who uses a dockboard, portable ladder, fixed ladder, or ladder safety system shall be trained in the proper care, inspection, storage, and use of that equipment before using it.
+cfr-title-99/I/A/2/2.2/99-2.2.md:15:defines: [dockboard, exit discharge, exit route, fixed ladder, guardrail system, hole, ladder, portable ladder, toeboard, unprotected sides and edges, walking-working surface]
+cfr-title-99/I/A/2/2.2/99-2.2.md:20:  Part 2 definitions section. Supplies the surface, ladder, guardrail, and exit route vocabulary
+cfr-title-99/I/A/2/2.2/99-2.2.md:21:  that the fall protection duty in § 2.4, the ladder sections § 2.5 to § 2.7, the guardrail
+cfr-title-99/I/A/2/2.2/99-2.2.md:44:*Fixed ladder* means a ladder with rails or individual rungs that is permanently attached to a structure, building, or equipment. It does not include ship stairs, step bolts, or manhole steps.
+cfr-title-99/I/A/2/2.2/99-2.2.md:52:*Portable ladder* means a ladder that can readily be moved or carried, and usually consists of side rails joined at intervals by steps, rungs, or cleats.
+cfr-title-99/I/A/2/2.5/99-2.5.md:18:tags: [ladders]
+cfr-title-99/I/A/2/2.5/99-2.5.md:20:  General ladder section of Part 2. Sets the rules that apply to every ladder regardless of
+cfr-title-99/I/A/2/2.5/99-2.5.md:22:  climbing practice, then hands portable ladders to § 2.6 and fixed ladders to § 2.7. Uses the
+cfr-title-99/I/A/2/2.5/99-2.5.md:23:  ladder definition from § 2.2.
+cfr-title-99/I/A/2/2.5/99-2.5.md:36:(a) *Application.* This section applies to every ladder, as defined in [§ 2.2](CFR:99-2.2#ladder), except a ladder that is an integral part of a machine. Additional requirements for portable ladders are in [§ 2.6](CFR:99-2.6) and for fixed ladders in [§ 2.7](CFR:99-2.7).
+cfr-title-99/I/A/2/2.5/99-2.5.md:38:(b) *Design and capacity.* The employer shall ensure that each ladder is capable of supporting its maximum intended load without failure, and that rungs, steps, and cleats are parallel, level, and uniformly spaced when the ladder is in position for use, with a spacing of not less than 10 inches (25 cm) and not more than 14 inches (36 cm) measured between the centerlines.
+cfr-title-99/I/A/2/2.5/99-2.5.md:40:(c) *Surfaces.* Ladder rungs, steps, and cleats shall have a surface that minimizes slipping, such as corrugation, knurling, dimpling, or a skid-resistant coating. A wooden ladder shall not be coated with any material that may obscure structural defects.
+cfr-title-99/I/A/2/2.5/99-2.5.md:42:(d) *Inspection.* Ladders shall be inspected before initial use in each work shift, and more frequently as necessary, to identify any visible defect that could cause employee injury. A ladder with a structural or other defect shall be immediately tagged "Dangerous: Do Not Use" and removed from service until it is repaired or replaced.
+cfr-title-99/I/A/2/2.5/99-2.5.md:44:(e) *Use.* Each employee shall face the ladder when climbing up or down, shall use at least one hand to grasp the ladder when climbing, and shall not carry any object or load that could cause the employee to lose balance and fall.
+cfr-title-99/I/A/2/2.6/99-2.6.md:5:title: Portable ladders
+cfr-title-99/I/A/2/2.6/99-2.6.md:18:tags: [ladders, table]
+cfr-title-99/I/A/2/2.6/99-2.6.md:20:  Portable ladder section of Part 2. Adds to the general ladder rules of § 2.5 the requirements
+cfr-title-99/I/A/2/2.6/99-2.6.md:21:  specific to ladders that can be carried: the duty rating table, the setup angle, the 3-foot
+cfr-title-99/I/A/2/2.6/99-2.6.md:23:  portable ladder term is defined in § 2.2.
+cfr-title-99/I/A/2/2.6/99-2.6.md:34:# § 2.6 Portable ladders
+cfr-title-99/I/A/2/2.6/99-2.6.md:36:(a) *Application.* This section applies to each portable ladder, as defined in [§ 2.2](CFR:99-2.2#portable-ladder), in addition to the requirements of [§ 2.5](CFR:99-2.5).
+cfr-title-99/I/A/2/2.6/99-2.6.md:38:(b) *Duty rating.* Each portable ladder shall be marked with its duty rating and shall not be loaded beyond the maximum load for that rating in the following table.
+cfr-title-99/I/A/2/2.6/99-2.6.md:48:(c) *Setup.* A non-self-supporting portable ladder shall be used at an angle such that the horizontal distance from the top support to the foot of the ladder is approximately one-quarter of the working length of the ladder. A self-supporting ladder shall be used only with its spreaders locked in the fully open position.
+cfr-title-99/I/A/2/2.6/99-2.6.md:50:(d) *Extension above landing.* When a portable ladder is used to gain access to an upper landing surface, the side rails shall extend at least 3 feet (0.9 m) above the landing surface, or the ladder shall be secured at its top to a rigid support and a grab device shall be provided.
+cfr-title-99/I/A/2/2.6/99-2.6.md:52:(e) *Securing and placement.* A portable ladder shall be secured, or held by another employee, when it is used on a slippery surface or where it may be displaced by workplace activity or traffic. A portable ladder shall not be placed on boxes, barrels, or other unstable bases to obtain additional height, and shall not be moved, shifted, or extended while an employee is on it.
+cfr-title-99/I/A/2/2.6/99-2.6.md:54:(f) *Top step and cap.* An employee shall not stand on the top step or cap of a stepladder, or on the top three rungs of a straight or extension ladder, unless the ladder is designed for that use.
+cfr-title-99/I/A/2/2.7/99-2.7.md:5:title: Fixed ladders
+cfr-title-99/I/A/2/2.7/99-2.7.md:18:tags: [ladders, fall-protection]
+cfr-title-99/I/A/2/2.7/99-2.7.md:20:  Fixed ladder section of Part 2 as amended effective January 1, 2026 by Fixture Register
+cfr-title-99/I/A/2/2.7/99-2.7.md:21:  document 2026-00001. Adds to the general ladder rules in § 2.5 the requirements for ladders
+cfr-title-99/I/A/2/2.7/99-2.7.md:23:  phase-out schedule for cages and wells, landing platform spacing, and the guardrail rule of
+cfr-title-99/I/A/2/2.7/99-2.7.md:35:# § 2.7 Fixed ladders
+cfr-title-99/I/A/2/2.7/99-2.7.md:37:(a) *Application.* This section applies to each fixed ladder, as defined in [§ 2.2](CFR:99-2.2#fixed-ladder), in addition to the requirements of [§ 2.5](CFR:99-2.5).
+cfr-title-99/I/A/2/2.7/99-2.7.md:39:(b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system or a ladder safety system. A cage or well is not a means of fall protection under this paragraph, except that:
+cfr-title-99/I/A/2/2.7/99-2.7.md:41:(1) A cage or well installed before January 1, 2026 may continue in use until December 31, 2036, provided it is maintained in accordance with paragraph (e) of this section; and
+cfr-title-99/I/A/2/2.7/99-2.7.md:43:(2) When a fixed ladder, cage, or well is replaced, or a new fixed ladder is installed, on or after January 1, 2026, the ladder shall be equipped with a personal fall arrest system or a ladder safety system, and a cage or well shall not be installed as a substitute.
+cfr-title-99/I/A/2/2.7/99-2.7.md:45:(c) *Landing platforms.* Where a ladder safety system or personal fall arrest system is used, the ladder shall have a rest platform at intervals of not more than 150 feet (45.7 m). Where a cage or well remains in use under paragraph (b)(1) of this section, the ladder shall have landing platforms at intervals of not more than 50 feet (15.2 m), with the ladder sections offset so that a fall is arrested at each platform.
+cfr-title-99/I/A/2/2.7/99-2.7.md:47:(d) *Top of ladder.* The side rails of a through or side-step fixed ladder shall extend at least 42 inches (1.1 m) above the top of the access level or landing platform, and the landing shall be protected by a guardrail system meeting [§ 2.8](CFR:99-2.8) except at the ladder opening.
+cfr-title-99/I/A/2/2.7/99-2.7.md:49:(e) *Maintenance.* Fixed ladders and their fall protection systems shall be inspected annually and maintained free of corrosion, deformation, and loose or missing rungs and fasteners.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:5:title: Fixed ladders
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:18:tags: [ladders, fall-protection]
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:20:  Fixed ladder section of Part 2 as originally issued in 2024. Adds to the general ladder rules
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:21:  in § 2.5 the requirements for ladders permanently attached to structures: the 24-foot
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:22:  threshold for a fall protection system, cages and wells as a permanent alternative, landing
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:35:# § 2.7 Fixed ladders
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:37:(a) *Application.* This section applies to each fixed ladder, as defined in [§ 2.2](CFR:99-2.2#fixed-ladder), in addition to the requirements of [§ 2.5](CFR:99-2.5).
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:39:(b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system, a ladder safety system, a cage, or a well. A cage or well installed on or before the effective date of this section is an acceptable means of fall protection for the life of the ladder, provided it is maintained in accordance with paragraph (e) of this section.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:41:(c) *Landing platforms.* Where a ladder safety system or personal fall arrest system is used, the ladder shall have a rest platform at intervals of not more than 150 feet (45.7 m). Where a cage or well is used, the ladder shall have landing platforms at intervals of not more than 50 feet (15.2 m), with the ladder sections offset so that a fall is arrested at each platform.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:43:(d) *Top of ladder.* The side rails of a through or side-step fixed ladder shall extend at least 42 inches (1.1 m) above the top of the access level or landing platform, and the landing shall be protected by a guardrail system meeting [§ 2.8](CFR:99-2.8) except at the ladder opening.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:45:(e) *Maintenance.* Fixed ladders and their fall protection systems shall be inspected annually and maintained free of corrosion, deformation, and loose or missing rungs and fasteners.
+cfr-title-99/I/A/2/99-2.md:21:  fall protection in § 2.4, the ladder sections, guardrail criteria, floor load ratings, the exit
+cfr-title-99/I/A/2/99-2.md:40:- [§ 2.6 Portable ladders](CFR:99-2.6)
+cfr-title-99/I/A/2/99-2.md:41:- [§ 2.7 Fixed ladders](CFR:99-2.7)
+cfr-title-99/I/A/99-I-A.md:22:  protection, ladders, exit routes), and Part 3 (recording and reporting injuries and illnesses).
+fr/2026/2026-00001.md:20:tags: [notice, final-rule, ladders, fall-protection]
+fr/2026/2026-00001.md:30:      (b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more
+fr/2026/2026-00001.md:32:      a ladder safety system. A cage or well is not a means of fall protection under this
+fr/2026/2026-00001.md:35:  Final rule published in the Fixture Register that amends § 2.7 of Title 99 (fixed ladders)
+fr/2026/2026-00001.md:36:  effective January 1, 2026. Removes cages and wells as an accepted means of fall protection on
+fr/2026/2026-00001.md:37:  fixed ladders taller than 24 feet, with a phase-out running to the end of 2036, and leaves the
+fr/2026/2026-00001.md:38:  general ladder rules of § 2.5 and the guardrail criteria of § 2.8 untouched.
+fr/2026/2026-00001.md:59:**SUMMARY:** The Fixture Safety Administration is revising the fall protection requirement for fixed ladders in Title 99. The rule removes cages and wells from the list of accepted means of fall protection on fixed ladders that extend more than 24 feet above a lower level, requires a personal fall arrest system or a ladder safety system on new and replaced ladders, and allows existing cages and wells to remain in use for a phase-out period ending December 31, 2036.
+fr/2026/2026-00001.md:65:Under [§ 2.7(b)](CFR:99-2.7#b) of Title 99 as issued in 2024, a cage or well was an acceptable means of fall protection on a fixed ladder for the life of the ladder. Incident data collected under [Part 3](CFR:99-3) since that date show that cages and wells do not arrest a fall; they contain the falling employee within the ladder envelope and can themselves cause injury. Ladder safety systems and personal fall arrest systems, by contrast, arrest a fall within a short distance.
+fr/2026/2026-00001.md:67:The Administration considered and rejected an immediate removal requirement. Replacing every existing cage would impose a large cost with little benefit where the ladder is rarely climbed. A ten-year phase-out lets employers replace cages and wells as part of normal maintenance, while ensuring that no new cage or well is installed as a substitute for a fall arrest system.
+fr/2026/2026-00001.md:69:The rule does not change the general ladder requirements of [§ 2.5](CFR:99-2.5), the landing platform spacing where a cage remains in use, or the guardrail requirement of [§ 2.8](CFR:99-2.8) at the top of a ladder.
+fr/2026/2026-00001.md:79:> **§ 2.7 Fixed ladders**
+fr/2026/2026-00001.md:83:> (b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system or a ladder safety system. A cage or well is not a means of fall protection under this paragraph, except that:
+fr/2026/2026-00001.md:85:> (1) A cage or well installed before January 1, 2026 may continue in use until December 31, 2036, provided it is maintained in accordance with paragraph (e) of this section; and
+fr/2026/2026-00001.md:87:> (2) When a fixed ladder, cage, or well is replaced, or a new fixed ladder is installed, on or after January 1, 2026, the ladder shall be equipped with a personal fall arrest system or a ladder safety system, and a cage or well shall not be installed as a substitute.

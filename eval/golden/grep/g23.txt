@@ -1,0 +1,35 @@
+cfr-title-99/I/A/2/2.7/99-2.7.md-38-
+cfr-title-99/I/A/2/2.7/99-2.7.md:39:(b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system or a ladder safety system. A cage or well is not a means of fall protection under this paragraph, except that:
+cfr-title-99/I/A/2/2.7/99-2.7.md-40-
+cfr-title-99/I/A/2/2.7/99-2.7.md:41:(1) A cage or well installed before January 1, 2026 may continue in use until December 31, 2036, provided it is maintained in accordance with paragraph (e) of this section; and
+cfr-title-99/I/A/2/2.7/99-2.7.md-42-
+cfr-title-99/I/A/2/2.7/99-2.7.md:43:(2) When a fixed ladder, cage, or well is replaced, or a new fixed ladder is installed, on or after January 1, 2026, the ladder shall be equipped with a personal fall arrest system or a ladder safety system, and a cage or well shall not be installed as a substitute.
+cfr-title-99/I/A/2/2.7/99-2.7.md-44-
+cfr-title-99/I/A/2/2.7/99-2.7.md:45:(c) *Landing platforms.* Where a ladder safety system or personal fall arrest system is used, the ladder shall have a rest platform at intervals of not more than 150 feet (45.7 m). Where a cage or well remains in use under paragraph (b)(1) of this section, the ladder shall have landing platforms at intervals of not more than 50 feet (15.2 m), with the ladder sections offset so that a fall is arrested at each platform.
+cfr-title-99/I/A/2/2.7/99-2.7.md-46-
+--
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md-38-
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:39:(b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system, a ladder safety system, a cage, or a well. A cage or well installed on or before the effective date of this section is an acceptable means of fall protection for the life of the ladder, provided it is maintained in accordance with paragraph (e) of this section.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md-40-
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md:41:(c) *Landing platforms.* Where a ladder safety system or personal fall arrest system is used, the ladder shall have a rest platform at intervals of not more than 150 feet (45.7 m). Where a cage or well is used, the ladder shall have landing platforms at intervals of not more than 50 feet (15.2 m), with the ladder sections offset so that a fall is arrested at each platform.
+cfr-title-99/I/A/2/2.7/99-2.7@2024-01-01.md-42-
+--
+fr/2026/2026-00001.md-31-      than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system or
+fr/2026/2026-00001.md:32:      a ladder safety system. A cage or well is not a means of fall protection under this
+fr/2026/2026-00001.md-33-      paragraph, except that:
+--
+fr/2026/2026-00001.md-64-
+fr/2026/2026-00001.md:65:Under [§ 2.7(b)](CFR:99-2.7#b) of Title 99 as issued in 2024, a cage or well was an acceptable means of fall protection on a fixed ladder for the life of the ladder. Incident data collected under [Part 3](CFR:99-3) since that date show that cages and wells do not arrest a fall; they contain the falling employee within the ladder envelope and can themselves cause injury. Ladder safety systems and personal fall arrest systems, by contrast, arrest a fall within a short distance.
+fr/2026/2026-00001.md-66-
+fr/2026/2026-00001.md:67:The Administration considered and rejected an immediate removal requirement. Replacing every existing cage would impose a large cost with little benefit where the ladder is rarely climbed. A ten-year phase-out lets employers replace cages and wells as part of normal maintenance, while ensuring that no new cage or well is installed as a substitute for a fall arrest system.
+fr/2026/2026-00001.md-68-
+fr/2026/2026-00001.md:69:The rule does not change the general ladder requirements of [§ 2.5](CFR:99-2.5), the landing platform spacing where a cage remains in use, or the guardrail requirement of [§ 2.8](CFR:99-2.8) at the top of a ladder.
+fr/2026/2026-00001.md-70-
+--
+fr/2026/2026-00001.md-82->
+fr/2026/2026-00001.md:83:> (b) *Fall protection.* The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system or a ladder safety system. A cage or well is not a means of fall protection under this paragraph, except that:
+fr/2026/2026-00001.md-84->
+fr/2026/2026-00001.md:85:> (1) A cage or well installed before January 1, 2026 may continue in use until December 31, 2036, provided it is maintained in accordance with paragraph (e) of this section; and
+fr/2026/2026-00001.md-86->
+fr/2026/2026-00001.md:87:> (2) When a fixed ladder, cage, or well is replaced, or a new fixed ladder is installed, on or after January 1, 2026, the ladder shall be equipped with a personal fall arrest system or a ladder safety system, and a cage or well shall not be installed as a substitute.
+fr/2026/2026-00001.md-88->
