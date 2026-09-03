@@ -1,7 +1,7 @@
 # Goal: Implement `sectgrep` (Engineering Spec v0.4)
 
 **Source of truth:** `sectgrep-spec-v0.4.md` in this directory. Where this goal and the spec disagree, the spec wins. Where the spec is silent, decide, record the decision in `docs/decisions.md`, and continue.
-**Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03, and milestone 2 (structure: xrefs, Actions, terms, tables, as-of snapping, `refs`, `define`, `map --complete`, `read --history`; exact-match 1.00 on the fixture, `eval/results/m2.md`) and milestone 3 (`grep` on the ripgrep crates; 28 parity cases identical to ripgrep 14.1.1, `eval/results/m3.md`) and milestone 4 (tantivy + model2vec `search` with RRF; p95 240 ms on two converted eCFR titles, `eval/results/m4.md`; the eCFR XML half of C1 shipped as `packages/sect-convert`) and milestone 5 (signal table, citation and definition short-circuits, `--expand`, `--seed`, abstention; all seven E.1 gates pass, `eval/results/m5.md`) the same day. Open questions resolved with the human (`docs/decisions.md` #14, #23 to #31): name stays `sectgrep` / `sect`, GPUs under WSL2, public repo at `github.com/amazingvince/sectgrep`.
+**Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03, and milestone 2 (structure: xrefs, Actions, terms, tables, as-of snapping, `refs`, `define`, `map --complete`, `read --history`; exact-match 1.00 on the fixture, `eval/results/m2.md`) and milestone 3 (`grep` on the ripgrep crates; 28 parity cases identical to ripgrep 14.1.1, `eval/results/m3.md`) and milestone 4 (tantivy + model2vec `search` with RRF; p95 240 ms on two converted eCFR titles, `eval/results/m4.md`; the eCFR XML half of C1 shipped as `packages/sect-convert`) and milestone 5 (signal table, citation and definition short-circuits, `--expand`, `--seed`, abstention; all seven E.1 gates pass, `eval/results/m5.md`) and milestone 6 (incremental rebuilds across every layer, the pre-query stat pass, synchronous or background refresh, `--freshness auto|wait|no`; B.6 targets met on Linux and the NTFS gap documented, `eval/results/m6.md`) the same day. Open questions resolved with the human (`docs/decisions.md` #14, #23 to #31): name stays `sectgrep` / `sect`, GPUs under WSL2, public repo at `github.com/amazingvince/sectgrep`.
 **Written:** 2026-09-03
 
 ---
@@ -138,11 +138,12 @@ Total: roughly 16-18 engineer-weeks; about 8-9 calendar weeks with two engineers
 
 ## 8. Next actions
 
-1. Milestone 6 (G-J): blake3-driven incremental rebuilds across all layers, background rebuild for large change sets, `--freshness wait`, `--no-refresh`, the B.6 timing targets measured on a real title.
-2. Milestone C0 in WSL2 on the local GPUs, then the rest of C1 (Federal Register XML, PDF/DOCX/HTML/XLSX, OCR) and C2 (validators, align).
-3. No human decisions are pending; the next stop-and-ask points are a paid API run (never without asking) and publishing at R1.
+1. Milestone 7 (G-K): `sect-mcp` on `rmcp`, `sect install`, the answering-agent SKILL, the Pi and Claude Agent SDK examples, tag v0.1.0 (no registry publish).
+2. Milestone 3b (G-M) is unblocked (needs 3 and 6): keep or cut the n-gram prefilter on a 3-title corpus.
+3. Milestone C0 in WSL2 on the local GPUs (a Rust toolchain now lives there under `~/.cargo`, installed with `--no-modify-path` for the milestone-6 Linux measurements), then the rest of C1 (Federal Register XML, PDF/DOCX/HTML/XLSX, OCR) and C2 (validators, align).
+4. No human decisions are pending; the next stop-and-ask points are a paid API run (never without asking) and publishing at R1.
 
-Done: bootstrap, milestones 0, 0.5, 1, 2, 3, 4, 5 and the eCFR XML path of C1 (all 2026-09-03).
+Done: bootstrap, milestones 0, 0.5, 1, 2, 3, 4, 5, 6 and the eCFR XML path of C1 (all 2026-09-03).
 
 ## 9. Running this with `/goal`
 

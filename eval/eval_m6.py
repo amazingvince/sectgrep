@@ -146,7 +146,11 @@ def main() -> int:
         f.write_text(text, encoding="utf-8", newline="\n")
     run(exe, SYN, "index")
 
-    win = f"{platform.system()} {platform.release()}, NTFS"
+    win = f"{platform.system()} {platform.release()}"
+    if platform.system() == "Windows":
+        build = int(platform.version().split(".")[-1]) if platform.version().split(".")[-1].isdigit() else 0
+        win = "Windows 11" if build >= 22000 else win
+    win += ", NTFS"
     targets = [
         ("Full build of one converted CFR title (Titles 1 + 4, 638 files)", "< 60 s", f"{real['full_ms'] / 1000:.2f} s" if real else "n/a", "", "", real is not None and real["full_ms"] < 60_000),
         ("Full build at spec scale (synthetic, 10,102 files, 10,000 sections)", "< 60 s", f"{syn['full_ms'] / 1000:.2f} s", f"{a.wsl_full_ms / 1000:.2f} s (no semantic layer)" if a.wsl_full_ms is not None else "", "", syn["full_ms"] < 60_000),
