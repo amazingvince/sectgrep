@@ -1,0 +1,4 @@
+# Empty workspace. Crates are added starting at milestone 1 (see GOAL.md section 5).
+[workspace]
+members = []
+resolver = "2"

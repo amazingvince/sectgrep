@@ -1,0 +1,5 @@
+{"qid": "hist-01", "type": "amendment-history", "query": "history of § 2.7", "expected": {"op": "history", "id": "CFR:99-2.7", "expected": ["CFR:99-2.7@2024-01-01", "FR:2026-00001#instr-1", "CFR:99-2.7@2026-01-01"]}, "generation": "hand"}
+{"qid": "hist-02", "type": "amendment-history", "query": "which sections does Fixture Register document 2026-00001 amend", "expected": {"op": "refs", "id": "FR:2026-00001#instr-1", "direction": "out", "type": "amends", "expected": ["CFR:99-2.7"]}, "generation": "hand"}
+{"qid": "hist-03", "type": "amendment-history", "query": "history of § 2.8", "expected": {"op": "history", "id": "CFR:99-2.8", "expected": ["CFR:99-2.8@2024-01-01"]}, "generation": "hand"}
+{"qid": "hist-04", "type": "amendment-history", "query": "What changed in the fixed ladder rule and when?", "gold": ["FR:2026-00001", "CFR:99-2.7"], "generation": "hand"}
+{"qid": "hist-05", "type": "amendment-history", "query": "which Action produced the current text of § 2.7", "expected": {"op": "refs", "id": "CFR:99-2.7", "direction": "in", "type": "amends", "expected": ["FR:2026-00001#instr-1"]}, "generation": "hand"}

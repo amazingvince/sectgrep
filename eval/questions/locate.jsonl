@@ -1,0 +1,30 @@
+{"qid": "loc-01", "type": "locate", "query": "How high above a lower level does a worker need fall protection at an open edge?", "gold": ["CFR:99-2.4"], "generation": "hand"}
+{"qid": "loc-02", "type": "locate", "query": "What angle should a leaning extension ladder be set at?", "gold": ["CFR:99-2.6"], "generation": "hand"}
+{"qid": "loc-03", "type": "locate", "query": "How many exits does a workplace need?", "gold": ["CFR:99-2.10"], "generation": "hand"}
+{"qid": "loc-04", "type": "locate", "query": "How long must an employer keep the injury log?", "gold": ["CFR:99-3.4"], "generation": "hand"}
+{"qid": "loc-05", "type": "locate", "query": "Which injuries have to be phoned in within 24 hours?", "gold": ["CFR:99-3.5"], "generation": "hand"}
+{"qid": "loc-06", "type": "locate", "query": "Can a State agency be an employer under this title?", "gold": ["CFR:99-1.3"], "generation": "hand"}
+{"qid": "loc-07", "type": "locate", "query": "Is a farm with eight workers covered?", "gold": ["CFR:99-1.5"], "generation": "hand"}
+{"qid": "loc-08", "type": "locate", "query": "Minimum height of the letters on an exit sign", "gold": ["CFR:99-2.12"], "generation": "hand"}
+{"qid": "loc-09", "type": "locate", "query": "What must be in an emergency action plan?", "gold": ["CFR:99-2.13"], "generation": "hand"}
+{"qid": "loc-10", "type": "locate", "query": "Requirements for a written plan about ignition sources and combustible waste", "gold": ["CFR:99-2.14"], "generation": "hand"}
+{"qid": "loc-11", "type": "locate", "query": "Deadline to contest a citation", "gold": ["CFR:99-1.9"], "generation": "hand"}
+{"qid": "loc-12", "type": "locate", "query": "How much can a penalty be cut for a small employer with a good record?", "gold": ["CFR:99-1.10"], "generation": "hand"}
+{"qid": "loc-13", "type": "locate", "query": "When does an employer have to post the annual injury summary?", "gold": ["CFR:99-1.6", "CFR:99-3.3"], "generation": "hand"}
+{"qid": "loc-14", "type": "locate", "query": "Cases where the worker's name is left off the log", "gold": ["CFR:99-3.7"], "generation": "hand"}
+{"qid": "loc-15", "type": "locate", "query": "Who can accompany the inspector during a walkaround?", "gold": ["CFR:99-1.9"], "generation": "hand"}
+{"qid": "loc-16", "type": "locate", "query": "Rung spacing on ladders", "gold": ["CFR:99-2.5"], "generation": "hand"}
+{"qid": "loc-17", "type": "locate", "query": "Does a company with 9 employees have to keep the 300 log?", "gold": ["CFR:99-3.8"], "generation": "hand"}
+{"qid": "loc-18", "type": "locate", "query": "Is the common cold a recordable illness?", "gold": ["CFR:99-3.2"], "generation": "hand"}
+{"qid": "loc-19", "type": "locate", "query": "Ownership change: who keeps the injury records?", "gold": ["CFR:99-3.4"], "generation": "hand"}
+{"qid": "loc-20", "type": "locate", "query": "How to get permission to temporarily not comply with a standard because equipment isn't available", "gold": ["CFR:99-1.7"], "generation": "hand"}
+{"qid": "loc-21", "type": "locate", "query": "Toeboard height when tools could fall to a lower level", "gold": ["CFR:99-2.8"], "generation": "hand"}
+{"qid": "loc-22", "type": "locate", "query": "What load must a warehouse floor for heavy storage carry?", "gold": ["CFR:99-2.9"], "generation": "hand"}
+{"qid": "loc-23", "type": "locate", "query": "Fixed ladder taller than 24 feet: what fall protection is required?", "gold": ["CFR:99-2.7"], "generation": "hand"}
+{"qid": "loc-24", "type": "locate", "query": "Employee asks for a copy of the log: how fast must the employer provide it?", "gold": ["CFR:99-3.6"], "generation": "hand"}
+{"qid": "loc-25", "type": "locate", "query": "Which spaces need a posted load rating plate?", "gold": ["CFR:99-2.9"], "generation": "hand"}
+{"qid": "loc-26", "type": "locate", "query": "Do ladders used by firefighters have to meet this part?", "gold": ["CFR:99-2.1"], "generation": "hand"}
+{"qid": "loc-27", "type": "locate", "query": "Retaliation against a worker who reports an injury", "gold": ["CFR:99-3.6"], "generation": "hand"}
+{"qid": "loc-28", "type": "locate", "query": "What happens if a hazard can't be fixed right away?", "gold": ["CFR:99-1.4", "CFR:99-2.3"], "generation": "hand"}
+{"qid": "loc-29", "type": "locate", "query": "Can the summary of a variance petition be posted next to the required notices?", "gold": ["CFR:99-1.8"], "generation": "hand"}
+{"qid": "loc-30", "type": "locate", "query": "Doors on an exit route: which way do they swing and can they be locked?", "gold": ["CFR:99-2.10"], "generation": "hand"}

@@ -1,0 +1,11 @@
+name: city-amendments
+kind: overlay
+title: "City of Fixture - Local Amendments to Title 99 (synthetic; not real law)"
+publisher: "City of Fixture, Department of Buildings (synthetic)"
+precedence: 200
+id_prefix: "CITY:"
+id_pattern: '(?i)\b(?:city\s+amendment\s+|CITY:)?(?P<num>AM-\d{1,3})\b'
+id_template: "CITY:{num}"
+legal_status: official
+version: "2025-03-01"
+acquire: "synthetic; no external source"

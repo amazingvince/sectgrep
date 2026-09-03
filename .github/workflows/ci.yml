@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rust-workspace:
+    name: Rust workspace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      # The workspace is empty until milestone 1. `cargo metadata` proves the manifest parses.
+      # Switch to `cargo test --workspace` when the first crate lands.
+      - run: cargo metadata --format-version 1 --no-deps > /dev/null
+
+  fixture-and-prototype:
+    name: Fixture contract + milestone-0 eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.10"
+      - name: Install the milestone-0 prototype
+        run: uv sync --project proto
+      - name: Validate the fixture corpus against the B.2 contract
+        run: uv run --project proto sect-proto validate fixtures/corpus
+      - name: Milestone-0 eval (gate Recall@5 >= 0.85 on locate and definition)
+        run: uv run --project proto sect-proto eval --corpus fixtures/corpus --questions eval/questions --out eval/results/m0.md --gate 0.85 --filter-rank 3

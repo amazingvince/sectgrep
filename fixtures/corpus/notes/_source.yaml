@@ -1,0 +1,11 @@
+name: notes
+kind: note
+title: "Synthesized notes (WS3 notes layer). Helpful, lintable, never outranks corpus."
+publisher: "sectgrep notes agent"
+precedence: 0
+id_prefix: "NOTE:"
+id_pattern: '(?i)\bNOTE:(?P<slug>[a-z0-9-]+)\b'
+id_template: "NOTE:{slug}"
+legal_status: derived
+version: "2026-09-03"
+acquire: "generated"

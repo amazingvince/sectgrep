@@ -1,0 +1,5 @@
+{"qid": "wc-01", "type": "wrong-corpus", "query": "home office deduction limit for the tax year", "gold": [], "generation": "hand", "notes": "tax regulations, not Title 99"}
+{"qid": "wc-02", "type": "wrong-corpus", "query": "FDA labeling requirements for dietary supplements", "gold": [], "generation": "hand"}
+{"qid": "wc-03", "type": "wrong-corpus", "query": "aircraft maintenance logbook entries", "gold": [], "generation": "hand"}
+{"qid": "wc-04", "type": "wrong-corpus", "query": "HIPAA privacy rule for patient medical records", "gold": [], "generation": "hand", "notes": "hard control: shares privacy and records vocabulary with § 3.7"}
+{"qid": "wc-05", "type": "wrong-corpus", "query": "residential building code stair riser height", "gold": [], "generation": "hand", "notes": "hard control: near-topic building code vocabulary"}

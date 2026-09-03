@@ -1,0 +1,11 @@
+name: fr
+kind: notice
+title: "Fixture Register - rule documents affecting Title 99 (synthetic; not real law)"
+publisher: "Office of the Fixture Register (synthetic)"
+precedence: 100
+id_prefix: "FR:"
+id_pattern: '(?i)\b(?:FR:|fixture\s+register\s+(?:document\s+)?)?(?P<doc>20\d{2}-\d{5})\b'
+id_template: "FR:{doc}"
+legal_status: official
+version: "2026-01-01"
+acquire: "synthetic; no external source"

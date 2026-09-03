@@ -1,0 +1,10 @@
+{"qid": "id-01", "type": "id-lookup", "query": "99 CFR 2.8", "gold": ["CFR:99-2.8"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-02", "type": "id-lookup", "query": "§ 1.5(a)(2)", "gold": ["CFR:99-1.5"], "expected": {"anchor": "a-2"}, "generation": "hand"}
+{"qid": "id-03", "type": "id-lookup", "query": "section 3.5", "gold": ["CFR:99-3.5"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-04", "type": "id-lookup", "query": "What does 99 CFR 1.10 say?", "gold": ["CFR:99-1.10"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-05", "type": "id-lookup", "query": "AM-2", "gold": ["CITY:AM-2"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-06", "type": "id-lookup", "query": "Fixture Register document 2026-00001", "gold": ["FR:2026-00001"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-07", "type": "id-lookup", "query": "§ 2.13(c)", "gold": ["CFR:99-2.13"], "expected": {"anchor": "c"}, "generation": "hand"}
+{"qid": "id-08", "type": "id-lookup", "query": "99 C.F.R. § 3.9", "gold": ["CFR:99-3.9"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "id-09", "type": "id-lookup", "query": "show me section 2.7(b)(1)", "gold": ["CFR:99-2.7"], "expected": {"anchor": "b-1"}, "generation": "hand"}
+{"qid": "id-10", "type": "id-lookup", "query": "city amendment AM-1", "gold": ["CITY:AM-1"], "expected": {"anchor": null}, "generation": "hand"}

@@ -1,0 +1,20 @@
+{"qid": "def-01", "type": "definition", "query": "definition of competent person", "gold": ["CFR:99-1.2"], "expected": {"anchor": "competent-person"}, "generation": "hand"}
+{"qid": "def-02", "type": "definition", "query": "what is a hole", "gold": ["CFR:99-2.2"], "expected": {"anchor": "hole"}, "generation": "hand"}
+{"qid": "def-03", "type": "definition", "query": "meaning of establishment", "gold": ["CFR:99-1.2"], "expected": {"anchor": "establishment"}, "generation": "hand"}
+{"qid": "def-04", "type": "definition", "query": "what counts as first aid", "gold": ["CFR:99-3.9"], "expected": {"anchor": "first-aid"}, "generation": "hand"}
+{"qid": "def-05", "type": "definition", "query": "define exit discharge", "gold": ["CFR:99-2.2"], "expected": {"anchor": "exit-discharge"}, "generation": "hand"}
+{"qid": "def-06", "type": "definition", "query": "what is restricted work", "gold": ["CFR:99-3.9"], "expected": {"anchor": "restricted-work"}, "generation": "hand"}
+{"qid": "def-07", "type": "definition", "query": "what does qualified person mean", "gold": ["CFR:99-1.2"], "expected": {"anchor": "qualified-person"}, "generation": "hand"}
+{"qid": "def-08", "type": "definition", "query": "toeboard definition", "gold": ["CFR:99-2.2"], "expected": {"anchor": "toeboard"}, "generation": "hand"}
+{"qid": "def-09", "type": "definition", "query": "what is a dockboard", "gold": ["CFR:99-2.2"], "expected": {"anchor": "dockboard"}, "generation": "hand"}
+{"qid": "def-10", "type": "definition", "query": "definition of medical treatment", "gold": ["CFR:99-3.9"], "expected": {"anchor": "medical-treatment"}, "generation": "hand"}
+{"qid": "def-11", "type": "definition", "query": "what does work environment mean", "gold": ["CFR:99-3.9"], "expected": {"anchor": "work-environment"}, "generation": "hand"}
+{"qid": "def-12", "type": "definition", "query": "define walking-working surface", "gold": ["CFR:99-2.2"], "expected": {"anchor": "walking-working-surface"}, "generation": "hand"}
+{"qid": "def-13", "type": "definition", "query": "what is a hazardous condition", "gold": ["CFR:99-1.2"], "expected": {"anchor": "hazardous-condition"}, "generation": "hand"}
+{"qid": "def-14", "type": "definition", "query": "days away from work meaning", "gold": ["CFR:99-3.9"], "expected": {"anchor": "days-away-from-work"}, "generation": "hand"}
+{"qid": "def-15", "type": "definition", "query": "portable ladder vs fixed ladder definitions", "gold": ["CFR:99-2.2"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "def-16", "type": "definition", "query": "who is an employee", "gold": ["CFR:99-1.2"], "expected": {"anchor": "employee"}, "generation": "hand"}
+{"qid": "def-17", "type": "definition", "query": "how does this title define an employer", "gold": ["CFR:99-1.2"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "def-18", "type": "definition", "query": "guardrail system definition", "gold": ["CFR:99-2.2"], "expected": {"anchor": "guardrail-system"}, "generation": "hand"}
+{"qid": "def-19", "type": "definition", "query": "what is meant by unprotected sides and edges", "gold": ["CFR:99-2.2"], "expected": {"anchor": null}, "generation": "hand"}
+{"qid": "def-20", "type": "definition", "query": "what is a workday", "gold": ["CFR:99-1.2"], "expected": {"anchor": "workday"}, "generation": "hand"}

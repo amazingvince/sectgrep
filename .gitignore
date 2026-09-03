@@ -1,0 +1,23 @@
+# Rust
+target/
+# Node
+node_modules/
+# Python prototype (milestone 0, not shipped)
+proto/.venv/
+.uv-cache/
+.uv-python/
+proto/.hf-cache/
+__pycache__/
+*.pyc
+*.egg-info/
+# sect indexes and working directories (regenerable)
+**/.sect/
+work/
+staging/
+review/
+lint/
+raw/
+!fixtures/raw/
+# OS
+.DS_Store
+Thumbs.db
