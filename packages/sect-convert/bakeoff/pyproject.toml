@@ -1,0 +1,21 @@
+[project]
+name = "sect-bakeoff"
+version = "0.1.0"
+description = "Milestone C0: extractor and OCR bake-off harness (Docling, Marker, PaddleOCR-VL-1.5, GLM-OCR, olmOCR-2 on vLLM), scoring TextEdit, reading order, and TEDS"
+requires-python = ">=3.11"
+dependencies = [
+  "rapidfuzz>=3.9",
+  "apted>=1.0.3",
+  "pillow>=10",
+  "pyyaml>=6",
+]
+
+[project.scripts]
+bakeoff = "bakeoff.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bakeoff"]

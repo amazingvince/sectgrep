@@ -1,0 +1,73 @@
+{
+  "doc": "29-1917-121",
+  "section": "§ 1917.121",
+  "title": "Spiral stairways.",
+  "blocks": [
+    {
+      "kind": "heading",
+      "text": "§ 1917.121 Spiral stairways.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(a) Definition. “Spiral stairway” means one with closed circular form, uniform sector-shaped treads and a supporting column.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(b) Requirements. Spiral stairways shall meet the following requirements:",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(1) Stairways shall conform to the minimum dimensions of Figure F-1;",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 0,
+      "html": "<table><tr><th></th><th>A (half-tread width)</th><th>B</th></tr><tr><td>Normal use by employees</td><td>11 inches (27.94 cm)</td><td>6 inches (15.24 cm).</td></tr><tr><td>Limited access</td><td>9 inches (22.86 cm)</td><td>5 inches (12.7 cm).</td></tr></table>"
+    },
+    {
+      "kind": "para",
+      "text": "(2) Stairway risers shall be uniform and shall range from 6 1/2 to 10 1/2 inches (16.5 to 26.67 cm) in height;",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(3) Minimum loading capability shall be 100 pounds per square foot (4.79kN), and minimum tread center concentrated loading shall be 300 pounds (1334 N);",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(4) Railings shall conform to the requirements of § 1917.112(c)(1). If balusters are used, there shall be a minimum of one per tread. Handrails shall be a minimum of 1 1/4 inches (3.18 cm) in outside diameter; and",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(5) Vertical clearance shall be at least 6 feet, 6 inches (1.98 m) above the top step.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(c) Maintenance. Spiral stairways shall be maintained in safe condition.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "cita",
+      "text": "[48 FR 30909, July 5, 1983, as amended at 62 FR 40201, July 25, 1997; 65 FR 40942, June 30, 2000]",
+      "page": 1,
+      "html": null
+    }
+  ]
+}

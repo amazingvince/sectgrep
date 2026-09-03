@@ -1,0 +1,163 @@
+{
+  "doc": "29-1926-102",
+  "section": "§ 1926.102",
+  "title": "Eye and face protection.",
+  "blocks": [
+    {
+      "kind": "heading",
+      "text": "§ 1926.102 Eye and face protection.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(a) General. (1) The employer shall ensure that each affected employee uses appropriate eye or face protection when exposed to eye or face hazards from flying particles, molten metal, liquid chemicals, acids or caustic liquids, chemical gases or vapors, or potentially injurious light radiation.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(2) The employer shall ensure that each affected employee uses eye protection that provides side protection when there is a hazard from flying objects. Detachable side protectors ( e.g. clip-on or slide-on side shields) meeting the pertinent requirements of this section are acceptable.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(3) The employer shall ensure that each affected employee who wears prescription lenses while engaged in operations that involve eye hazards wears eye protection that incorporates the prescription in its design, or wears eye protection that can be worn over the prescription lenses without disturbing the proper position of the prescription lenses or the protective lenses.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(4) Eye and face PPE shall be distinctly marked to facilitate identification of the manufacturer.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(5) Protectors shall meet the following minimum requirements:",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(i) They shall provide adequate protection against the particular hazards for which they are designed.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(ii) They shall be reasonably comfortable when worn under the designated conditions.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(iii) They shall fit snugly and shall not unduly interfere with the movements of the wearer.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(iv) They shall be durable.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(v) They shall be capable of being disinfected.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(vi) They shall be easily cleanable.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(b) Criteria for protective eye and face protection. (1) Protective eye and face protection devices must comply with any of the following consensus standards:",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(i) ANSI/ISEA Z87.1-2010, Occupational and Educational Personal Eye and Face Protection Devices, incorporated by reference in § 1926.6;",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(ii) ANSI Z87.1-2003, Occupational and Educational Personal Eye and Face Protection Devices, incorporated by reference in § 1926.6; or",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(iii) ANSI Z87.1-1989 (R-1998), Practice for Occupational and Educational Eye and Face Protection, incorporated by reference in § 1926.6;",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(2) Protective eye and face protection devices that the employer demonstrates are at least as effective as protective eye and face protection devices that are constructed in accordance with one of the above consensus standards will be deemed to be in compliance with the requirements of this section.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(c) Protection against radiant energy —(1) Selection of shade numbers for welding filter. Table E-1 shall be used as a guide for the selection of the proper shade numbers of filter lenses or plates used in welding. Shades more dense than those listed may be used to suit the individual's needs.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Welding operation</th><th>Shade number</th></tr><tr><td>Shielded metal-arc welding 1/16-, 3/32-, 1/8-, 5/32-inch diameter electrodes</td><td>10</td></tr><tr><td>Gas-shielded arc welding (nonferrous) 1/16-, 3/32-, 1/8-, 5/32-inch diameter electrodes</td><td>11</td></tr><tr><td>Gas-shielded arc welding (ferrous) 1/16-, 3/32-, 1/8-, 5/32-inch diameter electrodes</td><td>12</td></tr><tr><td>Shielded metal-arc welding 3/16-, 7/32-, 1/4-inch diameter electrodes</td><td>12</td></tr><tr><td>5/16-, 3/8-inch diameter electrodes</td><td>14</td></tr><tr><td>Atomic hydrogen welding</td><td>10-14</td></tr><tr><td>Carbon-arc welding</td><td>14</td></tr><tr><td>Soldering</td><td>2</td></tr><tr><td>Torch brazing</td><td>3 or 4</td></tr><tr><td>Light cutting, up to 1 inch</td><td>3 or 4</td></tr><tr><td>Medium cutting, 1 inch to 6 inches</td><td>4 or 5</td></tr><tr><td>Heavy cutting, over 6 inches</td><td>5 or 6</td></tr><tr><td>Gas welding (light), up to 1/8-inch</td><td>4 or 5</td></tr><tr><td>Gas welding (medium), 1/8-inch to 1/2-inch</td><td>5 or 6</td></tr><tr><td>Gas welding (heavy), over 1/2-inch</td><td>6 or 8</td></tr></table>"
+    },
+    {
+      "kind": "para",
+      "text": "(2) Laser protection. (i) Employees whose occupation or assignment requires exposure to laser beams shall be furnished suitable laser safety goggles which will protect for the specific wavelength of the laser and be of optical density (O.D.) adequate for the energy involved. Table E-2 lists the maximum power or energy density for which adequate protection is afforded by glasses of optical densities from 5 through 8. Output levels falling between lines in this table shall require the higher optical density.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Intensity, CW maximum power density (watts/cm 2 )</th><th>Attenuation</th></tr><tr><th>Optical density (O.D.)</th><th>Attenuation factor</th></tr><tr><td>10 −2</td><td>5</td><td>10 5</td></tr><tr><td>10 −1</td><td>6</td><td>10 6</td></tr><tr><td>1.0</td><td>7</td><td>10 7</td></tr><tr><td>10.0</td><td>8</td><td>10 8</td></tr></table>"
+    },
+    {
+      "kind": "para",
+      "text": "(ii) All protective goggles shall bear a label identifying the following data:",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(A) The laser wavelengths for which use is intended;",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(B) The optical density of those wavelengths;",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(C) The visible light transmission.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "cita",
+      "text": "[44 FR 8577, Feb. 9, 1979; 44 FR 20940, Apr. 6, 1979, as amended at 58 FR 35160, June 30, 1993; 81 FR 16092, Mar. 25, 2016]",
+      "page": 1,
+      "html": null
+    }
+  ]
+}

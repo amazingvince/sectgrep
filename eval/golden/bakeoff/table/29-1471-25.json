@@ -1,0 +1,37 @@
+{
+  "doc": "29-1471-25",
+  "section": "§ 1471.25",
+  "title": "How is this part organized?",
+  "blocks": [
+    {
+      "kind": "heading",
+      "text": "§ 1471.25 How is this part organized?",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "(a) This part is subdivided into ten subparts. Each subpart contains information related to a broad topic or specific audience with special responsibilities, as shown in the following table:",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 0,
+      "html": "<table><tr><th>In subpart . . .</th><th>You will find provisions related to . . .</th></tr><tr><td>A</td><td>general information about this rule.</td></tr><tr><td>B</td><td>the types of FMCS transactions that are covered by the Governmentwide nonprocurement suspension and debarment system.</td></tr><tr><td>C</td><td>the responsibilities of persons who participate in covered transactions.</td></tr><tr><td>D</td><td>the responsibilities of FMCS officials who are authorized to enter into covered transactions.</td></tr><tr><td>E</td><td>the responsibilities of Federal agencies for the Excluded Parties List System (Disseminated by the General Services Administration).</td></tr><tr><td>F</td><td>the general principles governing suspension, debarment, voluntary exclusion and settlement.</td></tr><tr><td>G</td><td>suspension actions.</td></tr><tr><td>H</td><td>debarment actions.</td></tr><tr><td>I</td><td>definitions of terms used in this part.</td></tr><tr><td>J</td><td>[Reserved]</td></tr></table>"
+    },
+    {
+      "kind": "para",
+      "text": "(b) The following table shows which subparts may be of special interest to you, depending on who you are:",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 0,
+      "html": "<table><tr><th>If you are . . .</th><th>See subpart(s) . . .</th></tr><tr><td>(1) a participant or principal in a nonprocurement transaction</td><td>A, B, C, and I.</td></tr><tr><td>(2) a respondent in a suspension action</td><td>A, B, F, G and I.</td></tr><tr><td>(3) a respondent in a debarment action</td><td>A, B, F, H and I.</td></tr><tr><td>(4) a suspending official</td><td>A, B, D, E, F, G and I.</td></tr><tr><td>(5) a debarring official</td><td>A, B, D, E, F, H and I.</td></tr><tr><td>(6) a (n) FMCS official authorized to enter into a covered transaction</td><td>A, B, D, E and I.</td></tr><tr><td>(7) Reserved</td><td>J.</td></tr></table>"
+    }
+  ]
+}

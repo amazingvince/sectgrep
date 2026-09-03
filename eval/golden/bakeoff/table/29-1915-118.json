@@ -1,0 +1,79 @@
+{
+  "doc": "29-1915-118",
+  "section": "§ 1915.118",
+  "title": "Tables.",
+  "blocks": [
+    {
+      "kind": "heading",
+      "text": "§ 1915.118 Tables.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "para",
+      "text": "The provisions of this section apply to ship repairing, shipbuilding and shipbreaking.",
+      "page": 0,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 0,
+      "html": "<table><tr><th>Structural members</th><th>Light duty (Up to 25 pounds per square foot)—Height in feet</th><th>Heavy duty (25 to 75 pounds per square foot)—Height in feet</th></tr><tr><th>≤24</th><th>>24≤40</th><th>>40≤60</th><th>≤24</th><th>>24≤40</th><th>>40≤60</th></tr><tr><td>Poles or uprights (in inches)</td><td>2 × 4</td><td>3 × 4 or 2 × 6</td><td>4 × 4</td><td>3 × 4</td><td>4 × 4</td><td>4 × 6</td></tr><tr><td>Bearers (in inches)</td><td>2 × 6</td><td>2 × 6</td><td>2 × 6</td><td>2 × 8</td><td>2 × 8</td><td>2 × 10</td></tr><tr><td>Ledgers (in inches)</td><td>2 × 6</td><td>2 × 6</td><td>2 × 6</td><td>2 × 8</td><td>2 × 8</td><td>2 × 8</td></tr><tr><td>Stringers (not supporting bearers) (in inches)</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td></tr><tr><td>Braces (in inches)</td><td>1 × 4</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td><td>1 × 6</td></tr><tr><td>Pole spacing—longitudinally (in feet)</td><td>7 1/2</td><td>7 1/2</td><td>7 1/2</td><td>7</td><td>7</td><td>7</td></tr><tr><td>Pole spacing—transversely (in feet)</td><td>6 1/2 min</td><td>7 1/2 min</td><td>8 1/2 min</td><td>6 1/2</td><td>10</td><td>10</td></tr><tr><td>Ledger spacing—vertically (in feet)</td><td>7</td><td>7</td><td>7</td><td>4 1/2</td><td>4 1/2</td><td>4 1/2</td></tr></table>"
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 0,
+      "html": "<table><tr><th>Length (in feet)</th><th>Cross section (in inches)</th></tr><tr><th>At ends</th><th>At center</th></tr><tr><td>15</td><td>1 7/8 × 2 3/4</td><td>1 7/8 × 3 3/4</td></tr><tr><td>16</td><td>1 7/8 × 2 3/4</td><td>1 7/8 × 3 3/4</td></tr><tr><td>18</td><td>1 7/8 × 3</td><td>1 7/8 × 4</td></tr><tr><td>20</td><td>1 7/8 × 3</td><td>1 7/8 × 4</td></tr><tr><td>24</td><td>1 7/8 × 3</td><td>1 7/8 × 4 1/2</td></tr></table>"
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Structural members</th><th>Height in feet</th></tr><tr><th>≤10</th><th>>10≤16</th><th>16≤20</th></tr><tr><td></td><td>inches</td><td>inches</td><td>inches</td></tr><tr><td>Legs</td><td>2 × 4</td><td>3 × 4</td><td>4 × 6</td></tr><tr><td>Bearers or headers</td><td>2 × 6</td><td>2 × 8</td><td>4 × 6</td></tr><tr><td>Crossbraces</td><td>2 × 4</td><td>2 × 4</td><td>2 × 6</td></tr><tr><td></td><td>or</td></tr><tr><td></td><td>1 × 8</td></tr><tr><td>Longitudinal braces</td><td>2 × 4</td><td>2 × 6</td><td>2 × 6</td></tr></table>"
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Span in feet</th><th>Lumber dimensions in inches</th></tr><tr><th>A</th><th>B</th><th>A</th><th>B</th><th>A</th><th>B</th><th>A</th><th>B</th><th>A</th><th>B</th></tr><tr><td></td><td>2 × 10</td><td>1 5/8 × 9 1/2</td><td>2 × 12</td><td>1 5/8 × 11 1/2</td><td>3 × 8</td><td>2 5/8 × 7 1/2</td><td>3 × 10</td><td>2 5/8 × 9 1/2</td><td>3 × 12</td><td>2 5/8 × 11 1/2</td></tr><tr><td>6</td><td>256</td><td></td><td>309</td><td></td><td>526</td><td></td><td>667</td><td></td><td>807</td></tr><tr><td>8</td><td>192</td><td></td><td>232</td><td></td><td>395</td><td></td><td>500</td><td></td><td>605</td></tr><tr><td>10</td><td>153</td><td></td><td>186</td><td></td><td>316</td><td></td><td>400</td><td></td><td>484</td></tr><tr><td>12</td><td>128</td><td></td><td>155</td><td></td><td>263</td><td></td><td>333</td><td></td><td>404</td></tr><tr><td>14</td><td>110</td><td></td><td>133</td><td></td><td>225</td><td></td><td>286</td><td></td><td>346</td></tr><tr><td>16</td><td></td><td></td><td>116</td><td></td><td>197</td><td></td><td>250</td><td></td><td>303</td></tr></table>"
+    },
+    {
+      "kind": "note",
+      "text": "(A)—Rough lumber.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "note",
+      "text": "(B)—Dressed lumber.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Improved plow steel, rope diameter, inches</th><th>Number of clips</th><th>Minimum spacing, inches</th></tr><tr><th>Drop forged</th><th>Other material</th></tr><tr><td>( 1 )</td><td></td><td></td><td></td></tr><tr><td>1/2</td><td>3</td><td>4</td><td>3</td></tr><tr><td>5/8</td><td>3</td><td>4</td><td>3 3/4</td></tr><tr><td>3/4</td><td>4</td><td>5</td><td>4 1/2</td></tr><tr><td>7/8</td><td>4</td><td>5</td><td>5 1/4</td></tr><tr><td>1</td><td>4</td><td>6</td><td>6</td></tr><tr><td>1 1/8</td><td>5</td><td>6</td><td>6 3/4</td></tr><tr><td>1 1/4</td><td>5</td><td>7</td><td>7 1/2</td></tr><tr><td>1 3/8</td><td>6</td><td>7</td><td>8 1/4</td></tr><tr><td>1 1/2</td><td>6</td><td>8</td><td>9</td></tr></table>"
+    },
+    {
+      "kind": "note",
+      "text": "1 Three clips shall be used on wire size less than 1/2 -inch diameter.",
+      "page": 1,
+      "html": null
+    },
+    {
+      "kind": "table",
+      "text": "",
+      "page": 1,
+      "html": "<table><tr><th>Chain size in inches</th><th>Maximum allowable wear in fraction of inches</th></tr><tr><td>1/4 ( 9/32 )</td><td>3/64</td></tr><tr><td>3/8</td><td>5/64</td></tr><tr><td>1/2</td><td>7/64</td></tr><tr><td>5/8</td><td>9/64</td></tr><tr><td>3/4</td><td>5/32</td></tr><tr><td>7/8</td><td>11/64</td></tr><tr><td>1</td><td>3/16</td></tr><tr><td>1 1/8</td><td>7/32</td></tr><tr><td>1 1/4</td><td>1/4</td></tr><tr><td>1 3/8</td><td>9/32</td></tr><tr><td>1 1/2</td><td>5/16</td></tr><tr><td>1 3/4</td><td>11/32</td></tr></table>"
+    },
+    {
+      "kind": "cita",
+      "text": "[47 FR 16986, Apr. 20, 1982, as amended at 61 FR 26351, May 24, 1996; 67 FR 44543, July 3, 2002; 76 FR 33610, June 8, 2011]",
+      "page": 1,
+      "html": null
+    }
+  ]
+}
