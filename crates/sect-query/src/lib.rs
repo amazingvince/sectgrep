@@ -512,8 +512,9 @@ pub fn grep(index: &Index, opts: &sect_exact::GrepOptions, annotate: bool, scope
     } else {
         None
     };
+    // "shown" counts matching lines only; context lines are extra and never counted as matches.
     let shown = match mode {
-        "lines" => lines.len(),
+        "lines" => lines.iter().filter(|l| l.kind == sect_exact::LineKind::Match).count(),
         _ => raw.per_file.len(),
     };
     let mut extra = vec![("files-searched".to_string(), raw.files_searched), ("files-matched".to_string(), raw.files_matched), ("matching-lines".to_string(), raw.total_matches), ("max-hits".to_string(), raw.max_hits)];
