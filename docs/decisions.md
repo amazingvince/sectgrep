@@ -19,8 +19,22 @@ Continues the decisions log in `sectgrep-spec-v0.4.md` Part F.3. Entries 1-15 ar
 | 11 | Languages | Rust for `sect`; TypeScript for WS2/WS3; Docling and OCR models as subprocesses. | Spec |
 | 12 | Chunk unit | Section/subsection file; split only at paragraph labels. | Spec |
 | 13 | Versioning | Work / Expression / Action; `--as-of` snaps, current-only default. | Spec |
-| 14 | Name | `sectgrep` / `sect`, pending registry check; fallback `regsift`. | **Checked 2026-09-03, see 14a; final call pending human** |
+| 14 | Name | `sectgrep` / `sect`, pending registry check; fallback `regsift`. | **Decided 2026-09-03: keep `sectgrep` / `sect`** (see 14a) |
 | 15 | Retrieval core | Fork-or-borrow decision (0.5) against `zg` and `semble_rs` before writing. | Pending, milestone 0.5 |
+
+## Open questions resolved with the human before milestone 2 (2026-09-03)
+
+| # | Question | Decision |
+|---|---|---|
+| 23 | Order of work | Stay on the Rust track: milestone 2 (structure) next, then C0/C1. The converter (C1) must land before milestone 4 so `search` is measured on a real title. |
+| 24 | Compute | This machine has two NVIDIA GPUs available under WSL2: an RTX 5090 (32 GB) and an RTX 4090 (24 GB). The OCR bake-off (C0), any VLM transcription, and any embedding experiments run inside WSL2 in Docker with CUDA. No paid vision API arm unless asked again; hosted inference is not needed. |
+| 25 | Remote | Public GitHub repository `amazingvince/sectgrep`, Apache-2.0, created 2026-09-03 with `main` pushed; CI runs on Linux there. Nothing is published to a package registry until R1. |
+| 26 | Spec-change proposals | `spec-changes.md` #1 to #8 stay proposals; the code follows them. The human folds them into spec v0.5 at review time. #8 (`zg` is TypeScript) is the one that changes a spec claim. |
+| 27 | Real corpus for evaluation | Start with two small eCFR titles for speed (Title 1 General Provisions, Title 4 Accounts), add Title 29 for the scaling arm in E.3. Fetched by script into `raw/`, never committed. |
+| 28 | Question generation on the real corpus | Cross-reference questions are written in-session by the assistant following the CRAwLeR recipe (no API spend); the set is capped at a few hundred. Reopen if a larger set is needed. |
+| 29 | Model weights for `sect-semantic` | Fetched at index time into the standard Hugging Face cache with a local-path override (`sect index --embedding <path-or-repo>`); never at query time. |
+| 30 | `kind: internal` | Treated as an overlay kind with precedence above base and below local law until the spec defines it; flagged in `spec-changes.md` when it first matters. |
+| 31 | Abstention | Revisit at milestone 5 with a score-margin or leg-agreement feature; do not tune the floors on the fixture (wrong-corpus 0.60, no-gold 1.00). |
 
 ## 15a. Fork-or-borrow: what was read in `zg` and `semble_rs` (milestone 0.5, 2026-09-03)
 
@@ -76,7 +90,7 @@ Run from this machine; nothing was published.
 - (A) Keep `sectgrep` / `sect`. Publish the crate as `sectgrep`, binary `sect`. Accept that a `cargo install sect` typo resolves to an unrelated crate.
 - (B) Follow the spec literally: project and binary `regsift`, MCP prefix `regsift_`, index dir `.regsift/`.
 
-**Decision: pending human.** `GOAL.md` section 7 lists the name fallback as a human call. Until it is made, the repository uses `sectgrep` / `sect`. Renaming before milestone 1 is a find-and-replace over `GOAL.md`, `README.md`, `proto/`, and `.github/`.
+**Decision (human, 2026-09-03): option A.** The project and crate are `sectgrep`, the binary is `sect`, the MCP prefix is `sect_`, and the index directory is `.sect/`. The crate is published as `sectgrep` when R1 ships; `cargo install sectgrep` installs `sect`. The `regsift` fallback is retired.
 
 ## Milestone 0 (2026-09-03)
 

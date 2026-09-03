@@ -47,7 +47,7 @@ See [proto/README.md](proto/README.md).
 
 ## Name
 
-The project name `sectgrep` and binary `sect` are provisional. The registry check is recorded in `docs/decisions.md` entry 14a; the final call is a human decision.
+The project and crate are `sectgrep`; the binary is `sect`. `sect` alone is taken on crates.io by an unrelated library, so install with `cargo install sectgrep` once R1 is published. The registry check and the decision are in `docs/decisions.md` entry 14a.
 
 ## License
 

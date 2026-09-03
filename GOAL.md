@@ -1,7 +1,7 @@
 # Goal: Implement `sectgrep` (Engineering Spec v0.4)
 
 **Source of truth:** `sectgrep-spec-v0.4.md` in this directory. Where this goal and the spec disagree, the spec wins. Where the spec is silent, decide, record the decision in `docs/decisions.md`, and continue.
-**Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03. Next: milestone 2, then C0. The name decision (`docs/decisions.md` 14a) is still waiting on a human.
+**Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03. Open questions resolved with the human (`docs/decisions.md` #14, #23 to #31): name stays `sectgrep` / `sect`, milestone 2 next, GPUs under WSL2, public repo at `github.com/amazingvince/sectgrep`.
 **Written:** 2026-09-03
 
 ---
@@ -61,7 +61,7 @@ Carry these into every milestone. They come from A.3, A.4, A.5, and B.1.
 
 **Platform caveat.** This is Windows 11. The spec lists Windows as a v1 non-goal (A.5). Treat Linux as the reference platform: run tests and evals in WSL2 or Docker, and do not block a milestone on a Windows-only failure. Do not gratuitously break Windows either, since it is the dev box.
 
-**Resource check before C0.** The OCR bake-off runs 0.9-1.2B VLMs and possibly a paid vision API. Confirm GPU availability (or plan for hosted inference) and confirm current API pricing before selecting a secondary transcriber (H.6, H.11).
+**GPUs.** Two NVIDIA GPUs are available under WSL2 on this machine: an RTX 5090 (32 GB) and an RTX 4090 (24 GB). The OCR bake-off (C0), VLM transcription, and embedding experiments run inside WSL2 in Docker with CUDA (decisions #24). No paid vision API arm unless the human asks for one; confirm pricing before any such run (H.6, H.11).
 
 ## 5. Phase plan
 
@@ -139,8 +139,8 @@ Total: roughly 16-18 engineer-weeks; about 8-9 calendar weeks with two engineers
 ## 8. Next actions
 
 1. Milestone 2 (G-C): xrefs, Actions, terms, tables, precedence, `--as-of` snapping, `refs`, `define`, `map --complete`, `read --history`.
-2. Human decisions pending: the name (14a), and GPU or hosted-inference plus vision-API pricing before C0.
-3. Milestone C0 once those are settled.
+2. Milestone C0 in WSL2 on the local GPUs, then C1 so a real eCFR title exists before milestone 4.
+3. No human decisions are pending; the next stop-and-ask points are a paid API run (never without asking) and publishing at R1.
 
 Done: bootstrap, milestone 0, milestone 0.5, milestone 1 (all 2026-09-03).
 
