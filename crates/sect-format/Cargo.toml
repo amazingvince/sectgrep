@@ -1,0 +1,15 @@
+[package]
+name = "sect-format"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Text and JSON rendering of verb responses; the header (freshness, counts) always comes first"
+
+[dependencies]
+sect-core.workspace = true
+sect-corpus.workspace = true
+sect-index.workspace = true
+sect-query.workspace = true
+serde.workspace = true
+serde_json.workspace = true

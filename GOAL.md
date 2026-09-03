@@ -1,7 +1,7 @@
 # Goal: Implement `sectgrep` (Engineering Spec v0.4)
 
 **Source of truth:** `sectgrep-spec-v0.4.md` in this directory. Where this goal and the spec disagree, the spec wins. Where the spec is silent, decide, record the decision in `docs/decisions.md`, and continue.
-**Status:** Bootstrap and milestone 0 complete (2026-09-03, gate passed: locate 0.95, definition 1.00). Next: milestone 0.5, then 1. The name decision (`docs/decisions.md` 14a) is still waiting on a human.
+**Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03. Next: milestone 2, then C0. The name decision (`docs/decisions.md` 14a) is still waiting on a human.
 **Written:** 2026-09-03
 
 ---
@@ -136,12 +136,13 @@ Total: roughly 16-18 engineer-weeks; about 8-9 calendar weeks with two engineers
 - **Stop and ask a human before:** spending money (paid vision APIs, hosted model inference, new provider accounts); publishing to crates.io, npm, PyPI, or Homebrew; choosing the name fallback; anything needing credentials or API keys; resolving a D.3 **conflict** tier item (those are the human queue by design); changing a licensed dependency to a non-permissive one.
 - **Do not build:** applying rules to a specific case; multi-tenant or remote servers; auth beyond loopback; federation across corpus roots; exhaustive human review; late chunking; Windows-specific support (A.5).
 
-## 8. First actions
+## 8. Next actions
 
-1. Bootstrap the repo (section 5) including the registry name check.
-2. Milestone 0: build `fixtures/corpus` to the B.2 contract, write the question set, run the Python `semble` prototype, and report Recall@5. Do not start Rust until it clears 0.85.
-3. Milestone 0.5: read `zg` and `semble_rs`, commit the fork-or-borrow table.
-4. Confirm GPU or hosted-inference plan and API pricing, then run C0.
+1. Milestone 2 (G-C): xrefs, Actions, terms, tables, precedence, `--as-of` snapping, `refs`, `define`, `map --complete`, `read --history`.
+2. Human decisions pending: the name (14a), and GPU or hosted-inference plus vision-API pricing before C0.
+3. Milestone C0 once those are settled.
+
+Done: bootstrap, milestone 0, milestone 0.5, milestone 1 (all 2026-09-03).
 
 ## 9. Running this with `/goal`
 

@@ -1,0 +1,9 @@
+[package]
+name = "sect-exact"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect-exact: stub until milestone 3 (see GOAL.md section 5)"
+
+[dependencies]

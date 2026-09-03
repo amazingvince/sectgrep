@@ -1,0 +1,22 @@
+[package]
+name = "sect-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect: the command-line binary"
+
+[[bin]]
+name = "sect"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+sect-core.workspace = true
+sect-format.workspace = true
+sect-index.workspace = true
+sect-query.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile.workspace = true

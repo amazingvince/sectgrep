@@ -1,0 +1,9 @@
+[package]
+name = "sect-semantic"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect-semantic: stub until milestone 4 (see GOAL.md section 5)"
+
+[dependencies]

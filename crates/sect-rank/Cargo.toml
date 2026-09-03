@@ -1,0 +1,9 @@
+[package]
+name = "sect-rank"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect-rank: stub until milestone 5 (see GOAL.md section 5)"
+
+[dependencies]

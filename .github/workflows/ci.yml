@@ -12,9 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      # The workspace is empty until milestone 1. `cargo metadata` proves the manifest parses.
-      # Switch to `cargo test --workspace` when the first crate lands.
-      - run: cargo metadata --format-version 1 --no-deps > /dev/null
+      - run: cargo build --workspace --locked
+      - run: cargo test --workspace --locked
+      - name: Fixture passes the B.2 contract check
+        run: cargo run -p sect-cli --locked -- index --validate-only fixtures/corpus
 
   fixture-and-prototype:
     name: Fixture contract + milestone-0 eval

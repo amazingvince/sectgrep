@@ -1,0 +1,17 @@
+[package]
+name = "sect-corpus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Corpus walker, front-matter and body parsing, blake3 fingerprints, and the B.2 contract validator"
+
+[dependencies]
+blake3.workspace = true
+chrono.workspace = true
+ignore.workspace = true
+regex.workspace = true
+sect-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml_ng.workspace = true

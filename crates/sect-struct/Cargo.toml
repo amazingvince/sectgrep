@@ -1,0 +1,14 @@
+[package]
+name = "sect-struct"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Deterministic structural index: tree.json (milestone 1); xrefs, Actions, terms, tables, as-of (milestone 2)"
+
+[dependencies]
+chrono.workspace = true
+sect-core.workspace = true
+sect-corpus.workspace = true
+serde.workspace = true
+serde_json.workspace = true

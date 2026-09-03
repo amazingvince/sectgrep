@@ -1,0 +1,9 @@
+[package]
+name = "sect-mcp"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "sect-mcp: stub until milestone 7 (see GOAL.md section 5)"
+
+[dependencies]

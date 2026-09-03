@@ -1,0 +1,15 @@
+[package]
+name = "sect-index"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Index build (walk, fingerprint, validate, structural files, manifest, log) and freshness checks"
+
+[dependencies]
+chrono.workspace = true
+sect-core.workspace = true
+sect-corpus.workspace = true
+sect-struct.workspace = true
+serde.workspace = true
+serde_json.workspace = true

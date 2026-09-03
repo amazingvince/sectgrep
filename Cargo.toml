@@ -1,4 +1,41 @@
-# Empty workspace. Crates are added starting at milestone 1 (see GOAL.md section 5).
+# sectgrep workspace. Crate layout from spec B.7; crates not yet needed are stubs that name their milestone.
 [workspace]
-members = []
+members = ["crates/*"]
 resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+license = "Apache-2.0"
+description = "sect: single-binary search and navigation over a structured markdown corpus of rules and guidelines, built for AI agents"
+
+[workspace.dependencies]
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml_ng = "0.10"
+blake3 = "1"
+ignore = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1"
+clap = { version = "4", features = ["derive", "env"] }
+tempfile = "3"
+
+sect-core = { path = "crates/sect-core" }
+sect-corpus = { path = "crates/sect-corpus" }
+sect-struct = { path = "crates/sect-struct" }
+sect-exact = { path = "crates/sect-exact" }
+sect-ngram = { path = "crates/sect-ngram" }
+sect-lexical = { path = "crates/sect-lexical" }
+sect-semantic = { path = "crates/sect-semantic" }
+sect-rank = { path = "crates/sect-rank" }
+sect-index = { path = "crates/sect-index" }
+sect-query = { path = "crates/sect-query" }
+sect-format = { path = "crates/sect-format" }
+sect-mcp = { path = "crates/sect-mcp" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
