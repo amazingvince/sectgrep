@@ -38,7 +38,18 @@ impl Model2VecProvider {
     /// otherwise the hub is contacted (index time only).
     pub fn load(repo_or_path: &str) -> Result<Model2VecProvider> {
         let local = Path::new(repo_or_path).join("model.safetensors").is_file();
-        let source: String = if local { repo_or_path.to_string() } else { snapshot_dir(repo_or_path).map(|p| p.to_string_lossy().to_string()).unwrap_or_else(|| repo_or_path.to_string()) };
+        let mut source: String = if local { repo_or_path.to_string() } else { snapshot_dir(repo_or_path).map(|p| p.to_string_lossy().to_string()).unwrap_or_else(|| repo_or_path.to_string()) };
+        // A hub fetch: hold a lock so parallel sect processes do not download the same files at
+        // once; whoever waits finds the snapshot in the cache afterwards.
+        let _guard = if !local && source == repo_or_path {
+            let g = DownloadLock::acquire(&hub_cache_dir())?;
+            if let Some(p) = snapshot_dir(repo_or_path) {
+                source = p.to_string_lossy().to_string();
+            }
+            Some(g)
+        } else {
+            None
+        };
         let model = StaticModel::from_pretrained(&source, None, None, None).map_err(|e| SectError::Other(format!("model2vec `{repo_or_path}`: {e}")))?;
         let dim = model.encode_single("dimension probe").len();
         Ok(Model2VecProvider { model, name: format!("model2vec:{repo_or_path}"), dim })
@@ -59,6 +70,44 @@ impl Model2VecProvider {
             std::fs::copy(&src, dir.join(name)).map_err(|e| SectError::io(&src, e))?;
         }
         Ok(dir.to_path_buf())
+    }
+}
+
+/// Cross-process lock for hub downloads: `<hub cache>/.sect-download.lock`, created atomically;
+/// waiters poll, and a lock older than ten minutes is treated as abandoned.
+struct DownloadLock(PathBuf);
+
+impl DownloadLock {
+    fn acquire(dir: &Path) -> Result<DownloadLock> {
+        std::fs::create_dir_all(dir).map_err(|e| SectError::io(dir, e))?;
+        let path = dir.join(".sect-download.lock");
+        let started = std::time::Instant::now();
+        loop {
+            match std::fs::OpenOptions::new().write(true).create_new(true).open(&path) {
+                Ok(mut f) => {
+                    let _ = writeln!(f, "{}", std::process::id());
+                    return Ok(DownloadLock(path));
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+                    let stale = std::fs::metadata(&path).and_then(|m| m.modified()).map(|t| t.elapsed().map(|d| d.as_secs() > 600).unwrap_or(false)).unwrap_or(true);
+                    if stale {
+                        let _ = std::fs::remove_file(&path);
+                        continue;
+                    }
+                    if started.elapsed().as_secs() > 900 {
+                        return Err(SectError::Other(format!("model download lock {} held for over fifteen minutes", path.display())));
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(200));
+                }
+                Err(e) => return Err(SectError::io(&path, e)),
+            }
+        }
+    }
+}
+
+impl Drop for DownloadLock {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
     }
 }
 

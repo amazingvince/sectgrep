@@ -20,6 +20,8 @@ jobs:
           path: ~/.cache/huggingface
           key: hf-potion-retrieval-32M-v1
       - run: cargo build --workspace --locked
+      - name: Warm the model cache once (tests spawn several sect processes in parallel)
+        run: cargo run -p sect-cli --locked -- index fixtures/corpus
       - run: cargo test --workspace --locked
       - name: Fixture passes the B.2 contract check
         run: cargo run -p sect-cli --locked -- index --validate-only fixtures/corpus
@@ -30,8 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 22
