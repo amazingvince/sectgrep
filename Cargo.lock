@@ -1927,6 +1927,7 @@ name = "sect-query"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "regex",
  "sect-core",
  "sect-corpus",
  "sect-exact",

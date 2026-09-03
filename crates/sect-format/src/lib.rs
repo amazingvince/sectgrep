@@ -227,7 +227,7 @@ pub fn search_text(r: &Response<SearchResult>) -> String {
         SearchMode::Fts => "fts (bm25 only)",
         SearchMode::Vector => "vector only",
     };
-    let mut bits = vec![format!("mode {mode}")];
+    let mut bits = vec![format!("mode {mode}"), format!("weights lex {:.1} vec {:.1}{}", x.weights.0, x.weights.1, if x.id_or_term_like { " (id/term-like)" } else { "" })];
     if let Some(d) = x.as_of {
         bits.push(format!("as-of {d}"));
     }
@@ -239,7 +239,16 @@ pub fn search_text(r: &Response<SearchResult>) -> String {
     }
     s.push_str(&format!("search: {:?}; {}\n", x.query, bits.join("; ")));
     if x.abstained {
-        s.push_str("not found: nothing above the confidence floor\n");
+        s.push_str(&format!(
+            "not found: nothing above the confidence floor (lexical overlap {:.2}{}); nearest scope: {}. The hits below are the nearest candidates, not an answer.\n",
+            x.confidence.lex_overlap,
+            x.confidence.cosine.map(|c| format!(", cosine {c:.2}")).unwrap_or_default(),
+            x.nearest.clone().unwrap_or_default()
+        ));
+    }
+    if let Some(seed) = &x.seed {
+        s.push_str(&format!("seed: {} tokens of a {} token budget, {} sections, lexical-heavy\n{}\n", seed.tokens, seed.budget, seed.entries, seed.text));
+        return s;
     }
     for h in &x.hits {
         let legs = match (h.lex_rank, h.vec_rank) {
@@ -255,12 +264,20 @@ pub fn search_text(r: &Response<SearchResult>) -> String {
         if !h.narrowed_by.is_empty() {
             flags.push(format!("narrowed-by {}", h.narrowed_by.iter().map(|n| format!("{}#{}", n.id, n.anchor.clone().unwrap_or_default())).collect::<Vec<_>>().join(",")));
         }
+        if let Some(p) = &h.pinned {
+            flags.insert(0, p.clone());
+        }
         let part = if h.nparts > 1 { format!("  part {}/{}", h.part + 1, h.nparts) } else { String::new() };
-        s.push_str(&format!("{}. {}  {} {}  eff {}  score {:.3} ({legs})  refs in {} / out {}{part}{}\n", h.rank, h.expr, h.label, h.title, date(&h.effective), h.score, h.refs_in, h.refs_out, if flags.is_empty() { String::new() } else { format!("  [{}]", flags.join("; ")) }));
+        let anchor = h.anchor.as_ref().map(|a| format!("#{a}")).unwrap_or_default();
+        s.push_str(&format!("{}. {}{anchor}  {} {}  eff {}  score {:.3} ({legs})  refs in {} / out {}{part}{}\n", h.rank, h.expr, h.label, h.title, date(&h.effective), h.score, h.refs_in, h.refs_out, if flags.is_empty() { String::new() } else { format!("  [{}]", flags.join("; ")) }));
         s.push_str(&format!("   {}\n", h.breadcrumb));
         match h.line {
             Some(l) => s.push_str(&format!("   L{l}: {}\n", h.snippet)),
             None => s.push_str(&format!("   {}\n", h.snippet)),
+        }
+        for e in &h.expanded {
+            let anchor = e.anchor.as_ref().map(|a| format!("#{a}")).unwrap_or_default();
+            s.push_str(&format!("   -> {}{anchor}  {} {}  eff {}\n", e.id, e.label, e.title, date(&e.effective)));
         }
     }
     s

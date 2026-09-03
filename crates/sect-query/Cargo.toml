@@ -8,6 +8,7 @@ description = "The seven verbs over an opened index; milestone 1 ships read, map
 
 [dependencies]
 chrono.workspace = true
+regex.workspace = true
 sect-core.workspace = true
 sect-corpus.workspace = true
 sect-exact.workspace = true

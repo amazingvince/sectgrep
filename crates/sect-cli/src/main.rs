@@ -68,6 +68,15 @@ enum Cmd {
         /// Hits to return (at most 50).
         #[arg(long, default_value_t = 10)]
         limit: usize,
+        /// Append one-line summaries: `refs` (sections each hit references) or `ancestors`.
+        #[arg(long, value_name = "refs|ancestors", value_parser = ["refs", "ancestors"])]
+        expand: Option<String>,
+        /// Lexical-heavy top-k as a compact context block for one-time injection at session start.
+        #[arg(long)]
+        seed: bool,
+        /// Token budget for --seed.
+        #[arg(long, default_value_t = 1500)]
+        budget: usize,
     },
     /// Show a section (Work id, Expression id, or id#anchor) with its structural context.
     Read {
@@ -202,14 +211,14 @@ fn main() {
 fn run() -> Result<i32> {
     let cli = Cli::parse();
     match cli.cmd {
-        Cmd::Search { query, fts, vector, fuse, scope, source, kind, as_of, limit } => {
+        Cmd::Search { query, fts, vector, fuse, scope, source, kind, as_of, limit, expand, seed, budget } => {
             let index = sect_index::open(&cli.corpus, !cli.no_refresh)?;
             let mode = match (fts, vector, fuse) {
                 (true, false, false) => sect_query::SearchMode::Fts,
                 (false, true, false) => sect_query::SearchMode::Vector,
                 _ => sect_query::SearchMode::Fuse,
             };
-            let opts = sect_query::SearchOptions { query, mode, scope, source, kind, as_of: parse_date(&as_of)?, include_superseded: cli.include_superseded, limit };
+            let opts = sect_query::SearchOptions { query, mode, scope, source, kind, as_of: parse_date(&as_of)?, include_superseded: cli.include_superseded, limit, expand: expand.as_deref().and_then(sect_query::Expand::parse), seed, budget };
             let r = sect_query::search(&index, &opts)?;
             print!("{}", if cli.json { sect_format::json(&r) + "\n" } else { sect_format::search_text(&r) });
             Ok(0)

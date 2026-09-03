@@ -258,8 +258,10 @@ def _structural(corpus: Corpus, S: Searcher, exp: dict, q: dict, latency) -> boo
             ok = (sec.expr if sec else None) == exp["expected"]
             verb = "read --as-of"
         elif op == "as_of_search":
-            res = S.search(q["query"], limit=5, as_of=dt.date.fromisoformat(exp["date"]))
-            got = res.hits[0].section.expr if res.hits and not res.abstained else None
+            # The Expression served for the expected Work at that date (rank order among Works is ranking).
+            res = S.search(q["query"], limit=10, as_of=dt.date.fromisoformat(exp["date"]))
+            work = exp["expected"].split("@")[0]
+            got = next((h.section.expr for h in res.hits if h.section.id == work), None) if not res.abstained else None
             ok = got == exp["expected"]
             verb = "search --as-of"
         elif op == "history":

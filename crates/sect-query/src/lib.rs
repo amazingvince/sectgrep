@@ -417,6 +417,25 @@ pub enum SearchMode {
     Vector,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Expand {
+    /// One-line summaries of every section each hit references (depth 1).
+    Refs,
+    /// The ancestor chain of each hit.
+    Ancestors,
+}
+
+impl Expand {
+    pub fn parse(s: &str) -> Option<Expand> {
+        match s {
+            "refs" => Some(Expand::Refs),
+            "ancestors" => Some(Expand::Ancestors),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct SearchOptions {
     pub query: String,
@@ -427,6 +446,19 @@ pub struct SearchOptions {
     pub as_of: Option<NaiveDate>,
     pub include_superseded: bool,
     pub limit: usize,
+    pub expand: Option<Expand>,
+    /// `--seed`: a lexical-heavy top-k rendered as a compact context block under `budget` tokens.
+    pub seed: bool,
+    pub budget: usize,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct Expanded {
+    pub id: String,
+    pub label: String,
+    pub title: String,
+    pub anchor: Option<String>,
+    pub effective: Option<NaiveDate>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -434,16 +466,20 @@ pub struct SearchHit {
     pub rank: usize,
     pub id: String,
     pub expr: String,
+    pub anchor: Option<String>,
     pub label: String,
     pub title: String,
     pub breadcrumb: String,
     pub kind: String,
     pub source: String,
     pub effective: Option<NaiveDate>,
-    /// RRF score normalized so that rank 1 in both lists is 1.0.
+    /// RRF score normalized so that rank 1 in both lists is 1.0, plus the signal table.
     pub score: f64,
+    /// Set when the hit was placed by a structural rule rather than ranking.
+    pub pinned: Option<String>,
     pub lex_rank: Option<usize>,
     pub vec_rank: Option<usize>,
+    pub cosine: Option<f32>,
     pub chunk_id: String,
     pub part: usize,
     pub nparts: usize,
@@ -454,23 +490,46 @@ pub struct SearchHit {
     pub narrowed_by: Vec<Narrow>,
     pub refs_in: usize,
     pub refs_out: usize,
+    pub expanded: Vec<Expanded>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SeedBlock {
+    pub budget: usize,
+    pub tokens: usize,
+    pub entries: usize,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct Confidence {
+    /// Fraction of the query's content terms present in the top hit's chunk.
+    pub lex_overlap: f64,
+    pub cosine: Option<f32>,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SearchResult {
     pub query: String,
     pub mode: SearchMode,
+    pub expand: Option<Expand>,
+    pub seed: Option<SeedBlock>,
     pub scope: Option<String>,
     pub source: Option<String>,
     pub kind: Option<String>,
     pub as_of: Option<NaiveDate>,
     pub include_superseded: bool,
     pub limit: usize,
+    /// The query looked like an id or a defined term, so BM25 was weighted x2.
+    pub id_or_term_like: bool,
+    pub weights: (f64, f64),
     pub candidates_lexical: usize,
     pub candidates_vector: usize,
     pub embedding: Option<String>,
-    /// Milestone 5 turns this on when nothing clears the confidence floor.
+    /// Nothing cleared the confidence floor: the hits are nearest candidates, not an answer.
     pub abstained: bool,
+    pub nearest: Option<String>,
+    pub confidence: Confidence,
     pub hits: Vec<SearchHit>,
 }
 
@@ -498,7 +557,43 @@ fn best_line(body: &str, terms: &[String], line_start: usize) -> (Option<usize>,
     }
 }
 
-/// `sect search`: hybrid retrieval (spec B.4). Structural guarantees never come from here.
+fn norm_words(s: &str) -> Vec<String> {
+    s.to_lowercase().split(|c: char| !(c.is_alphanumeric() || c == '-')).filter(|w| !w.is_empty()).map(str::to_string).collect()
+}
+
+/// The longest defined term whose words appear as a phrase in the query (last word may be plural).
+fn find_term<'a>(index: &'a Index, query: &str) -> Option<(&'a sect_struct::TermRec, usize)> {
+    let q = norm_words(query);
+    let mut best: Option<(&sect_struct::TermRec, usize)> = None;
+    for rec in index.graph.terms.values() {
+        let t = norm_words(&rec.term);
+        if t.is_empty() || t.len() > q.len() {
+            continue;
+        }
+        let found = q.windows(t.len()).any(|w| w.iter().zip(t.iter()).enumerate().all(|(i, (a, b))| a == b || (i == t.len() - 1 && a.strip_suffix('s') == Some(b.as_str()))));
+        if found && best.map(|(b, _)| t.len() > norm_words(&b.term).len() || (t.len() == norm_words(&b.term).len() && rec.term.len() > b.term.len())).unwrap_or(true) {
+            best = Some((rec, t.len()));
+        }
+    }
+    best
+}
+
+static DEFINE_CUE: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+    regex::Regex::new(r"(?:defin\w*\s+of|definition\s+of|meaning\s+of|what\s+is|what\s+are|what\s+does|who\s+is|what\s+counts\s+as|define|term)\s+(?:a\s+|an\s+|the\s+)?(?P<t1>.+)$|^(?P<t2>.+?)s?\s+(?:definition|meaning|means|defined|vs|versus)\b").unwrap()
+});
+
+/// A define-shaped query: a cue word right next to the defined term ("what is a hole",
+/// "toeboard definition"), so a long question that merely mentions a term is not one.
+fn define_shaped(query: &str, term: &str) -> bool {
+    let q = norm_words(query).join(" ");
+    let t = norm_words(term).join(" ");
+    let Some(c) = DEFINE_CUE.captures(&q) else { return false };
+    let tail = c.name("t1").or_else(|| c.name("t2")).map(|m| m.as_str()).unwrap_or("");
+    tail == t || tail == format!("{t}s") || tail.starts_with(&format!("{t} ")) || tail.starts_with(&format!("{t}s "))
+}
+
+/// `sect search`: hybrid retrieval (spec B.4) with the signal table. Structural guarantees never
+/// come from here; the pins are direct lookups, not scores.
 pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResult>> {
     let limit = opts.limit.clamp(1, 50);
     if let Some(s) = &opts.scope {
@@ -528,14 +623,46 @@ pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResu
     }
     let allowed_idx: std::collections::HashSet<usize> = chunks.iter().enumerate().filter(|(_, c)| allowed_exprs.contains(&c.expr)).map(|(i, _)| i).collect();
     let by_chunk: BTreeMap<&str, usize> = chunks.iter().enumerate().map(|(i, c)| (c.chunk_id.as_str(), i)).collect();
+    let lx = index.lexical()?;
+    let qterms = lx.text_terms(&opts.query);
 
+    // Pins: citation short-circuit and definition resolution (direct lookups, rank 1).
+    let resolver = sect_corpus::Resolver::new(&index.sources);
+    let mut pins: Vec<(String, Option<String>, String)> = Vec::new();
+    let citation = resolver.resolve(&opts.query).filter(|c| index.tree.get(&c.id).is_some());
+    if let Some(c) = &citation {
+        let expr = match opts.as_of {
+            Some(d) => index.tree.as_of(&c.id, d).map(|e| e.expr.clone()),
+            None => index.tree.get(&c.id).map(|n| n.current.clone()),
+        };
+        if let Some(e) = expr.filter(|e| allowed_exprs.contains(e)) {
+            let anchor = c.anchor.clone().filter(|a| index.tree.get(&c.id).map(|n| n.anchors.contains(a)).unwrap_or(false));
+            pins.push((e, anchor, "citation short-circuit".into()));
+        }
+    }
+    let term_hit = find_term(index, &opts.query);
+    if let Some((rec, _)) = term_hit {
+        if define_shaped(&opts.query, &rec.term) {
+            let expr = match opts.as_of {
+                Some(d) => index.tree.as_of(&rec.id, d).map(|e| e.expr.clone()),
+                None => Some(rec.expr.clone()),
+            };
+            if let Some(e) = expr.filter(|e| allowed_exprs.contains(e)) {
+                pins.push((e, Some(rec.anchor.clone()), format!("definition resolution: {}", rec.term)));
+            }
+        }
+    }
+    let cites = sect_lexical::cite_tokens(&opts.query);
+    let term_like = term_hit.map(|(_, words)| sect_rank::term_like(qterms.len(), words)).unwrap_or(false);
+    let id_or_term_like = citation.is_some() || !cites.is_empty() || term_like;
+    let weights = sect_rank::weights(id_or_term_like, opts.seed);
+
+    // The two legs.
     let mut lex_ids: Vec<String> = Vec::new();
     let mut vec_ids: Vec<String> = Vec::new();
-    let mut terms: Vec<String> = Vec::new();
+    let mut cos_of: std::collections::HashMap<String, f32> = std::collections::HashMap::new();
     let mut embedding = None;
     if opts.mode != SearchMode::Vector {
-        let lx = index.lexical()?;
-        terms = lx.text_terms(&opts.query);
         let filter = sect_lexical::Filter { source: opts.source.clone(), kind: opts.kind.clone(), exprs: Some(allowed_exprs.clone()) };
         lex_ids = lx.search(&opts.query, &filter, sect_lexical::CANDIDATES)?.into_iter().filter(|h| by_chunk.contains_key(h.chunk_id.as_str())).map(|h| h.chunk_id).collect();
     }
@@ -550,30 +677,90 @@ pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResu
             embedding = Some(vectors.model.clone());
             let q = embedder.embed(&[opts.query.clone()])?.remove(0);
             let row_allowed: std::collections::HashSet<usize> = vectors.ids.iter().enumerate().filter(|(_, id)| by_chunk.get(id.as_str()).map(|i| allowed_idx.contains(i)).unwrap_or(false)).map(|(i, _)| i).collect();
-            vec_ids = vectors.search(&q, sect_semantic::CANDIDATES, Some(&row_allowed)).into_iter().map(|(i, _)| vectors.ids[i].clone()).collect();
+            for (i, cos) in vectors.search(&q, sect_semantic::CANDIDATES, Some(&row_allowed)) {
+                vec_ids.push(vectors.ids[i].clone());
+                cos_of.insert(vectors.ids[i].clone(), cos);
+            }
         }
     }
-    if terms.is_empty() {
-        terms = opts.query.split_whitespace().map(|w| w.to_lowercase()).collect();
+    let snippet_terms: Vec<String> = if qterms.is_empty() { opts.query.split_whitespace().map(|w| w.to_lowercase()).collect() } else { qterms.clone() };
+
+    // Fusion, then the signal table.
+    let fused = sect_rank::fuse(&lex_ids, &vec_ids, weights, sect_rank::RRF_K);
+    let mut refs_in: std::collections::HashMap<&str, usize> = std::collections::HashMap::new();
+    for e in &index.graph.edges {
+        if matches!(e.kind.as_str(), "references" | "overrides" | "narrows") && e.from != e.to {
+            *refs_in.entry(e.to.as_str()).or_default() += 1;
+        }
     }
-    let fused = sect_rank::fuse(&lex_ids, &vec_ids, (1.0, 1.0), sect_rank::RRF_K);
+    let per_work: std::collections::HashMap<&str, usize> = fused.iter().filter_map(|f| by_chunk.get(f.chunk_id.as_str())).fold(std::collections::HashMap::new(), |mut m, i| {
+        *m.entry(chunks[*i].id.as_str()).or_default() += 1;
+        m
+    });
+    let qset: std::collections::HashSet<&String> = qterms.iter().collect();
+    let scored: Vec<sect_rank::Fused> = fused
+        .into_iter()
+        .map(|mut f| {
+            if let Some(&i) = by_chunk.get(f.chunk_id.as_str()) {
+                let c = &chunks[i];
+                let tp_terms = lx.text_terms(&format!("{} {} {}", c.label, c.title, c.breadcrumb));
+                let matched = tp_terms.iter().filter(|t| qset.contains(t)).count();
+                let s = sect_rank::Signals {
+                    title_path_fraction: if qset.is_empty() { 0.0 } else { matched as f64 / qset.len() as f64 },
+                    refs_in: refs_in.get(c.id.as_str()).copied().unwrap_or(0),
+                    is_note: c.kind == "note",
+                    superseded: opts.include_superseded && c.superseded,
+                    chunks_in_section: per_work.get(c.id.as_str()).copied().unwrap_or(1),
+                };
+                f.score = sect_rank::apply_signals(f.score, &s);
+            }
+            f
+        })
+        .collect();
     // One hit per section. With --include-superseded every Expression is its own section so an
-    // older text can appear next to the current one (milestone 5 penalizes it by -0.5).
+    // older text can appear next to the current one, carrying the -0.5 penalty.
     let per_expr = opts.include_superseded;
-    let collapsed = sect_rank::collapse(fused, |chunk_id| by_chunk.get(chunk_id).map(|i| if per_expr { chunks[*i].expr.clone() } else { chunks[*i].id.clone() }).unwrap_or_else(|| chunk_id.to_string()));
+    let mut collapsed = sect_rank::collapse(scored, |chunk_id| by_chunk.get(chunk_id).map(|i| if per_expr { chunks[*i].expr.clone() } else { chunks[*i].id.clone() }).unwrap_or_else(|| chunk_id.to_string()));
+    // Pins go first, replacing any ranked entry for the same section.
+    let mut pin_info: std::collections::HashMap<String, (Option<String>, String)> = std::collections::HashMap::new();
+    for (expr, anchor, reason) in pins.iter().rev() {
+        let work = sect_core::split_expr(expr).0.to_string();
+        collapsed.retain(|f| by_chunk.get(f.chunk_id.as_str()).map(|i| chunks[*i].id != work).unwrap_or(true));
+        let chunk_id = chunks.iter().find(|c| c.expr == *expr).map(|c| c.chunk_id.clone()).unwrap_or_else(|| format!("{expr}#c0"));
+        collapsed.insert(0, sect_rank::Fused { chunk_id, score: 2.0, lex_rank: None, vec_rank: None });
+        pin_info.insert(expr.clone(), (anchor.clone(), reason.clone()));
+    }
     let matched = collapsed.len();
+
     let mut hits = Vec::new();
-    for (rank, f) in collapsed.into_iter().take(limit).enumerate() {
+    for (rank, f) in collapsed.iter().take(limit).enumerate() {
         let Some(&ci) = by_chunk.get(f.chunk_id.as_str()) else { continue };
         let c = &chunks[ci];
         let node = index.tree.get(&c.id);
-        let (line, snippet) = best_line(&c.body, &terms, c.line_start);
-        let refs_in = index.graph.edges.iter().filter(|e| e.to == c.id && matches!(e.kind.as_str(), "references" | "overrides" | "narrows")).count();
+        let (line, snippet) = best_line(&c.body, &snippet_terms, c.line_start);
         let refs_out = index.graph.edges.iter().filter(|e| e.from == c.id && e.kind == "references").count();
+        let (anchor, pinned) = pin_info.get(&c.expr).map(|(a, r)| (a.clone(), Some(r.clone()))).unwrap_or((None, None));
+        let expanded = match opts.expand {
+            Some(Expand::Refs) => {
+                let mut seen = std::collections::HashSet::new();
+                index
+                    .graph
+                    .edges
+                    .iter()
+                    .filter(|e| e.from == c.id && e.kind == "references" && e.resolved)
+                    .filter(|e| seen.insert(e.to.clone()))
+                    .filter_map(|e| index.tree.get(&e.to).map(|t| Expanded { id: t.id.clone(), label: t.label.clone(), title: t.title.clone(), anchor: e.anchor.clone(), effective: t.effective }))
+                    .take(12)
+                    .collect()
+            }
+            Some(Expand::Ancestors) => index.tree.ancestors(&c.id).into_iter().rev().map(|a| Expanded { id: a.id.clone(), label: a.label.clone(), title: a.title.clone(), anchor: None, effective: a.effective }).collect(),
+            None => vec![],
+        };
         hits.push(SearchHit {
             rank: rank + 1,
             id: c.id.clone(),
             expr: c.expr.clone(),
+            anchor,
             label: c.label.clone(),
             title: c.title.clone(),
             breadcrumb: c.breadcrumb.clone(),
@@ -581,8 +768,10 @@ pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResu
             source: c.source.clone(),
             effective: c.effective,
             score: (f.score * 10_000.0).round() / 10_000.0,
+            pinned,
             lex_rank: f.lex_rank,
             vec_rank: f.vec_rank,
+            cosine: cos_of.get(&c.chunk_id).copied(),
             chunk_id: c.chunk_id.clone(),
             part: c.part,
             nparts: c.nparts,
@@ -590,13 +779,76 @@ pub fn search(index: &Index, opts: &SearchOptions) -> Result<Response<SearchResu
             snippet,
             overridden_by: node.map(|n| n.overridden_by.clone()).unwrap_or_default(),
             narrowed_by: node.map(|n| n.narrowed_by.clone()).unwrap_or_default(),
-            refs_in,
+            refs_in: refs_in.get(c.id.as_str()).copied().unwrap_or(0),
             refs_out,
+            expanded,
         });
     }
+
+    // Abstention: only when no structural pin answered.
+    let mut confidence = Confidence { lex_overlap: 0.0, cosine: None };
+    let mut abstained = hits.is_empty();
+    let mut nearest = None;
+    if pins.is_empty() {
+        if let Some(top) = hits.first() {
+            let idx = by_chunk[top.chunk_id.as_str()];
+            let chunk_terms: std::collections::HashSet<String> = lx.text_terms(&chunks[idx].text).into_iter().collect();
+            confidence.lex_overlap = if qset.is_empty() { 0.0 } else { qterms.iter().filter(|t| chunk_terms.contains(*t)).count() as f64 / qterms.len() as f64 };
+            confidence.cosine = if opts.mode == SearchMode::Fts { None } else { top.cosine };
+            abstained = sect_rank::should_abstain(confidence.lex_overlap, confidence.cosine);
+        }
+        if abstained {
+            nearest = Some(hits.first().map(|h| h.breadcrumb.clone()).or_else(|| opts.scope.as_ref().and_then(|s| index.tree.get(s)).map(|n| n.breadcrumb.clone())).unwrap_or_else(|| "corpus root".into()));
+        }
+    }
+
+    // Seed block: a compact, lexical-heavy context block under a token budget.
+    let seed = if opts.seed {
+        let budget = opts.budget.max(50);
+        let mut tokens = 0usize;
+        let mut lines = Vec::new();
+        for h in &hits {
+            let flags = if h.overridden_by.is_empty() && h.narrowed_by.is_empty() { String::new() } else { format!(" | {}{}", if h.overridden_by.is_empty() { String::new() } else { format!("overridden-by {}", h.overridden_by.join(",")) }, if h.narrowed_by.is_empty() { String::new() } else { format!(" narrowed-by {}", h.narrowed_by.iter().map(|n| n.id.clone()).collect::<Vec<_>>().join(",")) }) };
+            let head = format!("- {} | {} {} | {} | eff {}{}", h.id, h.label, h.title, h.breadcrumb.rsplit(" > ").nth(1).unwrap_or(""), h.effective.map(|d| d.to_string()).unwrap_or_else(|| "n/a".into()), flags);
+            let snippet: String = h.snippet.split_whitespace().take(40).collect::<Vec<_>>().join(" ");
+            let entry_tokens = head.split_whitespace().count() + snippet.split_whitespace().count();
+            if tokens + entry_tokens > budget {
+                break;
+            }
+            tokens += entry_tokens;
+            lines.push(format!("{head}\n  {snippet}"));
+        }
+        Some(SeedBlock { budget, tokens, entries: lines.len(), text: lines.join("\n") })
+    } else {
+        None
+    };
+
     let shown = hits.len();
-    let extra = vec![("candidates-lexical".to_string(), lex_ids.len()), ("candidates-vector".to_string(), vec_ids.len()), ("limit".to_string(), limit)];
-    let result = SearchResult { query: opts.query.clone(), mode: opts.mode, scope: opts.scope.clone(), source: opts.source.clone(), kind: opts.kind.clone(), as_of: opts.as_of, include_superseded: opts.include_superseded, limit, candidates_lexical: lex_ids.len(), candidates_vector: vec_ids.len(), embedding, abstained: false, hits };
+    let mut extra = vec![("candidates-lexical".to_string(), lex_ids.len()), ("candidates-vector".to_string(), vec_ids.len()), ("limit".to_string(), limit)];
+    if abstained {
+        extra.push(("abstained".to_string(), 1));
+    }
+    let result = SearchResult {
+        query: opts.query.clone(),
+        mode: opts.mode,
+        expand: opts.expand,
+        seed,
+        scope: opts.scope.clone(),
+        source: opts.source.clone(),
+        kind: opts.kind.clone(),
+        as_of: opts.as_of,
+        include_superseded: opts.include_superseded,
+        limit,
+        id_or_term_like,
+        weights,
+        candidates_lexical: lex_ids.len(),
+        candidates_vector: vec_ids.len(),
+        embedding,
+        abstained,
+        nearest,
+        confidence,
+        hits,
+    };
     Ok(Response { header: header(index, shown, matched, extra), result })
 }
 

@@ -25,7 +25,7 @@ One JSONL file per question type. Every E.1 type is covered:
  "generation": "hand | crawler", "notes": "..."}
 ```
 
-`expected.op` is one of `map_complete`, `as_of`, `as_of_search`, `history`, `refs`, `overlay`, `table_lookup`. Gold and expected ids are Work ids (`CFR:99-2.7`) except where an Expression is meant (`CFR:99-2.7@2024-01-01`).
+`expected.op` is one of `map_complete`, `as_of`, `as_of_search`, `history`, `refs`, `overlay`, `table_lookup`. Gold and expected ids are Work ids (`CFR:99-2.7`) except where an Expression is meant (`CFR:99-2.7@2024-01-01`). `as_of_search` checks the Expression that `search --as-of` serves for the expected Work on that date; which Work ranks first is ranking, not the as-of guarantee.
 
 ## Cross-reference questions: the CRAwLeR recipe
 
