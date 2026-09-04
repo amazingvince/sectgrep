@@ -28,7 +28,7 @@ if (cmd === "verify") {
     process.exit(2);
   }
   const level = readState(review, arg("source")!).level;
-  verifyRun({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, review, work: arg("work"), concurrency: arg("concurrency") ? Number(arg("concurrency")) : process.env.SECT_VERIFIER_CONCURRENCY ? Number(process.env.SECT_VERIFIER_CONCURRENCY) : undefined, limit: arg("limit") ? Number(arg("limit")) : undefined, level, log: process.argv.includes("--json") ? (l) => console.error(l) : undefined })
+  verifyRun({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, review, work: arg("work"), sectBin: arg("sect"), concurrency: arg("concurrency") ? Number(arg("concurrency")) : process.env.SECT_VERIFIER_CONCURRENCY ? Number(process.env.SECT_VERIFIER_CONCURRENCY) : undefined, limit: arg("limit") ? Number(arg("limit")) : undefined, level, log: process.argv.includes("--json") ? (l) => console.error(l) : undefined })
     .then((r) => {
       if (process.argv.includes("--json")) console.log(JSON.stringify({ ...r, sections: undefined }, null, 2));
       else console.log(`${r.run_id}: ${r.counts.auto} auto, ${r.counts.conflict} conflict of ${r.counts.sections} sections; agreement ${(100 * r.agreement_rate).toFixed(1)}% on ${r.counts.judgments} judgment fields (${r.counts.deterministic} deterministic); ${r.counts.evidence_fails} evidence failure(s); verifier ${r.verifier.model}, ${r.usage.calls} call(s), $${r.usage.cost.toFixed(4)} -> ${review}/${r.run_id}.md`);
@@ -127,6 +127,7 @@ ingest({
   work: arg("work"),
   concurrency: arg("concurrency") ? Number(arg("concurrency")) : process.env.SECT_INGEST_CONCURRENCY ? Number(process.env.SECT_INGEST_CONCURRENCY) : undefined,
   limit: arg("limit") ? Number(arg("limit")) : undefined,
+  only: arg("only"),
   dryRun: process.argv.includes("--dry-run"),
   skillPath: arg("skill"),
   log: process.argv.includes("--json") ? (l) => console.error(l) : undefined,

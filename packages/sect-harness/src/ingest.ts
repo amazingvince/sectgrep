@@ -15,7 +15,8 @@ import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
 import { connectSect } from "./sect-tools.js";
 import { claimRun, finishRun, lockSource, runDir, runIdFor, type RunEntry } from "./staging.js";
-import { collectKnown, preResolve } from "./refs.js";
+import { composeExpressions } from "./notice.js";
+import { ancestorsOf, collectKnown, preResolve } from "./refs.js";
 import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary, type XrefResolution } from "./tools.js";
 
 export { bareReferences } from "./refs.js";
@@ -34,6 +35,8 @@ export interface IngestOptions {
   concurrency?: number;
   /** Only the first N sections (a smoke run). */
   limit?: number;
+  /** Only leaves whose input path contains this text, with their ancestors (a part of a title). */
+  only?: string;
   skillPath?: string;
   model?: ModelChoice;
   log?: (line: string) => void;
@@ -111,12 +114,13 @@ function sentencesWith(text: string, spans: string[]): string[] {
  * The per-section prompt: what the harness already linked, what remains to resolve, the terms
  * the converter detected, and the body (its head, with the sentences that matter from the rest).
  */
-export function sectionPrompt(rel: string, body: string, linked: XrefResolution[], remaining: string[], ws2Defines: string[]): string {
+export function sectionPrompt(rel: string, body: string, linked: XrefResolution[], remaining: string[], ws2Defines: string[], hints: string[] = []): string {
   const lines = [`Section \`${rel}\`.`];
   if (linked.length) lines.push(`Already linked by the harness, do not search for them: ${linked.map((x) => `"${x.text}" -> ${x.id}${x.anchor ? "#" + x.anchor : ""}`).join("; ")}.`);
   lines.push(remaining.length ? `Resolve with sect_search (limit 3, one search each): ${remaining.map((r) => `"${r}"`).join("; ")}.` : "No reference remains to resolve: do not search.");
   lines.push(ws2Defines.length ? `Terms the converter detected as defined: ${ws2Defines.join("; ")}.` : "The converter detected no defined term.");
-  lines.push(`Then call section_stage once with input="${rel}", context, defines, xrefs (only the ones you resolved) and flags.`, "", "```markdown");
+  lines.push(...hints);
+  lines.push(`Then call section_stage once with input="${rel}", context, defines, xrefs (only the ones you resolved) and flags${hints.length ? ", and the fields the hints above ask for" : ""}.`, "", "```markdown");
   const long = body.length > HEAD_CHARS;
   lines.push(long ? body.slice(0, HEAD_CHARS) + "\n[the rest of the section is not shown]" : body, "```");
   if (long) {
@@ -168,6 +172,9 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   const known = collectKnown([cx.corpus, inputDir]);
   mkdirSync(path.join(dir, o.source), { recursive: true });
   const files = walkMarkdown(inputDir).map((f) => path.relative(inputDir, f).replace(/\\/g, "/"));
+  // The source's kind decides what the agent is asked for (D.2 steps 8 and 9).
+  const sourceYaml = path.join(inputDir, "_source.yaml");
+  const sourceKind = existsSync(sourceYaml) ? String(((YAML.parse(readFileSync(sourceYaml, "utf-8")) ?? {}) as { kind?: string }).kind ?? "base") : "base";
   // A node other nodes name as their parent is structural: it carries a heading and a listing
   // of its children, not rule text. The harness stages it with WS2's context; the agent's turns
   // go to the leaves, whatever the levels are called.
@@ -175,9 +182,51 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
     const split = splitFrontMatter(readFileSync(path.join(inputDir, rel), "utf-8"));
     return String(((YAML.parse(split?.front ?? "") ?? {}) as { id?: string }).id ?? "");
   };
-  const structural = files.filter((f) => (known.children.get(idOf(f)) ?? 0) > 0);
-  const sectionFiles = files.filter((f) => !(known.children.get(idOf(f)) ?? 0));
-  const sections = o.limit ? sectionFiles.slice(0, o.limit) : sectionFiles;
+  const idOfFile = new Map(files.map((f) => [f, idOf(f)]));
+  const leafFiles = files.filter((f) => !(known.children.get(idOfFile.get(f)!) ?? 0));
+  const chosen = o.only ? leafFiles.filter((f) => f.includes(o.only!)) : leafFiles;
+  const sections = o.limit ? chosen.slice(0, o.limit) : chosen;
+  let structural = files.filter((f) => (known.children.get(idOfFile.get(f)!) ?? 0) > 0);
+  if (o.only) {
+    // A subset: only the ancestors of the chosen leaves are staged, and their listings keep a
+    // link only to what this run stages or the corpus already holds.
+    const keep = new Set<string>();
+    for (const f of sections) for (const a of ancestorsOf(known, idOfFile.get(f)!)) keep.add(a.id);
+    structural = structural.filter((f) => keep.has(idOfFile.get(f)!));
+    cx.keepIds = new Set([...keep, ...sections.map((f) => idOfFile.get(f)!), ...collectKnown([cx.corpus]).ids.keys()]);
+  }
+  const structuralIds = new Set(structural.map((f) => idOfFile.get(f)!));
+  // Step 9: after the leaves are staged, each notice's Actions compose the new Expressions.
+  const composeNotices = () => {
+    if (sourceKind !== "notice") return;
+    for (const r of [...cx.staged]) {
+      if (r.derived || structuralIds.has(r.id)) continue;
+      const c = composeExpressions(cx, r.path, cx.corpus, r.input);
+      log(`${r.id}: ${c.derived.length} Expression(s) composed${c.unapplied.length ? `; unapplied: ${c.unapplied.map((u) => `${u.action_id} (${u.why})`).join("; ")}` : ""}${c.skipped.length ? `; skipped: ${c.skipped.map((s) => `${s.target_id} (${s.why})`).join("; ")}` : ""}`);
+    }
+  };
+  /** What the prompt asks for beyond a base section, from the input's own fields. */
+  const hintsFor = (front: Record<string, unknown>): string[] => {
+    if (sourceKind === "overlay") {
+      const ov = ((front.overrides ?? []) as unknown[]).map(String);
+      const na = ((front.narrows ?? []) as Array<{ id?: string; anchor?: string } | string>).map((n) => (typeof n === "string" ? n : `${n.id}${n.anchor ? "#" + n.anchor : ""}`));
+      return [
+        "This is an overlay item: decide which base nodes it overrides (replaces whole) and which paragraphs it narrows (changes or excepts), searching the base with sect_search on its subject and the citations in it; give overrides [{id, rationale}] and narrows [{id, anchor, rationale}] with one sentence each, or neither when the item only adopts the base as it stands.",
+        ov.length || na.length ? `The converter proposed overrides: ${ov.join(", ") || "(none)"}; narrows: ${na.join(", ") || "(none)"}. Confirm or correct them.` : "",
+      ].filter(Boolean);
+    }
+    if (sourceKind === "notice") {
+      const acts = (front.actions ?? []) as Array<{ action_id: string; target_id: string; target_anchor?: string | null; kind: string; instruction?: string }>;
+      if (!acts.length) return ["This is a notice with no Action candidates from the converter: say so in flags."];
+      const lines = ["This is a notice. Confirm or correct each Action below in `actions` (one entry per action_id: target_id, target_anchor or null, kind). A target must be a real id; an anchor must be one of the target's paragraphs listed. Use sect_read on a target when in doubt. Do not write amended text."];
+      for (const a of acts) {
+        const anchors = [...(cx.knownIds?.get(a.target_id) ?? [])].filter((x) => /^[a-z0-9-]+$/.test(x)).slice(0, 40);
+        lines.push(`- ${a.action_id}: ${String(a.instruction ?? "").slice(0, 300)} -> proposed ${a.target_id}${a.target_anchor ? "#" + a.target_anchor : ""}, ${a.kind}${cx.knownIds?.has(a.target_id) ? `; target paragraphs: ${anchors.join(", ") || "(none)"}` : "; target not in the corpus"}`);
+      }
+      return lines;
+    }
+    return [];
+  };
   // The source's registry entry travels with the sections: the run directory is a corpus root
   // and the source is its one subdirectory, so validators and `sect index` read it as a corpus.
   if (existsSync(path.join(inputDir, "_source.yaml"))) writeFileSync(path.join(dir, o.source, "_source.yaml"), readFileSync(path.join(inputDir, "_source.yaml")), "utf-8");
@@ -212,6 +261,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
           failed.push({ input: rel, error: e instanceof Error ? e.message : String(e) });
         }
       }
+      composeNotices();
     } else {
       const choice = o.model ?? modelFromEnv();
       if (!choice.model || !choice.config.apiKey) throw new Error(`no model available: provider ${choice.config.provider}, model ${choice.config.model}; copy .env.example to .env, or pass --dry-run`);
@@ -233,7 +283,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
             initialState: { systemPrompt: skill, model: choice.model!, tools },
             beforeToolCall: async ({ toolCall }) => guardToolCall(cx, toolCall as { name: string; arguments: Record<string, unknown> }),
           });
-          const prompt = sectionPrompt(rel, body, resolved, remaining, front.defines ?? []) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
+          const prompt = sectionPrompt(rel, body, resolved, remaining, front.defines ?? [], hintsFor(front as Record<string, unknown>)) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
           await agent.prompt(prompt);
           await agent.waitForIdle();
           const u = usageOf(agent);
@@ -264,6 +314,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
           }
         };
         await Promise.all(Array.from({ length: pool }, worker));
+        composeNotices();
         // Step 10: fix hard failures, at most three rounds. Files the agents wrote beside the
         // staged sections go first: nothing can fix them, and they are not the document.
         const strays = removeStrayFiles(cx);

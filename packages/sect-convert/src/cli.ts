@@ -17,6 +17,7 @@ import { pageGeometry, pngSize, renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber } from "./ocr/transcriber.js";
 import { loadDotEnv, modelConfig, providerExtras } from "./env.js";
 import { fetchSectionDates, readSectionDates, readTitleDate } from "./versioner.js";
+import { convertOverlay, extractedSha } from "./overlay.js";
 
 // The nearest .env (gitignored) supplies keys and model choices; the shell wins over it.
 loadDotEnv();
@@ -154,6 +155,25 @@ if (cmd === "fetch") {
     console.log(`${n.id} effective ${n.effective}: ${n.actions.length} action candidate(s) [${n.actions.map((a) => `${a.kind} ${a.target_id}${a.target_anchor ? "#" + a.target_anchor : ""}`).join("; ")}] -> ${join(dir, n.docnum + ".md")}`);
   }
   console.log(`${files.length} notice(s), ${total} action candidate(s)`);
+} else if (cmd === "overlay") {
+  // sect-convert overlay --work work/<sha> --source-yaml <_source.yaml> --raw <raw path> --out <corpus root> [--effective YYYY-MM-DD] [--only ID,ID]
+  const work = arg("work");
+  const sourceYaml = arg("source-yaml");
+  const out = arg("out");
+  const rawPath = arg("raw");
+  if (!work || !sourceYaml || !out || !rawPath) {
+    console.error("usage: sect-convert overlay --work work/<sha> --source-yaml <_source.yaml> --raw <raw path> --out <corpus root> [--effective YYYY-MM-DD] [--only ID,ID]");
+    process.exit(2);
+  }
+  const sha = extractedSha(work) ?? createHash("sha256").update(readFileSync(rawPath)).digest("hex");
+  const version = /^version:\s*"?(\d{4}-\d{2}-\d{2})/m.exec(readFileSync(sourceYaml, "utf-8"))?.[1];
+  const r = convertOverlay({ work, sourceYaml, rawPath: rawPath.replace(/\\/g, "/"), rawSha256: sha, effective: arg("effective") ?? version ?? new Date().toISOString().slice(0, 10), only: arg("only")?.split(",").map((s) => s.trim()).filter(Boolean) });
+  for (const f of r.files) {
+    const p = join(out, f.path);
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, f.text, "utf8");
+  }
+  console.log(`overlay: ${r.items.length} item(s) [${r.items.map((i) => i.id).join(", ")}] -> ${out}; ${r.skipped.length} element(s) skipped${r.skipped.length ? ` (${r.skipped.slice(0, 3).map((s) => `p${s.page}: ${s.why}`).join("; ")})` : ""}`);
 } else if (cmd === "validate") {
   // The seven C.5 validators over a staging directory (or a corpus root), exit 1 on any error.
   const staging = process.argv[3];

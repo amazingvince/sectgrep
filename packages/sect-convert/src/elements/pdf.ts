@@ -54,10 +54,16 @@ export async function readPdfPages(data: Uint8Array): Promise<PdfPage[]> {
     };
     const items: Item[] = [];
     for (const it of content.items as Array<{ str: string; transform: number[]; width: number; height: number; fontName: string }>) {
-      if (!("str" in it) || !it.str.trim()) continue;
+      if (!("str" in it) || !it.str) continue;
       const [a, b, , d, e, f] = it.transform;
       const size = Math.round(Math.hypot(a, b) * 10) / 10 || Math.abs(d);
       const h = it.height || size;
+      // Some producers emit every word space as its own zero-height item; it is the space
+      // between words, so it is kept as one, not dropped and not re-guessed from the gap.
+      if (!it.str.trim()) {
+        if (/\s/.test(it.str) && it.width > 0) items.push({ str: " ", x: e, y: vp.height - f - h, w: it.width, h, size, bold: false });
+        continue;
+      }
       const style = (content.styles as Record<string, { fontFamily?: string }>)[it.fontName];
       const bold = /bold|black|heavy|semibold|demi/i.test(fontName(it.fontName) + " " + (style?.fontFamily ?? ""));
       items.push({ str: it.str, x: e, y: vp.height - f - h, w: it.width, h, size, bold });
@@ -91,7 +97,8 @@ function groupLines(items: Item[]): Line[] {
     let cursor = -Infinity;
     for (const i of l.items) {
       const gap = i.x - cursor;
-      if (text && gap > l.size * 0.25 && !text.endsWith(" ") && !i.str.startsWith(" ")) text += " ";
+      // A word gap in tight justified text is about a fifth of the size; kerned fragments sit under a tenth.
+      if (text && gap > l.size * 0.15 && !text.endsWith(" ") && !i.str.startsWith(" ")) text += " ";
       text += i.str;
       cursor = i.x + i.w;
     }

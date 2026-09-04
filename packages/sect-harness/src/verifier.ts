@@ -7,7 +7,8 @@
 
 import { complete, type AssistantMessage, type Usage } from "@mariozechner/pi-ai";
 import { providerExtras, splitFrontMatter } from "@sectgrep/convert";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 import { evidenceChecks, type EvidenceIssue } from "./evidence.js";
@@ -20,6 +21,8 @@ export interface VerifierAnswer {
   defines: string[];
   overrides?: string[];
   narrows?: Array<{ id: string; anchor?: string | null }>;
+  /** One entry per action_id: the target the instruction names, or null when no candidate fits. */
+  actions?: Array<{ action_id: string; target_id: string | null; target_anchor?: string | null; kind?: string }>;
   action_targets?: string[];
   notes?: string;
 }
@@ -87,6 +90,8 @@ export interface VerifyOptions {
   model?: ModelChoice;
   /** Injected verifier (tests): the prompt in, the answer out. */
   verify?: (prompt: string, system: string) => Promise<{ answer: VerifierAnswer; usage?: Usage }>;
+  /** The sect binary, for search-derived overlay candidates (default SECT_BIN). */
+  sectBin?: string;
   concurrency?: number;
   limit?: number;
   level?: SamplingLevel;
@@ -96,20 +101,31 @@ export interface VerifyOptions {
 export { candidatesFor, collectKnown, isDeterministic, type Known };
 
 export const VERIFIER_SYSTEM = `You are the Verifier of sectgrep (spec D.3). You check one section of a regulatory corpus, blind: you do not see the ingest agent's answers, and you decide every judgment field yourself from the section and the candidates given. You never invent an id: an id you give must be one of the candidates listed for that reference, or null. Answer with one JSON object and nothing else:
-{"xrefs":[{"text":"<the reference exactly as listed>","id":"<candidate id or null>","anchor":"<paragraph anchor or null>","confidence":0.0-1.0,"reason":"<one short sentence>"}],"defines":["<term the section defines, as written, without emphasis marks>"],"overrides":["<ids, only for an overlay that replaces sections>"],"narrows":[{"id":"<id>","anchor":"<anchor or null>"}],"action_targets":["<ids, only for a notice>"],"notes":"<anything a person should see, or empty>"}
+{"xrefs":[{"text":"<the reference exactly as listed>","id":"<candidate id or null>","anchor":"<paragraph anchor or null>","confidence":0.0-1.0,"reason":"<one short sentence>"}],"defines":["<term the section defines, as written, without emphasis marks>"],"overrides":["<candidate ids the overlay item replaces whole; only for an overlay>"],"narrows":[{"id":"<candidate id whose paragraph the item changes or excepts>","anchor":"<anchor or null>"}],"actions":[{"action_id":"<as listed>","target_id":"<candidate id or null>","target_anchor":"<anchor or null>","kind":"amend|add|remove|redesignate|stay"}],"notes":"<anything a person should see, or empty>"}
 Rules: a citation in a form a source's id pattern recognizes is the id that pattern builds, when that id is a candidate; a citation that names no source is the candidate in the section's own source when there is one, and is uncertain (confidence below 0.5) when only other sources offer it; a container named by its level and number (a part, chapter, subpart, article) is that node in the section's own source; "paragraph (x) of this section" is the section itself with anchor x; "this <level>" is the nearest ancestor of that level; a term is defined only by a sentence of the form "Term means ..." or "Term is defined as ...". Keep reasons short.`;
 
-export function verifierPrompt(rel: string, inputText: string, refs: string[], candidates: Map<string, Candidate[]>, kind: string): string {
+export interface PromptExtras {
+  /** Overlay: the base candidates search and the item's citations offer. */
+  overlayCandidates?: Candidate[];
+  /** Notice: each Action's instruction and the candidates its citations offer (the converter's proposal is not shown). */
+  actions?: Array<{ action_id: string; instruction: string; candidates: Candidate[] }>;
+}
+
+export function verifierPrompt(rel: string, inputText: string, refs: string[], candidates: Map<string, Candidate[]>, kind: string, extras: PromptExtras = {}): string {
   const lines = [`Section file: ${rel} (source kind: ${kind}).`, ""];
+  const show = (c: Candidate[]) => (c.length ? c.map((x) => `${x.id}${x.anchor ? "#" + x.anchor : ""} (${x.title.slice(0, 60) || "no title"})`).join("; ") : "no candidate");
   if (refs.length) {
     lines.push("Bare references in the body and the candidate ids the corpus offers for each:");
-    for (const r of refs) {
-      const c = candidates.get(r) ?? [];
-      lines.push(`- "${r}": ${c.length ? c.map((x) => `${x.id}${x.anchor ? "#" + x.anchor : ""} (${x.title.slice(0, 60) || "no title"})`).join("; ") : "no candidate"}`);
-    }
+    for (const r of refs) lines.push(`- "${r}": ${show(candidates.get(r) ?? [])}`);
   } else lines.push("No bare references were found in the body.");
-  if (kind === "overlay") lines.push("", "This is an overlay: decide which base sections it overrides (replaces whole) or narrows (paragraphs), from the candidates above.");
-  if (kind === "notice") lines.push("", "This is a notice: decide which sections its amendatory instructions target, from the candidates above.");
+  if (kind === "overlay") {
+    lines.push("", "This is an overlay item. From these base candidates (found by search on its subject and by its citations), list in overrides the ones it replaces whole and in narrows the ones whose paragraph it changes or excepts, with the paragraph anchor when the text names one; an item that only adopts the base as it stands has neither:");
+    lines.push(`- candidates: ${show(extras.overlayCandidates ?? [])}`);
+  }
+  if (kind === "notice") {
+    lines.push("", "This is a notice. For each Action below, name in actions the target its instruction amends (a candidate id or null), the paragraph anchor it names or null, and the kind of change:");
+    for (const a of extras.actions ?? []) lines.push(`- ${a.action_id}: ${a.instruction.slice(0, 300)} | candidates: ${show(a.candidates)}`);
+  }
   lines.push("", "```markdown", inputText.length > 30_000 ? inputText.slice(0, 30_000) + "\n[truncated]" : inputText, "```");
   return lines.join("\n");
 }
@@ -126,6 +142,7 @@ export function parseAnswer(text: string): VerifierAnswer {
     defines: Array.isArray(j.defines) ? j.defines.map(String) : [],
     overrides: Array.isArray(j.overrides) ? j.overrides.map(String) : [],
     narrows: Array.isArray(j.narrows) ? j.narrows.map((n) => ({ id: String((n as { id?: unknown }).id ?? n), anchor: (n as { anchor?: unknown }).anchor ? String((n as { anchor?: unknown }).anchor) : null })) : [],
+    actions: Array.isArray(j.actions) ? j.actions.map((a) => ({ action_id: String(a.action_id ?? ""), target_id: a.target_id ? String(a.target_id) : null, target_anchor: a.target_anchor ? String(a.target_anchor) : null, kind: a.kind ? String(a.kind) : undefined })) : [],
     action_targets: Array.isArray(j.action_targets) ? j.action_targets.map(String) : [],
     notes: j.notes ? String(j.notes) : undefined,
   };
@@ -145,7 +162,7 @@ export function summarize(verdicts: SectionVerdict[], evidenceFails: number): { 
 }
 
 /** Field-by-field comparison of the ingest record and the verifier's answer. */
-export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: string[], candidates: Map<string, Candidate[]>, level: SamplingLevel, front: { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> }): Judgment[] {
+export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: string[], candidates: Map<string, Candidate[]>, level: SamplingLevel, front: { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ action_id?: string; target_id: string; target_anchor?: string | null; kind?: string }> }): Judgment[] {
   const out: Judgment[] = [];
   // The verifier may write the anchor into the id ("CFR:4-21.8#e"); ids compare without anchors.
   const split = (v: { id: string | null; anchor?: string | null }) => {
@@ -176,14 +193,40 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
   const a = new Set(record.defines.map(norm));
   const b = new Set(answer.defines.map(norm));
   if (a.size || b.size) out.push({ field: "defines", ingest: record.defines.join(", ") || "(none)", verifier: answer.defines.map((d) => d.replace(/[*_`]/g, "").trim()).join(", ") || "(none)", agree: a.size === b.size && [...a].every((t) => b.has(t)) });
-  const ov = ((front.overrides ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? String((t as { id?: unknown }).id) : String(t)));
-  if (ov.length || answer.overrides?.length) out.push({ field: "overrides", ingest: ov.join(", ") || "(none)", verifier: (answer.overrides ?? []).join(", ") || "(none)", agree: ov.length === (answer.overrides ?? []).length && ov.every((t) => answer.overrides?.includes(t)) });
-  const na = ((front.narrows ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? idOf(t as { id: string; anchor?: string }) : String(t)));
-  const nv = (answer.narrows ?? []).map(idOf);
+  // Overlay proposals: the record's when the agent made them, else the input's (a dry run).
+  const ov = record.overrides ? record.overrides.map((o) => o.id) : ((front.overrides ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? String((t as { id?: unknown }).id) : String(t)));
+  const vo = [...new Set((answer.overrides ?? []).map((t) => t.split("#")[0]))];
+  if (ov.length || vo.length) out.push({ field: "overrides", ingest: ov.join(", ") || "(none)", verifier: vo.join(", ") || "(none)", agree: ov.length === vo.length && ov.every((t) => vo.includes(t)) });
+  const na = record.narrows ? record.narrows.map((n) => idOf({ id: n.id, anchor: n.anchor ?? null })) : ((front.narrows ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? idOf(t as { id: string; anchor?: string }) : String(t)));
+  const nv = (answer.narrows ?? []).map((n) => idOf(split(n) as { id: string; anchor?: string | null }));
   if (na.length || nv.length) out.push({ field: "narrows", ingest: na.join(", ") || "(none)", verifier: nv.join(", ") || "(none)", agree: na.length === nv.length && na.every((t) => nv.includes(t)) });
-  const at = (front.actions ?? []).map((x) => x.target_id);
-  if (at.length || answer.action_targets?.length) out.push({ field: "action", ingest: [...new Set(at)].join(", ") || "(none)", verifier: [...new Set(answer.action_targets ?? [])].join(", ") || "(none)", agree: new Set(at).size === new Set(answer.action_targets ?? []).size && at.every((t) => answer.action_targets?.includes(t)) });
+  // Notice Actions, one judgment each: the target and paragraph the instruction amends.
+  const acts = record.actions ?? (front.actions ?? []).map((a) => ({ action_id: String(a.action_id ?? ""), target_id: a.target_id, target_anchor: a.target_anchor ?? null, kind: a.kind ?? "amend" }));
+  const va = new Map((answer.actions ?? []).map((a) => [a.action_id, a]));
+  for (const a of acts) {
+    if (!a.action_id) continue;
+    const v = va.get(a.action_id);
+    const vs = v?.target_id ? split({ id: v.target_id, anchor: v.target_anchor ?? null }) : null;
+    const ingest = idOf({ id: a.target_id, anchor: a.target_anchor ?? null });
+    const verifier = vs?.id ? idOf({ id: vs.id, anchor: vs.anchor }) : v ? "(none)" : "(not judged)";
+    const c = [...new Set((candidates.get(a.action_id) ?? []).map((x) => x.id))];
+    const det = c.length === 1 && c[0] === a.target_id && (!vs || vs.id === a.target_id);
+    out.push({ field: "action", text: a.action_id, ingest, verifier, agree: det || ingest === verifier, deterministic: det, verifier_reason: v ? `kind ${v.kind ?? "?"}` : undefined });
+  }
   return out;
+}
+
+/** Ids the corpus's own search returns for a query, through the sect binary; none without one. */
+export function searchIds(bin: string | undefined, corpus: string, query: string, limit = 8): string[] {
+  if (!bin || !query.trim()) return [];
+  const r = spawnSync(bin.includes("/") || bin.includes("\\") ? path.resolve(bin) : bin, ["search", query.slice(0, 400), "--corpus", corpus, "--json", "--limit", String(limit), "--no-refresh"], { encoding: "utf-8" });
+  if (r.status !== 0) return [];
+  try {
+    const j = JSON.parse(r.stdout.slice(r.stdout.indexOf("{"))) as { result?: { hits?: Array<{ id?: string }> } };
+    return (j.result?.hits ?? []).map((h) => String(h.id ?? "")).filter(Boolean);
+  } catch {
+    return [];
+  }
 }
 
 function usageOf(m: AssistantMessage): { input: number; output: number; cost: number } {
@@ -201,6 +244,7 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   if (!records.length) throw new Error(`${o.runDir} has no .ingest records; ingest first`);
   const known = collectKnown([path.resolve(o.corpus), inputDir]);
   const level = o.level ?? "normal";
+  const sectBin = o.sectBin ?? process.env.SECT_BIN;
   const choice = o.verify ? undefined : (o.model ?? verifierModelFromEnv());
   if (!o.verify && (!choice?.model || !choice.config.apiKey)) throw new Error(`no verifier model: provider ${choice?.config.provider}, model ${choice?.config.model}; set SECT_VERIFIER_MODEL and the key in .env`);
   const evidence = evidenceChecks({ staging: runDir, corpus: o.corpus, records, work: o.work });
@@ -210,25 +254,54 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
     const y = path.join(inputDir, "_source.yaml");
     return existsSync(y) ? String(((YAML.parse(readFileSync(y, "utf-8")) ?? {}) as { kind?: string }).kind ?? "base") : "base";
   })();
-  const todo = (o.limit ? records.slice(0, o.limit) : records).filter((r) => existsSync(path.join(inputDir, r.input)));
+  const todo = (o.limit ? records.slice(0, o.limit) : records).filter((r) => r.derived || existsSync(path.join(inputDir, r.input)));
   const usage = { input: 0, output: 0, cost: 0, calls: 0 };
   const verdicts: SectionVerdict[] = [];
   let next = 0;
   const worker = async () => {
     while (next < todo.length) {
       const r = todo[next++];
+      // An Expression the harness composed carries no judgment of its own; the evidence checks see it.
+      if (r.derived) {
+        const ev = evidenceByPath.get(r.path.replace(/\\/g, "/")) ?? [];
+        verdicts.push({ id: r.id, path: r.path, input: r.input, tier: ev.some((i) => i.level === "fail") ? "conflict" : "auto", judgments: [], evidence: ev });
+        continue;
+      }
       const text = readFileSync(path.join(inputDir, r.input), "utf-8");
       const split = splitFrontMatter(text);
-      const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> };
+      const front = (YAML.parse(split?.front ?? "") ?? {}) as { title?: string; overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ action_id?: string; target_id: string; target_anchor?: string | null; kind?: string; instruction?: string }> };
       // The spans to judge: the references the harness detects, plus the spans the ingest agent
       // linked (their text only, never their targets), so every judgment field gets a second opinion.
       const refs = [...new Set([...bareReferences(split?.body ?? text, known, r.id), ...r.xrefs.map((x) => x.text)])].slice(0, 24);
       const candidates = new Map(refs.map((t) => [t, candidatesFor(t, r.id, known)]));
+      const extras: PromptExtras = {};
+      if (sourceKind === "overlay") {
+        // Candidates from the item's citations and from a search of the corpus on its subject.
+        const fromRefs = refs.flatMap((t) => candidatesFor(t, r.id, known)).filter((c) => c.source !== (known.nodes.get(r.id)?.source ?? ""));
+        const query = `${String(front.title ?? "")} ${(split?.body ?? "").replace(/^#.*$/m, "").replace(/\s+/g, " ").trim().slice(0, 300)}`.trim();
+        const found = searchIds(sectBin, path.resolve(o.corpus), query, 8).filter((id) => known.nodes.has(id)).map((id) => ({ id, title: known.ids.get(id) ?? "", via: "pattern" as const, source: known.nodes.get(id)?.source }));
+        const seen = new Set<string>();
+        extras.overlayCandidates = [...fromRefs, ...found].filter((c) => !seen.has(c.id) && seen.add(c.id)).slice(0, 12);
+        candidates.set("(overlay)", extras.overlayCandidates);
+      }
+      if (sourceKind === "notice") {
+        extras.actions = [];
+        for (const a of front.actions ?? []) {
+          if (!a.action_id) continue;
+          const cites = bareReferences(String(a.instruction ?? ""), known, r.id);
+          const c = cites.flatMap((t) => candidatesFor(t, r.id, known));
+          if (known.nodes.has(a.target_id) && !c.some((x) => x.id === a.target_id)) c.push({ id: a.target_id, title: known.ids.get(a.target_id) ?? "", via: "pattern", source: known.nodes.get(a.target_id)?.source });
+          const seen = new Set<string>();
+          const list = c.filter((x) => !seen.has(x.id) && seen.add(x.id)).slice(0, 8);
+          candidates.set(a.action_id, list);
+          extras.actions.push({ action_id: a.action_id, instruction: String(a.instruction ?? ""), candidates: list });
+        }
+      }
       const judgmentsPossible = r.xrefs.length || refs.length || r.defines.length || sourceKind !== "base";
       let judgments: Judgment[] = [];
       // A node with children is structural: a listing, staged by the harness, not a judgment.
       if (judgmentsPossible && !hasChildren(known, r.id)) {
-        const prompt = verifierPrompt(r.input, text, refs, candidates, sourceKind);
+        const prompt = verifierPrompt(r.input, text, refs, candidates, sourceKind, extras);
         let answer: VerifierAnswer;
         try {
           if (o.verify) {

@@ -30,6 +30,10 @@ export interface RunContext {
   knownIds?: Map<string, Set<string>>;
   /** Per input file, the references the harness linked before the agent's turn. */
   preResolved?: Map<string, XrefResolution[]>;
+  /** Files the harness itself wrote beside the staged sections (a superseded prior, an ancestor): not strays. */
+  extraFiles?: Set<string>;
+  /** With a subset ingest: the ids a structural listing may keep linked; other entries are de-linked. */
+  keepIds?: Set<string>;
   log?: (line: string) => void;
 }
 
@@ -78,6 +82,14 @@ export interface XrefResolution {
   deterministic?: boolean;
 }
 
+export interface ActionChoice {
+  action_id: string;
+  target_id: string;
+  target_anchor: string | null;
+  kind: string;
+  note?: string;
+}
+
 export interface StagedRecord {
   id: string;
   input: string;
@@ -87,6 +99,13 @@ export interface StagedRecord {
   xrefs: XrefResolution[];
   flags: string[];
   body_tokens: number;
+  /** Overlay proposals (D.2 step 8): base nodes replaced whole, and paragraphs narrowed, each with a rationale. */
+  overrides?: Array<{ id: string; rationale?: string }>;
+  narrows?: Array<{ id: string; anchor?: string | null; rationale?: string }>;
+  /** Notice Actions as confirmed (D.2 step 9). */
+  actions?: ActionChoice[];
+  /** An Expression the harness composed from a prior one and Actions. */
+  derived?: { from: string; actions: string[] };
 }
 
 export interface SubmitSummary {
@@ -162,7 +181,24 @@ function findBare(body: string, needle: string): number {
  * prefix, defined terms, resolved references as links, the run in provenance. The body is
  * copied, never rewritten, so validator 2 holds by construction.
  */
-export function stageSection(cx: RunContext, p: { input: string; context: string; defines?: string[]; xrefs?: XrefResolution[]; flags?: string[]; resolutions?: string[] }): StagedRecord {
+export interface StageParams {
+  input: string;
+  context: string;
+  defines?: string[];
+  xrefs?: XrefResolution[];
+  flags?: string[];
+  resolutions?: string[];
+  overrides?: Array<{ id: string; rationale?: string }>;
+  narrows?: Array<{ id: string; anchor?: string | null; rationale?: string }>;
+  actions?: ActionChoice[];
+}
+
+/** A listing line whose target is outside the subset being ingested loses its link, not its text. */
+export function delinkOutside(body: string, keep: Set<string>): string {
+  return body.replace(/^(\s*[-*]\s*)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([A-Z][A-Z0-9]*:[^)\s#]+)(?:#[a-z0-9-]+)?\)\s*$/gm, (m, bullet: string, text: string, id: string) => (keep.has(id) ? m : `${bullet}${text} (not in this corpus)`));
+}
+
+export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
   const src = safeInput(cx, p.input);
   const raw = readFileSync(src, "utf-8");
   const split = splitFrontMatter(raw);
@@ -195,18 +231,76 @@ export function stageSection(cx: RunContext, p: { input: string; context: string
       xrefs.push({ ...x, anchor: null });
     } else xrefs.push(x);
   }
+  // Overlay proposals: only real base ids, and only anchors the target has (D.2 step 8).
+  let overrides: StagedRecord["overrides"];
+  if (p.overrides) {
+    overrides = [];
+    for (const o of p.overrides) {
+      if (!o?.id) continue;
+      if (cx.knownIds && !cx.knownIds.has(o.id)) flags.push(`unresolved override: ${o.id} is not an id in the corpus or the input; dropped`);
+      else overrides.push({ id: o.id, rationale: o.rationale });
+    }
+    front.overrides = overrides.map((o) => o.id);
+  }
+  let narrows: StagedRecord["narrows"];
+  if (p.narrows) {
+    narrows = [];
+    for (const n of p.narrows) {
+      if (!n?.id) continue;
+      const known = cx.knownIds?.get(n.id);
+      if (cx.knownIds && !known) {
+        flags.push(`unresolved narrowing: ${n.id} is not an id in the corpus or the input; dropped`);
+        continue;
+      }
+      let anchor = n.anchor ?? null;
+      if (anchor && known && !known.has(anchor)) {
+        flags.push(`unresolved anchor: ${n.id}#${anchor} is not a paragraph the target has; narrowed at the section`);
+        anchor = null;
+      }
+      narrows.push({ id: n.id, anchor, rationale: n.rationale });
+    }
+    front.narrows = narrows.map((n) => (n.anchor ? { id: n.id, anchor: n.anchor } : { id: n.id }));
+  }
+  // Notice Actions: the agent confirms or corrects the converter's by action_id; text and
+  // instruction stay the converter's, a target must be a real id (D.2 step 9).
+  let actions: StagedRecord["actions"];
+  if (Array.isArray(front.actions)) {
+    const ws2 = front.actions as Array<Record<string, unknown>>;
+    if (p.actions) {
+      const byId = new Map(ws2.map((a) => [String(a.action_id), a]));
+      for (const a of p.actions) {
+        const w = byId.get(a.action_id);
+        if (!w) {
+          flags.push(`unknown action ${a.action_id} ignored`);
+          continue;
+        }
+        if (a.target_id && cx.knownIds && !cx.knownIds.has(a.target_id)) {
+          flags.push(`action ${a.action_id}: target ${a.target_id} is not an id in the corpus or the input; the converter's target ${String(w.target_id)} stands`);
+          continue;
+        }
+        if (a.target_id) w.target_id = a.target_id;
+        const anchors = cx.knownIds?.get(String(w.target_id));
+        if (a.target_anchor && anchors && !anchors.has(a.target_anchor)) {
+          flags.push(`action ${a.action_id}: ${String(w.target_id)} has no paragraph (${a.target_anchor}); the section stands as the target`);
+          w.target_anchor = null;
+        } else w.target_anchor = a.target_anchor ?? null;
+        if (a.kind) w.kind = a.kind;
+      }
+    }
+    actions = ws2.map((a) => ({ action_id: String(a.action_id), target_id: String(a.target_id), target_anchor: a.target_anchor ? String(a.target_anchor) : null, kind: String(a.kind ?? "amend") }));
+  }
   // What was linked in code and what a person decided both stand in provenance.
   const det = xrefs.filter((x) => x.deterministic).map((x) => x.text);
   if (det.length) prov.deterministic_xrefs = det;
   else delete prov.deterministic_xrefs;
   if (p.resolutions?.length) prov.resolutions = [...new Set(p.resolutions)];
-  const { body, applied } = applyXrefs(split.body, xrefs);
+  const { body, applied } = applyXrefs(cx.keepIds ? delinkOutside(split.body, cx.keepIds) : split.body, xrefs);
   const outRel = stagingPathFor(cx, p.input);
   const outPath = safeStaging(cx, outRel);
   mkdirSync(path.dirname(outPath), { recursive: true });
   const fm = YAML.stringify(front, { lineWidth: 0 }).trimEnd();
   writeFileSync(outPath, `---\n${fm}\n---\n${body.startsWith("\n") ? "" : "\n"}${body}`, "utf-8");
-  const record: StagedRecord = { id: String(front.id ?? ""), input: p.input, path: outRel, context, defines: (front.defines as string[]) ?? [], xrefs: xrefs.filter((x) => x.id), flags, body_tokens: tokenCount(split.body) };
+  const record: StagedRecord = { id: String(front.id ?? ""), input: p.input, path: outRel, context, defines: (front.defines as string[]) ?? [], xrefs: xrefs.filter((x) => x.id), flags, body_tokens: tokenCount(split.body), ...(overrides ? { overrides } : {}), ...(narrows ? { narrows } : {}), ...(actions ? { actions } : {}) };
   const meta = path.join(cx.runDir, ".ingest");
   mkdirSync(meta, { recursive: true });
   writeFileSync(path.join(meta, `${record.id.replace(/[^A-Za-z0-9._-]+/g, "_") || "section"}.json`), JSON.stringify({ ...record, applied }, null, 2) + "\n", "utf-8");
@@ -229,7 +323,7 @@ export function removeStrayFiles(cx: RunContext): string[] {
       if (statSync(p).isDirectory()) walk(p);
       else if (n.endsWith(".md")) {
         const rel = path.relative(cx.runDir, p).replace(/\\/g, "/");
-        if (!staged.has(rel)) {
+        if (!staged.has(rel) && !cx.extraFiles?.has(rel)) {
           rmSync(p);
           removed.push(rel);
         }
@@ -335,7 +429,7 @@ export function harnessTools(cx: RunContext): AgentTool[] {
       name: "section_stage",
       label: "section_stage",
       description:
-        "Stage one input section: the body is copied verbatim; you supply the context prefix (50-100 tokens, names at least one referenced section's subject, no paraphrase of the body), the terms the section defines, the prose references you resolved with sect_search (text as it appears, the real id, optional anchor, confidence 0-1, the search used), and flags for anything a human should see.",
+        "Stage one input leaf: the body is copied verbatim; you supply the context prefix (50-100 tokens, names at least one referenced node's subject, no paraphrase of the body), the terms it defines, the references you resolved with sect_search (text as it appears, the real id, optional anchor, confidence 0-1, the search used), flags for anything a human should see; for an overlay item its overrides and narrows with a rationale each; for a notice the Actions confirmed or corrected by action_id.",
       parameters: schema(
         {
           input: { type: "string", description: "Input path of the section, as listed by input_list" },
@@ -346,18 +440,21 @@ export function harnessTools(cx: RunContext): AgentTool[] {
             items: { type: "object", properties: { text: { type: "string" }, id: { type: "string" }, anchor: { type: "string" }, confidence: { type: "number" }, search: { type: "string" } }, required: ["text", "id", "confidence"] },
           },
           flags: { type: "array", items: { type: "string" } },
+          overrides: { type: "array", items: { type: "object", properties: { id: { type: "string" }, rationale: { type: "string" } }, required: ["id"] } },
+          narrows: { type: "array", items: { type: "object", properties: { id: { type: "string" }, anchor: { type: "string" }, rationale: { type: "string" } }, required: ["id"] } },
+          actions: { type: "array", items: { type: "object", properties: { action_id: { type: "string" }, target_id: { type: "string" }, target_anchor: { type: "string" }, kind: { type: "string", enum: ["amend", "add", "remove", "redesignate", "stay"] }, note: { type: "string" } }, required: ["action_id", "target_id"] } },
         },
         ["input", "context"],
       ),
       executionMode: "sequential",
       async execute(_id: string, raw: unknown) {
-        const params = raw as { input: string; context: string; defines?: string[]; xrefs?: XrefResolution[]; flags?: string[] };
+        const params = raw as StageParams;
         // The harness's own links come first; the agent's stand for the rest.
         const pre = cx.preResolved?.get(params.input) ?? [];
         const own = (params.xrefs ?? []).filter((x) => !pre.some((p) => p.text === x.text));
         const r = stageSection(cx, { ...params, xrefs: [...pre, ...own] });
         cx.log?.(`staged ${r.id} (${r.xrefs.length} xrefs, ${r.defines.length} defines${r.flags.length ? ", flags: " + r.flags.join("; ") : ""})`);
-        return { content: [{ type: "text", text: `staged ${r.id} -> staging/${cx.runId}/${r.path}; ${r.xrefs.length} reference(s) linked, ${r.defines.length} term(s)` }], details: r };
+        return { content: [{ type: "text", text: `staged ${r.id} -> staging/${cx.runId}/${r.path}; ${r.xrefs.length} reference(s) linked, ${r.defines.length} term(s)${r.overrides ? `, ${r.overrides.length} override(s)` : ""}${r.narrows ? `, ${r.narrows.length} narrowing(s)` : ""}${r.actions ? `, ${r.actions.length} action(s)` : ""}${r.flags.length ? `; flags: ${r.flags.join("; ")}` : ""}` }], details: r };
       },
     },
     {

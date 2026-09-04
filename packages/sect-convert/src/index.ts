@@ -9,5 +9,6 @@ export { extract, readSourcePattern, type ExtractOptions } from "./extract.js";
 export { convertEcfr, type ConvertOptions, type DateStats, type NodeRec } from "./ecfr.js";
 export * from "./versioner.js";
 export * from "./registry.js";
+export * from "./overlay.js";
 export { convertFr } from "./fr.js";
 export { paragraphAnchors } from "./anchors.js";

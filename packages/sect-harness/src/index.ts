@@ -9,3 +9,5 @@ export * from "./sampling.js";
 export * from "./merge.js";
 export * from "./refs.js";
 export * from "./resolve.js";
+export * from "./actions.js";
+export * from "./notice.js";

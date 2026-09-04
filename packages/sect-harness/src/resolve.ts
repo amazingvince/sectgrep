@@ -9,6 +9,7 @@ import path from "node:path";
 import YAML from "yaml";
 import { evidenceChecks } from "./evidence.js";
 import { mergeRun, type MergeResult } from "./merge.js";
+import { composeExpressions } from "./notice.js";
 import { candidatesFor, collectKnown } from "./refs.js";
 import { collectIds, loadRecords, stageSection, type RunContext, type XrefResolution } from "./tools.js";
 import { consensus, reviewMarkdown, summarize, type Judgment, type Resolution, type SectionVerdict, type VerifierAnswer, type VerifyReport } from "./verifier.js";
@@ -77,12 +78,17 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   if (!scope.length) throw new Error(`${o.id} has no open disagreement${o.text ? ` on "${o.text}"` : ""}`);
   const pick = o.pick.trim();
   if (!["ingest", "verifier", "none"].includes(pick) && !isId(pick)) throw new Error(`--pick must be ingest, verifier, none, or an id (got ${pick})`);
-  if (isId(pick) && (scope.length !== 1 || scope[0].field !== "xref")) throw new Error(`an id can be picked for exactly one reference; name it with --text (open: ${scope.map((j) => `${j.field}${j.text ? ` "${j.text}"` : ""}`).join("; ")})`);
-  for (const j of scope) if (j.field !== "xref" && j.field !== "defines") throw new Error(`${j.field} conflicts are resolved by editing the input's front matter (H3); resolve handles references and definitions`);
+  if (isId(pick) && scope.length !== 1) throw new Error(`an id can be picked for exactly one judgment; name it with --text (open: ${scope.map((j) => `${j.field}${j.text ? ` "${j.text}"` : ""}`).join("; ")})`);
+  if (isId(pick) && scope[0].field === "defines") throw new Error("definitions take ingest, verifier or none, not an id");
+  if (pick === "none" && scope.some((j) => j.field === "action")) throw new Error("an Action needs a target: pick ingest, verifier or an id");
 
   // The chosen values, applied to the record.
   let xrefs: XrefResolution[] = record.xrefs.map((x) => ({ ...x }));
   let defines = [...record.defines];
+  let overrides = record.overrides ? record.overrides.map((o) => ({ ...o })) : undefined;
+  let narrows = record.narrows ? record.narrows.map((n) => ({ ...n })) : undefined;
+  let actions = record.actions ? record.actions.map((a) => ({ ...a })) : undefined;
+  const ids = (v: string) => (v === "(none)" ? [] : v.split(",").map((t) => t.trim()).filter(Boolean));
   const flags = record.flags.filter((f) => !f.startsWith("resolved: "));
   const resolutions: string[] = [];
   const stamp = new Date().toISOString().slice(0, 10);
@@ -101,11 +107,28 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
       value = bare ? "(left bare)" : chosen;
       flags.push(...record.flags.filter((f) => f.startsWith("unresolved") && f.includes(`"${text}"`)).map(() => "").filter(Boolean));
       resolutions.push(`"${text}" -> ${value} (${pick}, ${stamp})`);
-    } else {
-      const list = (v: string) => (v === "(none)" ? [] : v.split(",").map((t) => t.trim()).filter(Boolean));
-      defines = pick === "ingest" ? [...record.defines] : pick === "verifier" ? list(j.verifier) : [];
+    } else if (j.field === "defines") {
+      defines = pick === "ingest" ? [...record.defines] : pick === "verifier" ? ids(j.verifier) : [];
       value = defines.join(", ") || "(none)";
       resolutions.push(`defines -> ${value} (${pick}, ${stamp})`);
+    } else if (j.field === "overrides") {
+      const chosen = pick === "ingest" ? ids(j.ingest) : pick === "verifier" ? ids(j.verifier) : pick === "none" ? [] : [pick];
+      overrides = chosen.map((id) => ({ id: id.split("#")[0], rationale: `resolved by a person (${pick})` }));
+      value = chosen.join(", ") || "(none)";
+      resolutions.push(`overrides -> ${value} (${pick}, ${stamp})`);
+    } else if (j.field === "narrows") {
+      const chosen = pick === "ingest" ? ids(j.ingest) : pick === "verifier" ? ids(j.verifier) : pick === "none" ? [] : [pick];
+      narrows = chosen.map((v) => ({ ...splitId(v), rationale: `resolved by a person (${pick})` }));
+      value = chosen.join(", ") || "(none)";
+      resolutions.push(`narrows -> ${value} (${pick}, ${stamp})`);
+    } else {
+      // An Action: the target and paragraph the instruction amends.
+      const chosen = pick === "ingest" ? j.ingest : pick === "verifier" ? j.verifier : pick;
+      if (/^\(/.test(chosen)) throw new Error(`${j.text}: ${pick} offers no target`);
+      const { id, anchor } = splitId(chosen);
+      actions = (actions ?? []).map((a) => (a.action_id === j.text ? { ...a, target_id: id, target_anchor: anchor } : a));
+      value = chosen;
+      resolutions.push(`${j.text} -> ${value} (${pick}, ${stamp})`);
     }
     applied.push({ ...j, agree: true, resolved: pick, resolved_value: value });
   }
@@ -115,25 +138,32 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   // Re-stage from the input with the decision applied; the record on disk follows.
   const cx: RunContext = { runId, runDir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
   cx.knownIds = collectIds([cx.corpus, inputDir]);
-  const staged = stageSection(cx, { input: record.input, context: record.context, defines, xrefs, flags: keptFlags, resolutions: [...(readResolutions(runDir, section) ?? []), ...resolutions] });
+  const staged = stageSection(cx, { input: record.input, context: record.context, defines, xrefs, flags: keptFlags, resolutions: [...(readResolutions(runDir, section) ?? []), ...resolutions], overrides, narrows, actions });
+  // A changed Action changes the Expressions composed from it.
+  const recomposed = actions && applied.some((a) => a.field === "action") ? composeExpressions(cx, staged.path, cx.corpus, record.input) : null;
 
   // Evidence and consensus again for this section, against the verifier's stored answer.
   const known = collectKnown([cx.corpus, inputDir]);
   const text = readFileSync(path.join(inputDir, record.input), "utf-8");
   const split = splitFrontMatter(text);
-  const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> };
+  const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ action_id?: string; target_id: string; target_anchor?: string | null; kind?: string }> };
   const refs = [...new Set(section.judgments.filter((j) => j.field === "xref" && j.text).map((j) => j.text!))];
+  const vOf = (field: Judgment["field"]) => section.judgments.find((j) => j.field === field)?.verifier;
   const answer: VerifierAnswer = {
     xrefs: section.judgments.filter((j) => j.field === "xref" && j.text).map((j) => {
       const v = /^\(/.test(j.verifier) ? null : splitId(j.verifier);
       return { text: j.text!, id: v?.id ?? null, anchor: v?.anchor ?? null, confidence: 1, reason: j.verifier_reason };
     }),
-    defines: (() => {
-      const d = section.judgments.find((j) => j.field === "defines");
-      return d && d.verifier !== "(none)" ? d.verifier.split(",").map((t) => t.trim()).filter(Boolean) : [];
-    })(),
+    defines: ids(vOf("defines") ?? "(none)"),
+    overrides: ids(vOf("overrides") ?? "(none)"),
+    narrows: ids(vOf("narrows") ?? "(none)").map((v) => splitId(v)),
+    actions: section.judgments.filter((j) => j.field === "action" && j.text).map((j) => {
+      const v = /^\(/.test(j.verifier) ? null : splitId(j.verifier);
+      return { action_id: j.text!, target_id: v?.id ?? null, target_anchor: v?.anchor ?? null };
+    }),
   };
   const candidates = new Map(refs.map((t) => [t, candidatesFor(t, o.id, known)]));
+  for (const a of actions ?? []) candidates.set(a.action_id, known.nodes.has(a.target_id) ? [{ id: a.target_id, title: known.ids.get(a.target_id) ?? "", via: "pattern" }] : []);
   let judgments = consensus(staged, answer, refs, candidates, report.level, front);
   // A judgment a person decided agrees by that decision, whatever the two runs said.
   judgments = judgments.map((j) => {
@@ -145,6 +175,14 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   const conflict = judgments.some((j) => !j.agree) || evidence.some((i) => i.level === "fail");
   const verdict: SectionVerdict = { ...section, judgments, evidence, tier: conflict ? "conflict" : "auto" };
   report.sections[idx] = verdict;
+  // Expressions recomposed from a changed Action: their verdicts follow the evidence checks.
+  for (const d of recomposed?.derived ?? []) {
+    const ev = evidenceChecks({ staging: runDir, corpus: cx.corpus, records: [d], work: cx.work }).issues.filter((i) => i.path.replace(/\\/g, "/") === d.path.replace(/\\/g, "/"));
+    const v: SectionVerdict = { id: d.id, path: d.path, input: d.input, tier: ev.some((i) => i.level === "fail") ? "conflict" : "auto", judgments: [], evidence: ev };
+    const at = report.sections.findIndex((s) => s.id === d.id);
+    if (at >= 0) report.sections[at] = v;
+    else report.sections.push(v);
+  }
   const entries: Resolution[] = applied.map((a) => ({ id: o.id, field: a.field, text: a.text, ingest: a.ingest, verifier: a.verifier, pick, value: a.resolved_value ?? "", why: o.why, date: stamp }));
   report.resolutions = [...(report.resolutions ?? []), ...entries];
   Object.assign(report, summarize(report.sections, report.counts.evidence_fails - section.evidence.filter((i) => i.level === "fail").length + evidence.filter((i) => i.level === "fail").length));

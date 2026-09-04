@@ -178,11 +178,17 @@ export function convertFr(xml: string, opts: FrOptions = {}): FrNotice {
     const rTitle = attr(reg, "TITLE") || title;
     const rPart = attr(reg, "PART");
     let pending: { instruction: string; texts: string[] } | null = null;
+    // "4. Amend § 28.95 by: a. Revising paragraph (c); b. ..." puts the section on the numbered
+    // instruction and the edits on lettered ones: a lettered instruction without a section of
+    // its own belongs to the last section named.
+    let lastSec: string | null = null;
     const flush = () => {
       if (!pending) return;
       n++;
       const ins = pending.instruction;
-      const sec = sectionOf(ins);
+      const own = sectionOf(ins);
+      const sec = own ?? (/^[a-z]\.\s/i.test(ins) ? lastSec : null);
+      if (own) lastSec = own;
       const subpart = /subpart\s+([A-Z]{1,2})\b/i.exec(ins)?.[1];
       const part = /part\s+(\d+)/i.exec(ins)?.[1] ?? rPart;
       const target_id = sec ? `CFR:${rTitle}-${sec}` : subpart ? `CFR:${rTitle}-${part}-${subpart}` : `CFR:${rTitle}-${part}`;

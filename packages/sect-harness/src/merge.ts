@@ -83,11 +83,16 @@ export function mergeRun(o: MergeOptions): MergeResult {
   if (!existsSync(path.join(runDir, "submit.json"))) throw new Error(`${o.runDir} was not submitted`);
   const report = JSON.parse(readFileSync(verifyFile, "utf-8")) as VerifyReport;
   const corpus = path.resolve(o.corpus);
-  const srcDir = path.join(runDir, o.source);
+  // A run may hold several source directories: the notice's own and the base sources whose
+  // Expressions it amended. Each travels with its registry entry.
+  const sourceDirs = readdirSync(runDir).filter((n) => !n.startsWith(".") && existsSync(path.join(runDir, n, "_source.yaml")));
+  if (!sourceDirs.includes(o.source)) sourceDirs.push(o.source);
+  for (const n of sourceDirs) {
+    const y = path.join(runDir, n, "_source.yaml");
+    mkdirSync(path.join(corpus, n), { recursive: true });
+    if (existsSync(y) && !existsSync(path.join(corpus, n, "_source.yaml"))) writeFileSync(path.join(corpus, n, "_source.yaml"), readFileSync(y), "utf-8");
+  }
   const dstDir = path.join(corpus, o.source);
-  mkdirSync(dstDir, { recursive: true });
-  const y = path.join(srcDir, "_source.yaml");
-  if (existsSync(y)) writeFileSync(path.join(dstDir, "_source.yaml"), readFileSync(y), "utf-8");
   // A section that links to a held section of this run would leave a dangling link in the
   // corpus; it is held too, until the conflict is resolved. Links to ids already in the corpus
   // are fine. Repeated until nothing more is held.
@@ -120,6 +125,8 @@ export function mergeRun(o: MergeOptions): MergeResult {
   const blocked = [...held].filter(([, why]) => why !== "conflict");
   let merged = 0;
   let unchanged = 0;
+  let priors = 0;
+  const mergedPaths = new Set<string>();
   for (const s of report.sections) {
     if (held.has(s.id)) continue;
     const from = path.join(runDir, s.path);
@@ -133,8 +140,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
     for (const tag of [`ingest:${runId}`, `verifier:${runId}`]) if (!verified.includes(tag)) verified.push(tag);
     prov.verified_by = verified;
     front.provenance = prov;
-    const rel = path.relative(path.join(runDir, o.source), from);
-    const to = path.join(dstDir, rel);
+    const to = path.join(corpus, s.path);
     mkdirSync(path.dirname(to), { recursive: true });
     const { body, delinked } = delinkHeld(split.body, held);
     if (delinked.length) log(`${s.id}: ${delinked.length} listing entr${delinked.length === 1 ? "y" : "ies"} de-linked (held: ${delinked.join(", ")})`);
@@ -145,7 +151,29 @@ export function mergeRun(o: MergeOptions): MergeResult {
     }
     writeFileSync(to, out, "utf-8");
     merged++;
+    mergedPaths.add(s.path.replace(/\\/g, "/"));
   }
+  // The prior Expression of every merged Work travels with it, under its dated name.
+  const walkPriors = (d: string) => {
+    if (!existsSync(d)) return;
+    for (const n of readdirSync(d)) {
+      if (n.startsWith(".")) continue;
+      const p = path.join(d, n);
+      if (statSync(p).isDirectory()) walkPriors(p);
+      else if (/@\d{4}-\d{2}-\d{2}\.md$/.test(n)) {
+        const rel = path.relative(runDir, p).replace(/\\/g, "/");
+        const work = rel.replace(/@\d{4}-\d{2}-\d{2}\.md$/, ".md");
+        if (!mergedPaths.has(work)) continue;
+        const to = path.join(corpus, rel);
+        const text = readFileSync(p, "utf-8");
+        if (existsSync(to) && readFileSync(to, "utf-8") === text) continue;
+        mkdirSync(path.dirname(to), { recursive: true });
+        writeFileSync(to, text, "utf-8");
+        priors++;
+      }
+    }
+  };
+  for (const n of sourceDirs) walkPriors(path.join(runDir, n));
   let indexed = false;
   const bin = o.sectBin ?? process.env.SECT_BIN;
   if (bin) {
@@ -158,10 +186,10 @@ export function mergeRun(o: MergeOptions): MergeResult {
     const top = git(corpus, ["rev-parse", "--show-toplevel"]);
     if (!top.ok) throw new Error(`${corpus} is not inside a git repository: ${top.out}`);
     const root = top.out.replace(/\\/g, "/");
-    const rel = path.relative(root, dstDir).replace(/\\/g, "/");
-    git(root, ["add", "--", rel]);
-    const msg = `merge ${runId}: ${merged} section(s) of ${o.source}${held.size ? ` (${held.size} held for review, ${blocked.length} of them blocked by links to held sections)` : ""}\n\nVerifier ${report.verifier.provider} ${report.verifier.model}; agreement ${(100 * report.agreement_rate).toFixed(1)}% on ${report.counts.judgments} judgment fields.`;
-    const c = git(root, ["commit", "-q", "-m", msg, "--", rel]);
+    const rels = sourceDirs.map((n) => path.relative(root, path.join(corpus, n)).replace(/\\/g, "/"));
+    git(root, ["add", "--", ...rels]);
+    const msg = `merge ${runId}: ${merged} section(s) of ${o.source}${priors ? ` and ${priors} superseded prior Expression(s)` : ""}${held.size ? ` (${held.size} held for review, ${blocked.length} of them blocked by links to held sections)` : ""}\n\nVerifier ${report.verifier.provider} ${report.verifier.model}; agreement ${(100 * report.agreement_rate).toFixed(1)}% on ${report.counts.judgments} judgment fields.`;
+    const c = git(root, ["commit", "-q", "-m", msg, "--", ...rels]);
     if (!c.ok && !/nothing to commit/.test(c.out)) throw new Error(`git commit failed: ${c.out}`);
     commit = git(root, ["rev-parse", "HEAD"]).out;
   }
@@ -173,6 +201,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
     if (existsSync(reviewFile) && !readFileSync(reviewFile, "utf-8").includes("## Blocked by conflicts")) appendFileSync(reviewFile, note, "utf-8");
   }
   appendFileSync(path.join(review, "merges.jsonl"), JSON.stringify({ run_id: runId, source: o.source, merged, unchanged, held: held.size, blocked: blocked.length, commit, indexed, date: new Date().toISOString() }) + "\n", "utf-8");
+  void dstDir;
   return { run_id: runId, merged, held: held.size, blocked: blocked.length, commit, indexed, corpus, unchanged };
 }
 

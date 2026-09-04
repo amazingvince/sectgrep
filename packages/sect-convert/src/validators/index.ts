@@ -296,9 +296,45 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
     const j = jaccard(ctx, body);
     if (j >= cx.contextMax) out.push(issue(2, "error", doc, `context block paraphrases the body (token Jaccard ${j.toFixed(2)} >= ${cx.contextMax})`));
   }
-  const { text, reason } = cx.sourceOf(doc);
+  // An Expression composed from a prior one and a notice's Actions (provenance.derived_from,
+  // legal_status derived) has no single raw file: its source is the prior Expression's body
+  // with the applied Actions' quoted text (spec-changes #33).
+  const derivedFrom = (doc.front.provenance as { derived_from?: unknown } | undefined)?.derived_from;
+  let text: { tokens: string[]; kind: string } | null = null;
+  let reason: string | undefined;
+  if (derivedFrom) {
+    const [pid, pdate] = String(derivedFrom).split("@");
+    const prior = (cx.byId.get(pid) ?? []).find((d) => dateOf(d.front) === pdate);
+    if (!prior) reason = `prior Expression ${String(derivedFrom)} not found`;
+    else {
+      const actionTexts: string[] = [];
+      for (const ref of (doc.front.amended_by ?? []).map(String)) {
+        const notice = (cx.byId.get(ref.split("#")[0]) ?? []).find((n) => (n.front.actions?.length ?? 0) > 0);
+        const a = notice?.front.actions?.find((x) => x.action_id === ref);
+        if (a?.text) actionTexts.push(String(a.text));
+      }
+      text = { tokens: [...tokens(prior.body), ...tokens(actionTexts.join("\n"))], kind: "derived" };
+    }
+  } else ({ text, reason } = cx.sourceOf(doc));
   if (!text) {
     out.push(issue(2, "warning", doc, `round-trip not checked: ${reason ?? "source unavailable"}`));
+    return out;
+  }
+  if (text.kind === "derived" && body.length) {
+    // The amended paragraph sits out of order with the prior text, so no single span holds the
+    // body: every body token must instead come from the prior Expression or the Actions' text.
+    const bag = new Map<string, number>();
+    for (const t of text.tokens) bag.set(t, (bag.get(t) ?? 0) + 1);
+    let hit = 0;
+    for (const t of body) {
+      const n = bag.get(t) ?? 0;
+      if (n > 0) {
+        hit++;
+        bag.set(t, n - 1);
+      }
+    }
+    const score = hit / body.length;
+    if (score < cx.roundTrip) out.push(issue(2, "error", doc, `body tokens found in the prior Expression and the Actions' text: ${score.toFixed(3)} (< ${cx.roundTrip}; ${hit} of ${body.length})`));
     return out;
   }
   if (!body.length) {
