@@ -100,6 +100,8 @@ def words(text: str) -> list[str]:
                 break
     # A golden opens with its own title line and a provenance comment, neither of them page text.
     body = " ".join(l for l in lines if l.strip() != "---" and not l.startswith("<!--") and not re.match(r"^# FR-\d{4}-\d{2}-\d{2}-p\d+", l))
+    # A golden may hold a table as HTML; a whole-page reader gives the same cells as text.
+    body = re.sub(r"<[^>]*>", " ", body.replace("<br", " <br"))
     body = re.sub(r"[*_`#>|]", "", body)
     return [w for w in re.split(r"\s+", body.strip()) if w]
 
