@@ -44,8 +44,9 @@ export function verifierModelFromEnv(env: NodeJS.ProcessEnv = process.env): Mode
     provider: config.provider,
     baseUrl: config.baseUrl,
     reasoning: false,
-    input: ["text"],
-    cost: { input: 0.089, output: 0.177, cacheRead: 0, cacheWrite: 0 },
+    input: config.model.includes("vision") ? ["text", "image"] : ["text"],
+    // OpenRouter's listed prices on 2026-09-04: deepseek-v4-flash-0731 0.065/0.18, the vision variant 0.22/0.66.
+    cost: config.model.includes("vision") ? { input: 0.22, output: 0.66, cacheRead: 0, cacheWrite: 0 } : { input: 0.065, output: 0.18, cacheRead: 0, cacheWrite: 0 },
     contextWindow: 200_000,
     maxTokens: 16_384,
   };

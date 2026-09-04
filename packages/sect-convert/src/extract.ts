@@ -28,6 +28,8 @@ export interface ExtractOptions {
   apiKey?: string;
   /** Extra request fields for hosted transcribers (a retention preference). */
   extraBody?: Record<string, unknown>;
+  /** Scanned pages in flight at once; a vLLM server batches concurrent requests (default 4). */
+  ocrConcurrency?: number;
   /** The source's id_pattern/id_template for the native-id and reference passes. */
   pattern?: SourcePattern | null;
   homeTitle?: string;
@@ -98,13 +100,24 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
         let lines = 0;
         let divergent = 0;
         const unverified: number[] = [];
+        // Pages go to the transcribers several at a time (both readers per page in parallel already);
+        // results are folded back in page order.
+        const preset = presetFor(pair.primary.name.replace(/^(local|api):/, ""));
+        const results = new Map<number, Awaited<ReturnType<typeof transcribeDual>>>();
+        let cursor = 0;
+        const worker = async () => {
+          while (cursor < scanned.length) {
+            const p = scanned[cursor++];
+            const nativeDpi = pages.find((x) => x.page === p)?.image ? 150 : undefined;
+            const image = await renderPage(o.input, p, { ...preset.scale, nativeDpi });
+            results.set(p, await transcribeDual(pair.primary, pair.secondary, image, sha, 0));
+          }
+        };
+        await Promise.all(Array.from({ length: Math.max(1, Math.min(o.ocrConcurrency ?? 4, scanned.length)) }, worker));
+        mkdirSync(path.join(dir, "ocr"), { recursive: true });
         for (const p of scanned) {
-          const preset = presetFor(pair.primary.name.replace(/^(local|api):/, ""));
-          const nativeDpi = pages.find((x) => x.page === p)?.image ? 150 : undefined;
-          const image = await renderPage(o.input, p, { ...preset.scale, nativeDpi });
-          const r = await transcribeDual(pair.primary, pair.secondary, image, sha, 0);
+          const r = results.get(p)!;
           // Both raw readings, so a reviewer can see what each transcriber said about a flagged line.
-          mkdirSync(path.join(dir, "ocr"), { recursive: true });
           writeFileSync(path.join(dir, "ocr", `p${p}-primary.md`), r.primary.markdown);
           writeFileSync(path.join(dir, "ocr", `p${p}-secondary.md`), r.secondary.markdown);
           for (const e of r.elements) e.flags.push("ocr");

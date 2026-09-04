@@ -174,6 +174,7 @@ if (cmd === "fetch") {
     ocrPrimary: arg("ocr-primary") ?? process.env.SECT_OCR_PRIMARY,
     ocrSecondary: arg("ocr-secondary") ?? process.env.SECT_OCR_SECONDARY ?? (hosted.apiKey ? hosted.model : undefined),
     apiKey: process.env.SECT_OCR_API_KEY ?? hosted.apiKey, extraBody: providerExtras(hosted),
+    ocrConcurrency: arg("ocr-concurrency") ? Number(arg("ocr-concurrency")) : process.env.SECT_OCR_CONCURRENCY ? Number(process.env.SECT_OCR_CONCURRENCY) : undefined,
     pattern: sourceYaml ? readSourcePattern(sourceYaml) : null, homeTitle: arg("title"), images: process.argv.includes("--images"), force: process.argv.includes("--force"),
   })
     .then(({ report, dir, fromCache }) => {

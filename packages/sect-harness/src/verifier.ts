@@ -278,8 +278,20 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
               usage.cost += v.usage.cost?.total ?? 0;
             }
           } else {
+            // Transient provider errors (rate limits, gateway errors, resets) are retried with backoff.
+            const withBackoff = async <T>(f: () => Promise<T>, attempt = 0): Promise<T> => {
+              try {
+                return await f();
+              } catch (e) {
+                if (attempt < 3 && /\b429\b|rate.?limit|\b5\d\d\b|ECONNRESET|ETIMEDOUT|timeout|overloaded|temporarily/i.test(String(e))) {
+                  await new Promise((r) => setTimeout(r, 1500 * 2 ** attempt));
+                  return withBackoff(f, attempt + 1);
+                }
+                throw e;
+              }
+            };
             const ask = async (nudge: string) => {
-              const m = await complete(choice!.model as never, { systemPrompt: VERIFIER_SYSTEM, messages: [{ role: "user", content: prompt + nudge, timestamp: Date.now() }] }, { apiKey: choice!.config.apiKey, temperature: 0, maxTokens: 2000, ...(Object.keys(providerExtras(choice!.config)).length ? {} : {}) });
+              const m = await withBackoff(() => complete(choice!.model as never, { systemPrompt: VERIFIER_SYSTEM, messages: [{ role: "user", content: prompt + nudge, timestamp: Date.now() }] }, { apiKey: choice!.config.apiKey, temperature: 0, maxTokens: 2000, ...(Object.keys(providerExtras(choice!.config)).length ? {} : {}) }));
               const u = usageOf(m);
               usage.input += u.input;
               usage.output += u.output;

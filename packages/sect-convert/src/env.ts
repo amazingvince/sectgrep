@@ -16,6 +16,8 @@ export interface ModelConfig {
   apiKey?: string;
   /** Ask the provider not to retain prompts (OpenRouter: route only to providers with data collection denied). */
   noRetention: boolean;
+  /** For the verifier: the model to use when a judgment needs page images (unset for ingest). */
+  visionModel?: string;
 }
 
 export const MODEL_DEFAULTS = {
@@ -81,8 +83,16 @@ export function verifierConfig(env: NodeJS.ProcessEnv = process.env): ModelConfi
   const provider = env.SECT_VERIFIER_PROVIDER ?? env.SECT_MODEL_PROVIDER ?? MODEL_DEFAULTS.provider;
   const baseUrl = env.SECT_VERIFIER_BASE_URL ?? (provider === (env.SECT_MODEL_PROVIDER ?? MODEL_DEFAULTS.provider) ? env.SECT_MODEL_BASE_URL : undefined) ?? BASE_URLS[provider] ?? MODEL_DEFAULTS.baseUrl;
   const apiKey = env.SECT_VERIFIER_API_KEY ?? (KEY_VARS[provider] ? env[KEY_VARS[provider]] : undefined) ?? env.SECT_MODEL_API_KEY;
-  return { provider, baseUrl, model: env.SECT_VERIFIER_MODEL ?? "deepseek/deepseek-v4-flash", apiKey, noRetention: /^(1|true|yes)$/i.test(env.SECT_MODEL_NO_RETENTION ?? "") };
+  // Dated ids, so a run is reproducible: the plain alias floats to whatever DeepSeek serves next.
+  return { provider, baseUrl, model: env.SECT_VERIFIER_MODEL ?? VERIFIER_DEFAULTS.model, apiKey, noRetention: /^(1|true|yes)$/i.test(env.SECT_MODEL_NO_RETENTION ?? ""), visionModel: env.SECT_VERIFIER_VISION_MODEL ?? VERIFIER_DEFAULTS.visionModel };
 }
+
+export const VERIFIER_DEFAULTS = {
+  /** Text-only; what the verifier reads today. */
+  model: "deepseek/deepseek-v4-flash-0731",
+  /** Text and image; for judgments that need the page (an overlay PDF's table, an OCR-divergent span). */
+  visionModel: "deepseek/deepseek-v4-flash-vision-exp",
+};
 
 /** Request-body extras the provider needs for the configured retention policy. */
 export function providerExtras(c: ModelConfig): Record<string, unknown> {
