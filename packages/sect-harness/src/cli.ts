@@ -2,7 +2,7 @@
 // sect-harness ingest --input DIR --source NAME --corpus ROOT [--staging DIR] [--sect BIN]
 //   [--raw-root DIR] [--work DIR] [--concurrency N] [--limit N] [--dry-run] [--skill PATH] [--json]
 // One ingest run over WS2's output for one source, into staging/<run_id>/ (spec D.2).
-import { ingest } from "./ingest.js";
+import { ingest, resubmit } from "./ingest.js";
 
 function arg(name: string, def?: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -10,6 +10,16 @@ function arg(name: string, def?: string): string | undefined {
 }
 
 const cmd = process.argv[2];
+if (cmd === "resubmit") {
+  // sect-harness resubmit --run DIR --input DIR --source NAME --corpus ROOT [--staging DIR] [--sect BIN]
+  if (!arg("run") || !arg("input") || !arg("source") || !arg("corpus")) {
+    console.error("usage: sect-harness resubmit --run staging/<run_id> --input DIR --source NAME --corpus ROOT [--staging staging] [--sect BIN] [--raw-root .] [--work work]");
+    process.exit(2);
+  }
+  const r = resubmit({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, sectBin: arg("sect"), rawRoot: arg("raw-root"), work: arg("work") });
+  console.log(`${r.runId}: ${r.staged} section(s) re-staged, ${r.strays.length} stray file(s) removed; ${r.summary ? `submitted: ${r.summary.xrefs_resolved} reference(s), ${r.summary.low_confidence.length} low-confidence, ${r.summary.flags.length} flag(s)` : `not submitted: ${r.errors} validator error(s)`}`);
+  process.exit(r.summary ? 0 : 1);
+}
 if (cmd !== "ingest" || !arg("input") || !arg("source") || !arg("corpus")) {
   console.error("usage: sect-harness ingest --input DIR --source NAME --corpus ROOT [--staging staging] [--sect BIN] [--raw-root .] [--work work] [--concurrency 4] [--limit N] [--dry-run] [--skill docs/SKILL-ingest.md] [--json]");
   process.exit(2);

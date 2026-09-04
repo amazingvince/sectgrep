@@ -4,8 +4,8 @@
 // run directory's path guard, and `beforeToolCall` refuses the rest.
 
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
-import { splitFrontMatter, validateStaging, type Issue, type ValidateReport } from "@sectgrep/convert";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { paragraphAnchors, slug, splitFrontMatter, validateStaging, type Issue, type ValidateReport } from "@sectgrep/convert";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { TSchema } from "typebox";
 import YAML from "yaml";
@@ -26,7 +26,44 @@ export interface RunContext {
   sectBin?: string;
   /** Collected by section_stage and submit. */
   staged: StagedRecord[];
+  /** Every id in the corpus and the input with its anchors: a reference to anything else is not real. */
+  knownIds?: Map<string, Set<string>>;
   log?: (line: string) => void;
+}
+
+/**
+ * Work ids under the given roots (the corpus the staging joins, and the input), each with the
+ * anchors its current text offers: paragraph anchors plus one slug per defined term, as the
+ * validators and the Rust side derive them.
+ */
+export function collectIds(roots: string[]): Map<string, Set<string>> {
+  const ids = new Map<string, Set<string>>();
+  const walk = (d: string) => {
+    if (!existsSync(d)) return;
+    for (const n of readdirSync(d)) {
+      if (n.startsWith(".")) continue;
+      const p = path.join(d, n);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (n.endsWith(".md")) {
+        const text = readFileSync(p, "utf-8");
+        const split = splitFrontMatter(text);
+        if (!split) continue;
+        const m = /^id:\s*"?([^"\n]+?)"?\s*$/m.exec(split.front);
+        if (!m) continue;
+        const id = m[1].trim();
+        const anchors = ids.get(id) ?? new Set<string>();
+        for (const a of paragraphAnchors(split.body)) anchors.add(a.anchor);
+        const defines = /^defines:\s*\[([^\]]*)\]/m.exec(split.front);
+        for (const t of defines?.[1]?.split(",") ?? []) {
+          const term = t.trim().replace(/^["']|["']$/g, "");
+          if (term) anchors.add(slug(term));
+        }
+        ids.set(id, anchors);
+      }
+    }
+  };
+  for (const r of roots) walk(r);
+  return ids;
 }
 
 export interface XrefResolution {
@@ -136,19 +173,70 @@ export function stageSection(cx: RunContext, p: { input: string; context: string
   if (!verified.includes(`ingest:${cx.runId}`)) verified.push(`ingest:${cx.runId}`);
   prov.verified_by = verified;
   front.provenance = prov;
-  const { body, applied } = applyXrefs(split.body, p.xrefs ?? []);
+  // A reference to an id that exists nowhere is not linked: the agent must pick from real ids
+  // (D.2 step 6); the harness enforces it and keeps the text bare, with a flag.
+  const flags = [...(p.flags ?? [])];
+  const xrefs: XrefResolution[] = [];
+  for (const x of p.xrefs ?? []) {
+    const known = cx.knownIds?.get(x.id);
+    if (cx.knownIds && x.id && !known) {
+      flags.push(`unresolved: "${x.text}" was mapped to ${x.id}, which is not an id in the corpus or the input; left bare`);
+      continue;
+    }
+    // An anchor the target does not have: the id link stands, the anchor is dropped.
+    if (known && x.anchor && !known.has(x.anchor)) {
+      flags.push(`unresolved anchor: "${x.text}" named ${x.id}#${x.anchor}, which the target does not have; linked to the section`);
+      xrefs.push({ ...x, anchor: null });
+    } else xrefs.push(x);
+  }
+  const { body, applied } = applyXrefs(split.body, xrefs);
   const outRel = stagingPathFor(cx, p.input);
   const outPath = safeStaging(cx, outRel);
   mkdirSync(path.dirname(outPath), { recursive: true });
   const fm = YAML.stringify(front, { lineWidth: 0 }).trimEnd();
   writeFileSync(outPath, `---\n${fm}\n---\n${body.startsWith("\n") ? "" : "\n"}${body}`, "utf-8");
-  const record: StagedRecord = { id: String(front.id ?? ""), input: p.input, path: outRel, context, defines: (front.defines as string[]) ?? [], xrefs: (p.xrefs ?? []).filter((x) => x.id), flags: p.flags ?? [], body_tokens: tokenCount(split.body) };
+  const record: StagedRecord = { id: String(front.id ?? ""), input: p.input, path: outRel, context, defines: (front.defines as string[]) ?? [], xrefs: xrefs.filter((x) => x.id), flags, body_tokens: tokenCount(split.body) };
   const meta = path.join(cx.runDir, ".ingest");
   mkdirSync(meta, { recursive: true });
   writeFileSync(path.join(meta, `${record.id.replace(/[^A-Za-z0-9._-]+/g, "_") || "section"}.json`), JSON.stringify({ ...record, applied }, null, 2) + "\n", "utf-8");
   cx.staged = cx.staged.filter((s) => s.input !== record.input);
   cx.staged.push(record);
   return record;
+}
+
+/**
+ * Markdown files under the run that no section_stage produced are the agent's own writes (a note,
+ * a duplicate) and carry no provenance: removed before validation, and said so in the run's flags.
+ */
+export function removeStrayFiles(cx: RunContext): string[] {
+  const staged = new Set(cx.staged.map((s) => s.path));
+  const removed: string[] = [];
+  const walk = (d: string) => {
+    for (const n of readdirSync(d)) {
+      if (n.startsWith(".")) continue;
+      const p = path.join(d, n);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (n.endsWith(".md")) {
+        const rel = path.relative(cx.runDir, p).replace(/\\/g, "/");
+        if (!staged.has(rel)) {
+          rmSync(p);
+          removed.push(rel);
+        }
+      }
+    }
+  };
+  walk(cx.runDir);
+  return removed;
+}
+
+/** Rebuild the staged records of an existing run from its `.ingest/` files, for resubmission. */
+export function loadRecords(runDir: string): StagedRecord[] {
+  const dir = path.join(runDir, ".ingest");
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((n) => n.endsWith(".json"))
+    .map((n) => JSON.parse(readFileSync(path.join(dir, n), "utf-8")) as StagedRecord & { applied?: number })
+    .map(({ applied: _a, ...r }) => r);
 }
 
 export function validateRun(cx: RunContext): ValidateReport {

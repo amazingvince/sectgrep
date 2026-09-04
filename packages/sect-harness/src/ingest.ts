@@ -15,7 +15,7 @@ import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
 import { connectSect } from "./sect-tools.js";
 import { claimRun, finishRun, lockSource, runDir, runIdFor, type RunEntry } from "./staging.js";
-import { guardToolCall, harnessTools, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary } from "./tools.js";
+import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary } from "./tools.js";
 
 export interface IngestOptions {
   /** WS2's output for one source: a directory in the B.2 layout (`sect-convert ecfr --out`). */
@@ -141,6 +141,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   }
   const release = lockSource(o.staging, o.source);
   const cx: RunContext = { runId, runDir: dir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
+  cx.knownIds = collectIds([cx.corpus, inputDir]);
   mkdirSync(path.join(dir, o.source), { recursive: true });
   const files = walkMarkdown(inputDir).map((f) => path.relative(inputDir, f).replace(/\\/g, "/"));
   // Structural nodes (title, chapter, part, subpart) carry a heading and a listing of their
@@ -229,22 +230,29 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
           }
         };
         await Promise.all(Array.from({ length: pool }, worker));
-        // Step 10: fix hard failures, at most three rounds.
+        // Step 10: fix hard failures, at most three rounds. Files the agents wrote beside the
+        // staged sections go first: nothing can fix them, and they are not the document.
+        const strays = removeStrayFiles(cx);
+        if (strays.length) log(`removed ${strays.length} stray file(s) the agent wrote: ${strays.slice(0, 5).join(", ")}${strays.length > 5 ? ", ..." : ""}`);
         for (fixRounds = 0; fixRounds < 3; fixRounds++) {
           const report = validateRun(cx);
           const byPath = new Map<string, string[]>();
           for (const i of report.issues) if (i.level === "error") byPath.set(i.path, [...(byPath.get(i.path) ?? []), `[${i.validator}] ${i.message}`]);
           if (!byPath.size) break;
           log(`fix round ${fixRounds + 1}: ${byPath.size} document(s) with errors`);
-          for (const [p, msgs] of byPath) {
-            const rel = sections.find((s) => stagingPathFor(cx, s) === p.replace(/\\/g, "/"));
-            if (!rel) continue;
-            try {
-              await runOne(rel, msgs.join("\n"));
-            } catch (e) {
-              log(`fix of ${rel} failed: ${e instanceof Error ? e.message : String(e)}`);
+          const todo = [...byPath].map(([p, msgs]) => ({ rel: sections.find((s) => stagingPathFor(cx, s) === p.replace(/\\/g, "/")), msgs })).filter((t): t is { rel: string; msgs: string[] } => !!t.rel);
+          let k = 0;
+          const fixer = async () => {
+            while (k < todo.length) {
+              const { rel, msgs } = todo[k++];
+              try {
+                await runOne(rel, msgs.join("\n"));
+              } catch (e) {
+                log(`fix of ${rel} failed: ${e instanceof Error ? e.message : String(e)}`);
+              }
             }
-          }
+          };
+          await Promise.all(Array.from({ length: Math.min(pool, todo.length || 1) }, fixer));
         }
       } finally {
         await sect.close();
@@ -254,7 +262,8 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
     let summary: SubmitSummary | null = null;
     let errors = 0;
     try {
-      summary = submitRun(cx, failed.length ? `${failed.length} section(s) not staged: ${failed.map((f) => f.input).join(", ")}` : undefined);
+      const strays = removeStrayFiles(cx);
+      summary = submitRun(cx, [failed.length ? `${failed.length} section(s) not staged: ${failed.map((f) => f.input).join(", ")}` : "", strays.length ? `${strays.length} stray file(s) removed: ${strays.join(", ")}` : ""].filter(Boolean).join("; ") || undefined);
       finishRun(o.staging, runId, "submitted", { sections: summary.sections_added, xrefs: summary.xrefs_resolved, cost: usage.cost });
     } catch (e) {
       errors = validateRun(cx).errors;
@@ -265,4 +274,51 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   } finally {
     release();
   }
+}
+
+export interface ResubmitOptions {
+  runDir: string;
+  source: string;
+  input: string;
+  corpus: string;
+  staging: string;
+  sectBin?: string;
+  rawRoot?: string;
+  work?: string;
+  log?: (line: string) => void;
+}
+
+/**
+ * Re-stage an existing run from its own records (the agent's context, definitions, references
+ * and flags per section), drop stray files, validate, and submit. No model call: this is how a
+ * run is closed after the harness rules changed, or after a person fixed a record by hand.
+ */
+export function resubmit(o: ResubmitOptions): { runId: string; staged: number; strays: string[]; summary: SubmitSummary | null; errors: number } {
+  const log = o.log ?? ((l: string) => console.log(l));
+  const dir = path.resolve(o.runDir);
+  const runId = path.basename(dir);
+  const inputDir = path.resolve(o.input);
+  const cx: RunContext = { runId, runDir: dir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
+  cx.knownIds = collectIds([cx.corpus, inputDir]);
+  const records = loadRecords(dir);
+  for (const r of records) {
+    try {
+      stageSection(cx, { input: r.input, context: r.context, defines: r.defines, xrefs: r.xrefs, flags: r.flags.filter((f) => !f.startsWith("unresolved: ")) });
+    } catch (e) {
+      log(`re-stage of ${r.input} failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+  const strays = removeStrayFiles(cx);
+  if (strays.length) log(`removed ${strays.length} stray file(s): ${strays.slice(0, 8).join(", ")}`);
+  let summary: SubmitSummary | null = null;
+  let errors = 0;
+  try {
+    summary = submitRun(cx, strays.length ? `resubmitted; ${strays.length} stray file(s) removed: ${strays.join(", ")}` : "resubmitted");
+    finishRun(o.staging, runId, "submitted", { sections: summary.sections_added, xrefs: summary.xrefs_resolved });
+  } catch (e) {
+    errors = validateRun(cx).errors;
+    log(`submit refused: ${e instanceof Error ? e.message.split("\n").slice(0, 6).join("\n") : String(e)}`);
+    finishRun(o.staging, runId, "failed", { errors });
+  }
+  return { runId, staged: cx.staged.length, strays, summary, errors };
 }

@@ -40,6 +40,7 @@ def main() -> None:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--staging", default="staging")
     ap.add_argument("--concurrency", type=int, default=4)
+    ap.add_argument("--notes", default="", help="what happened around the run that the numbers do not show")
     a = ap.parse_args()
     xml = sorted(glob.glob(str(ROOT / "raw" / f"cfr-title-{a.title}" / "*" / f"ECFR-title{a.title}.xml")))[-1]
     inp = ROOT / "work" / "ingest-input"
@@ -117,6 +118,9 @@ def main() -> None:
         for f, c in flags.most_common(12):
             md.append(f"| {c} | {f.replace('|', '/')} |")
         md.append("")
+    if a.notes:
+        md.append("## Notes\n")
+        md.append(a.notes + "\n")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")
     print(f"wrote {OUT.relative_to(ROOT)}: run {res['runId']}, pass rate {pass_rate:.3f}, cost ${usage['cost']:.4f} over {doc_tokens} document tokens (${per * 1e6:.2f}/M)")

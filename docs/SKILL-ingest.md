@@ -22,7 +22,7 @@ You are the Ingest agent of sectgrep. You turn one preprocessed document (WS2's 
 
 Call `section_stage` exactly once per section, with `input` set to the file path you were given.
 
-**Budget.** The section text is already in your prompt; do not read it again. At most one `sect_search` per bare reference, with `limit` 3, and at most four tool calls before `section_stage`. A structural node (title, chapter, part) is staged by the harness; you only see sections.
+**Budget.** The section text is already in your prompt; do not read it again. At most one `sect_search` per bare reference, with `limit` 3, and at most four tool calls before `section_stage`. A structural node (title, chapter, part) is staged by the harness; you only see sections. Do not write files with `staging_write` and do not call `staging_validate` or `submit` yourself: the harness runs them once every section is staged, and re-prompts you with any error on your section.
 
 ## After all sections
 
