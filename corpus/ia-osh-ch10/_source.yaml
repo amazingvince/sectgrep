@@ -1,0 +1,14 @@
+name: ia-osh-ch10
+kind: overlay
+title: "Iowa Administrative Code 875, Chapter 10 - General Industry Safety and Health Rules (Labor Services)"
+publisher: "Iowa Legislature, Administrative Rules (Iowa Administrative Code, chapter 875-10, as of the 2024-01-24 edition)"
+precedence: 200
+id_prefix: "IA:"
+id_pattern: '(?i)\b875\s*[—–-]\s*10\.(?P<rule>\d{1,2})(?:\(88\))?(?:\((?P<p1>\d{1,2})\))?(?:\s*[“"](?P<p2>[a-z])[”"])?'
+id_template: "IA:875-10.{rule}"
+anchor_template: "{p1}"
+legal_status: official
+version: "2024-01-24"
+authority: "Iowa Code chapter 88"
+citation: "Iowa Administrative Code 875-10 (IAC 4/19/23)"
+acquire: "https://www.legis.iowa.gov/docs/iac/chapter/01-24-2024.875.10.pdf"
