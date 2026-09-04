@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-11.5",
+  "input": "I/A/11/11.5/4-11.5.md",
+  "path": "cfr-title-4/I/A/11/11.5/4-11.5.md",
+  "context": "§ 11.5 Revocation of authority to represent, within Part 11 (Recognition of Attorneys and Other Representatives), Subchapter A (Personnel System), Chapter I (Government Accountability Office) of Title 4 (Accounts). It refers to § 11.3 (Authority to represent in payment cases), § 11.4 (Authority to represent in other cases). Authority: 31 U.S.C. 711.. Source: 41 FR 35155, Aug. 20, 1976, unless otherwise noted. Redesignated at 45 FR 68374, Oct. 15, 1980..",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "dry-run: WS2 context kept, no references resolved"
+  ],
+  "body_tokens": 122,
+  "applied": 0
+}

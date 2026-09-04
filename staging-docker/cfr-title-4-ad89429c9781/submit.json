@@ -1,0 +1,1142 @@
+{
+  "run_id": "cfr-title-4-ad89429c9781",
+  "sections_added": 270,
+  "sections_changed": 0,
+  "xrefs_resolved": 0,
+  "low_confidence": [],
+  "flags": [
+    {
+      "id": "CFR:4",
+      "flag": "structural title: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I",
+      "flag": "structural chapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-84-199",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-1",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-11",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-2",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-3",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-4",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-A",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-5",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-6",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-7",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-8",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-9",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-21",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-22",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-25",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-27",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-A",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg10",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg11",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg12",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg13",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg14",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg7",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg8",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-B-sg9",
+      "flag": "structural subjectgroup: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-C",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-D",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-E",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-F",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-G",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-H",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-I",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-J",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-28-K",
+      "flag": "structural subpart: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-29",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-B",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-E",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-75",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-F",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-81",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-82",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-83",
+      "flag": "structural part: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-G [RESERVED]",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-I-S C",
+      "flag": "structural subchapter: staged by the harness with WS2's context"
+    },
+    {
+      "id": "CFR:4-11.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-11.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-11.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-11.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-11.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-2.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-3.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-3.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-3.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-4.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-4.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-4.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-4.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-5.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-6.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-7.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-8.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-9.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.0",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.10",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.11",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.12",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.13",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.14",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-21.9",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.10",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.11",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.12",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.13",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.14",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.15",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.16",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.17",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.18",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.19",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.20",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.21",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.22",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.23",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.24",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.25",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.26",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.27",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.28",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.29",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-22.9",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.10",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.11",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.12",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.13",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.14",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.15",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.16",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-25.9",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-27.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-27.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-27.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.10",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.11",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.12",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.13",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.9",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.46",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.47",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.48",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.49",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.50",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.55",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.56",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.57",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.58",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.59",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.60",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.61",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.62",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.63",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.65",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.66",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.67",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.68",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.69",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.80",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.81",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.86",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.87",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.88",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.89",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.90",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.15",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.16",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.17",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.18",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.19",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.20",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.21",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.22",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.23",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.24",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.25",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.26",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.27",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.28",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.29",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.40",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.41",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.42",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.43",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.44",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.45",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.91",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.92",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.100",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.101",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.95",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.96",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.97",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.98",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.99",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.110",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.111",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.112",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.113",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.114",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.115",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.116",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.120",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.121",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.122",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.123",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.124",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.130",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.131",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.132",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.133",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.140",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.141",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.145",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.146",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.147",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.148",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.149",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.155",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.160",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-28.161",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-75.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-81.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-82.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-82.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.1",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.10",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.11",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.12",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.13",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.14",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.15",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.16",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.17",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.18",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.19",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.2",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.20",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.21",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.3",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.4",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.5",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.6",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.7",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.8",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    },
+    {
+      "id": "CFR:4-83.9",
+      "flag": "dry-run: WS2 context kept, no references resolved"
+    }
+  ],
+  "validators": [
+    {
+      "n": 1,
+      "name": "validate-only index",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 2
+    },
+    {
+      "n": 2,
+      "name": "round-trip text",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "n": 3,
+      "name": "table cells",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "n": 4,
+      "name": "xref precision",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "n": 5,
+      "name": "provenance completeness",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "n": 6,
+      "name": "precedence sanity",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "n": 7,
+      "name": "action integrity",
+      "checked": 270,
+      "errors": 0,
+      "warnings": 0
+    }
+  ],
+  "errors": 0,
+  "warnings": 2
+}

@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-I-G [RESERVED]",
+  "input": "I/G [RESERVED]/4-I-G [RESERVED].md",
+  "path": "cfr-title-4/I/G [RESERVED]/4-I-G [RESERVED].md",
+  "context": "Subchapter G [RESERVED] Subchapter G [reserved], within Chapter I (Government Accountability Office) of Title 4 (Accounts). This deterministic context prefix was written by sect-convert from the eCFR XML hierarchy, headings, and explicit references only; it names where the text sits and what it points to, and the WS3 ingest agent replaces it with a written prefix.",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "structural subchapter: staged by the harness with WS2's context"
+  ],
+  "body_tokens": 6,
+  "applied": 0
+}

@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-I-F",
+  "input": "I/F/4-I-F.md",
+  "path": "cfr-title-4/I/F/4-I-F.md",
+  "context": "Subchapter F Records, within Chapter I (Government Accountability Office) of Title 4 (Accounts). It contains 3 parts, from Part 81 to Part 83. This deterministic context prefix was written by sect-convert from the eCFR XML hierarchy, headings, and explicit references only; it names where the text sits and what it points to, and the WS3 ingest agent replaces it with a written prefix.",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "structural subchapter: staged by the harness with WS2's context"
+  ],
+  "body_tokens": 40,
+  "applied": 0
+}

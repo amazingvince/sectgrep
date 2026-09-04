@@ -1,0 +1,35 @@
+{
+  "id": "CFR:4-28.3",
+  "input": "I/B/28/A/28.3/4-28.3.md",
+  "path": "cfr-title-4/I/B/28/A/28.3/4-28.3.md",
+  "context": "§ 28.3 General definitions, within Subpart A (Purpose, General Definitions, and Jurisdiction), Part 28 (Government Accountability Office Personnel Appeals Board; Procedures Applicable to Claims Concerning Employment Practices at the Government Accountability Office), Subchapter B (General Procedures), Chapter I (Government Accountability Office) of Title 4 (Accounts). It defines 21 terms: Administrative judge, Appeal, Board, Charge, Charging Party, Clerk of the Board. Authority: 31 U.S.C. 753.. Source: 68 FR 69298, Dec. 12, 2003.",
+  "defines": [
+    "Administrative judge",
+    "Appeal",
+    "Board",
+    "Charge",
+    "Charging Party",
+    "Clerk of the Board",
+    "Comptroller General",
+    "Days",
+    "Director of EEO Oversight",
+    "Executive Director",
+    "GAO",
+    "General Counsel",
+    "Initial Decision",
+    "Notice of Appeal",
+    "Person",
+    "Petition",
+    "Petitioner",
+    "Pleading",
+    "Reduction in Force (RIF)",
+    "Request for Reconsideration",
+    "Solicitor"
+  ],
+  "xrefs": [],
+  "flags": [
+    "dry-run: WS2 context kept, no references resolved"
+  ],
+  "body_tokens": 537,
+  "applied": 0
+}

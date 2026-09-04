@@ -1,0 +1,20 @@
+# Never the key, the indexes, the raw documents, or build output.
+.env
+.env.*
+.git
+target
+node_modules
+**/node_modules
+**/dist
+**/.sect
+raw
+corpora
+work
+staging
+review
+lint
+proto
+.uv-cache
+.uv-python
+fixtures/work
+eval/results

@@ -1,0 +1,18 @@
+{
+  "runs": {
+    "cfr-title-4-ad89429c9781": {
+      "run_id": "cfr-title-4-ad89429c9781",
+      "source": "cfr-title-4",
+      "raw_sha256": "ad89429c97812f07711bb766fdb880b423db8db4a93826f2885d3146f1267804",
+      "input": "C:\\Users\\amazi\\code\\sect\\work\\ingest-input\\cfr-title-4",
+      "started": "2026-09-04T03:25:07.673Z",
+      "status": "submitted",
+      "finished": "2026-09-04T03:25:16.077Z",
+      "summary": {
+        "sections": 270,
+        "xrefs": 0,
+        "cost": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-82.1",
+  "input": "I/F/82/82.1/4-82.1.md",
+  "path": "cfr-title-4/I/F/82/82.1/4-82.1.md",
+  "context": "§ 82.1 Court subpoenas or requests, within Part 82 (Furnishing Records of the Government Accountability Office in Judicial Proceedings), Subchapter F (Records), Chapter I (Government Accountability Office) of Title 4 (Accounts). Authority: 31 U.S.C. 711, 713, 714, 718, 3523, 2524, 2526, and 3529.. Source: 33 FR 358, Jan. 10, 1968, as amended at 45 FR 84955, Dec. 24, 1980; 47 FR 56980, Dec. 22, 1982.",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "dry-run: WS2 context kept, no references resolved"
+  ],
+  "body_tokens": 135,
+  "applied": 0
+}

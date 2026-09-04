@@ -1,0 +1,31 @@
+{
+  "name": "@sectgrep/harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "WS3 ingest harness: a Pi agent with the seven sect verbs and the staging tools (spec D.1, D.2)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "sect-harness": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "ingest": "tsx src/cli.ts ingest"
+  },
+  "dependencies": {
+    "@mariozechner/pi-agent-core": "0.73.1",
+    "@mariozechner/pi-ai": "0.73.1",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "@sectgrep/convert": "workspace:*",
+    "typebox": "^1.1.24",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

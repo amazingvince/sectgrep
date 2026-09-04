@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-I-E",
+  "input": "I/E/4-I-E.md",
+  "path": "cfr-title-4/I/E/4-I-E.md",
+  "context": "Subchapter E Standardized Fiscal Procedures, within Chapter I (Government Accountability Office) of Title 4 (Accounts). It contains 1 part, from Part 75 to Part 75. This deterministic context prefix was written by sect-convert from the eCFR XML hierarchy, headings, and explicit references only; it names where the text sits and what it points to, and the WS3 ingest agent replaces it with a written prefix.",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "structural subchapter: staged by the harness with WS2's context"
+  ],
+  "body_tokens": 18,
+  "applied": 0
+}

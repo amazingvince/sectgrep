@@ -255,9 +255,11 @@ export const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, 
 // ---- 1. sect index --validate-only
 
 export function validateIndex(staging: string, sectBin?: string): { issues: Issue[]; skipped?: string } {
-  const bin = sectBin ?? process.env.SECT_BIN ?? "sect";
+  const given = sectBin ?? process.env.SECT_BIN ?? "sect";
+  // A relative path is taken from the working directory; a bare name is looked up on PATH.
+  const bin = given.includes("/") || given.includes("\\") ? path.resolve(given) : given;
   const r = spawnSync(bin, ["index", "--validate-only", "--json", staging], { encoding: "utf-8", maxBuffer: 64 * 1024 * 1024 });
-  if (r.error) return { issues: [], skipped: `sect binary not found (${bin}); set SECT_BIN` };
+  if (r.error) return { issues: [], skipped: `sect binary not found (${bin}): ${r.error.message}; set SECT_BIN` };
   const issues: Issue[] = [];
   try {
     const j = JSON.parse(r.stdout) as { issues?: Array<{ level: string; path: string; message: string }> };

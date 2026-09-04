@@ -1,0 +1,13 @@
+{
+  "id": "CFR:4-83.4",
+  "input": "I/F/83/83.4/4-83.4.md",
+  "path": "cfr-title-4/I/F/83/83.4/4-83.4.md",
+  "context": "§ 83.4 Conditions of disclosure, within Part 83 (Privacy Procedures for Personnel Records), Subchapter F (Records), Chapter I (Government Accountability Office) of Title 4 (Accounts). It refers to § 83.5 (Specific disclosure of information), § 83.3 (Definitions), Part 81 (Public Availability of Government Accountability Office Records). Authority: 31 U.S.C. 711(1); Memorandum of Understanding between the U.S. Office of Personnel Management, the National Archives and. Source: 50 FR 13162, Apr. 3, 1985, unless otherwise noted..",
+  "defines": [],
+  "xrefs": [],
+  "flags": [
+    "dry-run: WS2 context kept, no references resolved"
+  ],
+  "body_tokens": 409,
+  "applied": 0
+}
