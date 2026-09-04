@@ -174,7 +174,7 @@ def main() -> None:
         lines["overlay_read"] = "\n".join(f"$ sect read {t}\n" + "\n".join(l for l in sect(["read", t, "--no-refresh"]).splitlines() if re.search(r"overrid|narrow", l, re.I))[:1200] for t in targets[:3])
 
     if "report" in phases:
-        notice_run = notice_run or latest_run("staging-h3notice", "fr")
+        notice_run = notice_run or latest_run("staging-h3notice2", "fr") or latest_run("staging-h3notice", "fr")
         # Mapping reference: the versioner's diff between the two dates.
         run(["node", str(CONVERT), "align", "cfr-title-4", "2024-06-17", "2024-07-18", "--out", "work/h3-changes.json"])
         changes = json.load(open(ROOT / "work" / "h3-changes.json", encoding="utf-8"))
@@ -211,6 +211,7 @@ def main() -> None:
             actual = body_of(cur.read_text(encoding="utf-8"))
             agree.append((d["id"], containment(toks(composed), toks(actual)), containment(toks(actual), toks(composed)), toks(composed) == toks(actual)))
         unapplied = [f for d in derived for f in d["flags"] if f.startswith("unapplied")]
+        held = [f for f in rec.get("flags", []) if f.startswith("composition held")]
         LABELS.parent.mkdir(parents=True, exist_ok=True)
         LABELS.write_text("\n".join([
             "# H3 label sheet: Federal Register rule 2024-13064 (4 CFR part 28)",
@@ -234,7 +235,7 @@ def main() -> None:
         md.append("## Action extraction (notice 2024-13064)\n")
         md.append(f"Against [review/h3-labels.md](../../review/h3-labels.md) (agent-drafted): **{tp} of {len(EXPECTED)} Actions have the expected target and paragraph, precision {precision:.3f}**; the converter's candidates were confirmed by the ingest agent and judged blind by the verifier ({sum(1 for j in judged.values() if j['agree'])} of {len(judged)} agree).\n")
         md.append("## Amendment mapping\n")
-        md.append(f"The run composed new Expressions for {len(produced)} Works; the versioner says the rule changed {len(changed)}: **precision {mp:.3f}, recall {mr:.3f}** ({len(produced & changed)} in both). Unapplied Actions: {len(unapplied)}{' (' + '; '.join(unapplied[:6]) + ')' if unapplied else ''}.\n")
+        md.append(f"The run composed new Expressions for {len(produced)} Works; the versioner says the rule changed {len(changed)}: **precision {mp:.3f}, recall {mr:.3f}** ({len(produced & changed)} in both). Unapplied Actions: {len(unapplied)}{' (' + '; '.join(unapplied[:6]) + ')' if unapplied else ''}. Compositions held for a person: {len(held)}{' (' + '; '.join(h[:200] for h in held[:4]) + ')' if held else ''}.\n")
         if agree:
             md.append("| Work | Composed text in the versioner's text | Versioner's text in the composed | Identical |")
             md.append("|---|---|---|---|")

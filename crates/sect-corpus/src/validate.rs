@@ -174,9 +174,20 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
                         cx.err(d, format!("Action `{a}` targets `{}`, not this section nor a container above it", act.target_id));
                     } else if let (Some(text), false) = (&act.text, act.kind == "remove") {
                         // A removal's quoted text is what leaves the Expression; it is not looked for.
+                        // Quoted paragraphs are looked for one by one (an inserted one may sit between
+                        // two others); a heading, a "reads as follows", or a paragraph printed with
+                        // asterisks is not given whole and is skipped.
                         let norm = |s: &str| s.split_whitespace().collect::<Vec<_>>().join(" ");
-                        if !norm(&d.body).contains(&norm(text)) {
-                            cx.err(d, format!("Action `{a}` quoted text is not present in this Expression"));
+                        let body = norm(&d.body);
+                        let missing = text
+                            .split("\n\n")
+                            .map(|p| p.trim())
+                            .filter(|p| !p.is_empty() && !p.starts_with('#') && !p.contains("* * *") && !p.to_lowercase().ends_with("as follows:") && !p.to_lowercase().ends_with("as follows"))
+                            .filter(|p| p.split_whitespace().count() >= 4)
+                            .filter(|p| !body.contains(&norm(p)))
+                            .count();
+                        if missing > 0 {
+                            cx.err(d, format!("Action `{a}` quoted text is not present in this Expression ({missing} paragraph(s))"));
                         }
                     }
                 }

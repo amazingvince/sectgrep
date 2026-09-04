@@ -242,7 +242,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
     if (sourceKind === "notice") {
       const acts = (front.actions ?? []) as Array<{ action_id: string; target_id: string; target_anchor?: string | null; kind: string; instruction?: string }>;
       if (!acts.length) return ["This is a notice with no Action candidates from the converter: say so in flags."];
-      const lines = ["This is a notice. Confirm or correct each Action below in `actions` (one entry per action_id: target_id, target_anchor or null, kind). A target must be a real id; an anchor must be one of the target's paragraphs listed. Use sect_read on a target when in doubt. Do not write amended text."];
+      const lines = ["This is a notice. Confirm or correct each Action below in `actions` (one entry per action_id: target_id, target_anchor or null, kind). A target must be a real id; an anchor must be one of the target's paragraphs listed. Use sect_read on a target when in doubt. Do not write amended text. A reference to a statute, a public law, a U.S. Code title or a title of an Act is outside this corpus: leave it bare, do not link it to a section."];
       for (const a of acts) {
         const anchors = [...(cx.knownIds?.get(a.target_id) ?? [])].filter((x) => /^[a-z0-9-]+$/.test(x)).slice(0, 40);
         lines.push(`- ${a.action_id}: ${String(a.instruction ?? "").slice(0, 300)} -> proposed ${a.target_id}${a.target_anchor ? "#" + a.target_anchor : ""}, ${a.kind}${cx.knownIds?.has(a.target_id) ? `; target paragraphs: ${anchors.join(", ") || "(none)"}` : "; target not in the corpus"}`);

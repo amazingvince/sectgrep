@@ -570,6 +570,18 @@ export function actionIntegrity(doc: Doc, cx: Context): Issue[] {
     if (action.target_id !== doc.front.id && !ancestors.has(action.target_id)) out.push(issue(7, "error", doc, `amended_by ${ref}: Action target ${action.target_id} is not this section nor a container above it`));
     const quoted = tokens(String(action.text ?? ""));
     if (String(action.kind ?? "") === "remove") continue;
+    // The quoted paragraphs need not sit together in the Expression (one may be placed between
+    // two others); each is looked for on its own, and one printed with asterisks is not given whole.
+    const paras = String(action.text ?? "").split(/\n{2,}/).map((p) => p.trim()).filter((p) => p && !/^#{1,6}\s/.test(p) && !/^\*\s?\*\s?\*\s*$/.test(p) && !/reads? as follows:?$/i.test(p) && !/\*\s?\*\s?\*/.test(p));
+    const bodyTokens = tokens(doc.body);
+    let missing = 0;
+    for (const p of paras) {
+      const pt = tokens(p);
+      if (pt.length < 4) continue;
+      if (spanMatch(pt, bodyTokens, cx.roundTrip).score < cx.roundTrip) missing++;
+    }
+    if (paras.length && missing) out.push(issue(7, "error", doc, `amended_by ${ref}: ${missing} of ${paras.length} quoted paragraph(s) not present in this Expression`));
+    if (paras.length) continue;
     if (!quoted.length) out.push(issue(7, "warning", doc, `amended_by ${ref}: Action carries no text to check`));
     else {
       const s = spanMatch(quoted, body);

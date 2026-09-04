@@ -142,8 +142,12 @@ export function evidenceChecks(o: EvidenceOptions): EvidenceReport {
         p = pd?.front.parent ? String(pd.front.parent) : null;
       }
       if (action.target_id !== d.front.id && !above.has(action.target_id)) issue(d, "amended_by", "fail", `${ref} targets ${action.target_id}, not this section nor a container above it`);
-      const quoted = String(action.kind ?? "") === "remove" ? [] : tokens(String(action.text ?? ""));
-      if (quoted.length && spanMatch(quoted, tokens(d.body)).score < 0.92) issue(d, "amended_by", "fail", `${ref}: the notice's text is not present in this Expression`);
+      if (String(action.kind ?? "") !== "remove") {
+        const paras = String(action.text ?? "").split(/\n{2,}/).map((p) => p.trim()).filter((p) => p && !/^#{1,6}\s/.test(p) && !/^\*\s?\*\s?\*\s*$/.test(p) && !/reads? as follows:?$/i.test(p) && !/\*\s?\*\s?\*/.test(p));
+        const bodyTokens = tokens(d.body);
+        const missing = paras.filter((p) => tokens(p).length >= 4 && spanMatch(tokens(p), bodyTokens).score < 0.92).length;
+        if (missing) issue(d, "amended_by", "fail", `${ref}: ${missing} of ${paras.length} quoted paragraph(s) not present in this Expression`);
+      }
       if (action.effective && date && String(action.effective).slice(0, 10) !== date) issue(d, "amended_by", "fail", `${ref} is effective ${action.effective} but this Expression ${date}`);
       if (d.front.supersedes) {
         const prev = splitExpr(String(d.front.supersedes));

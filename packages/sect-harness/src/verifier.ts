@@ -5,7 +5,7 @@
 // section and no tools, and answers in JSON. Consensus compares the two runs field by field:
 // agreement is the auto tier, disagreement is a conflict a person resolves.
 
-import { complete, type AssistantMessage, type Usage } from "@mariozechner/pi-ai";
+import type { Usage } from "@mariozechner/pi-ai";
 import { providerExtras, splitFrontMatter } from "@sectgrep/convert";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -126,8 +126,37 @@ export function verifierPrompt(rel: string, inputText: string, refs: string[], c
     lines.push("", "This is a notice. For each Action below, name in actions the target its instruction amends (a candidate id or null), the paragraph anchor it names or null, and the kind of change:");
     for (const a of extras.actions ?? []) lines.push(`- ${a.action_id}: ${a.instruction.slice(0, 300)} | candidates: ${show(a.candidates)}`);
   }
-  lines.push("", "```markdown", inputText.length > 30_000 ? inputText.slice(0, 30_000) + "\n[truncated]" : inputText, "```");
+  // The whole text of a long section drowns a reasoning model's budget: the verifier reads the
+  // front matter and the head, then the sentences that hold each span it must judge.
+  const shown = focusedText(inputText, [...refs, ...(extras.actions ?? []).map((a) => a.instruction.slice(0, 80))], kind === "notice" ? 6_000 : 8_000);
+  lines.push("", "```markdown", shown, "```");
   return lines.join("\n");
+}
+
+/** The front matter and the head of a document, plus the sentences holding the given spans, within a budget. */
+export function focusedText(text: string, spans: string[], budget: number): string {
+  if (text.length <= budget) return text;
+  const fm = text.startsWith("---") ? text.indexOf("\n---", 3) : -1;
+  const front = fm > 0 ? text.slice(0, fm + 4) : "";
+  const body = fm > 0 ? text.slice(fm + 4) : text;
+  const headLen = Math.max(1_500, Math.floor(budget / 3));
+  const parts = [front.length > budget / 2 ? front.slice(0, Math.floor(budget / 2)) + "\n[front matter truncated]" : front, body.slice(0, headLen), "[...]"];
+  const seen = new Set<string>();
+  for (const s of spans) {
+    if (!s) continue;
+    const at = body.indexOf(s, headLen);
+    if (at < 0) continue;
+    const start = Math.max(body.lastIndexOf("\n", at) + 1, body.lastIndexOf(". ", at) + 1, headLen);
+    const ends = [body.indexOf(". ", at + s.length), body.indexOf("\n", at + s.length)].filter((i) => i >= 0).map((i) => i + 1);
+    const sentence = body.slice(start, ends.length ? Math.min(...ends) : body.length).trim();
+    if (sentence && !seen.has(sentence)) {
+      seen.add(sentence);
+      parts.push(sentence.slice(0, 600));
+    }
+  }
+  let out = parts.join("\n\n");
+  if (out.length > budget) out = out.slice(0, budget) + "\n[truncated]";
+  return out;
 }
 
 export function parseAnswer(text: string): VerifierAnswer {
@@ -216,6 +245,28 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
   return out;
 }
 
+/** One completion at the provider's chat endpoint with a hard timeout; the usage priced by the model's table. */
+async function askDirect(choice: ModelChoice, user: string, timeoutMs: number): Promise<{ text: string; input: number; output: number; cost: number }> {
+  const t0 = Date.now();
+  if (process.env.SECT_VERIFIER_TRACE) console.error(`verifier: asking (${user.length} chars)`);
+  const model = choice.model as { baseUrl?: string; cost: { input: number; output: number } } | undefined;
+  const base = (model?.baseUrl ?? choice.config.baseUrl).replace(/\/+$/, "");
+  const res = await fetch(`${base}/chat/completions`, {
+    method: "POST",
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: { authorization: `Bearer ${choice.config.apiKey}`, "content-type": "application/json" },
+    // A reasoning model thinks for thousands of tokens before it answers: the budget is wide (the user's call: more reasoning, not less), the effort low so it stays bounded; reasoning.enabled=false answers in seconds when speed matters more.
+    body: JSON.stringify({ model: choice.config.model, temperature: 0, max_tokens: 16_000, reasoning: { effort: "low" }, ...providerExtras(choice.config), provider: { sort: "throughput", ...((providerExtras(choice.config) as { provider?: object }).provider ?? {}) }, messages: [{ role: "system", content: VERIFIER_SYSTEM }, { role: "user", content: user }] }),
+  });
+  if (!res.ok) throw new Error(`verifier HTTP ${res.status}: ${(await res.text().catch(() => "")).slice(0, 200)}`);
+  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number }; error?: { message?: string } };
+  if (data.error) throw new Error(`verifier: ${data.error.message ?? "error"}`);
+  const input = data.usage?.prompt_tokens ?? 0;
+  const output = data.usage?.completion_tokens ?? 0;
+  if (process.env.SECT_VERIFIER_TRACE) console.error(`verifier: answered in ${Date.now() - t0} ms, ${output} completion tokens, ${String(data.choices?.[0]?.message?.content ?? "").length} chars`);
+  return { text: String(data.choices?.[0]?.message?.content ?? ""), input, output, cost: (input * (model?.cost.input ?? 0) + output * (model?.cost.output ?? 0)) / 1e6 };
+}
+
 /** Ids the corpus's own search returns for a query, through the sect binary; none without one. */
 export function searchIds(bin: string | undefined, corpus: string, query: string, limit = 8): string[] {
   if (!bin || !query.trim()) return [];
@@ -227,11 +278,6 @@ export function searchIds(bin: string | undefined, corpus: string, query: string
   } catch {
     return [];
   }
-}
-
-function usageOf(m: AssistantMessage): { input: number; output: number; cost: number } {
-  const u = (m as { usage?: Usage }).usage;
-  return { input: (u?.input ?? 0) + (u?.cacheRead ?? 0) + (u?.cacheWrite ?? 0), output: u?.output ?? 0, cost: u?.cost?.total ?? 0 };
 }
 
 /** Run the verifier over a submitted run and write verify.json and the review file. */
@@ -303,6 +349,7 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
       if (judgmentsPossible && !hasChildren(known, r.id)) {
         const prompt = verifierPrompt(r.input, text, refs, candidates, sourceKind, extras);
         let answer: VerifierAnswer;
+        let verifierFailed = false;
         try {
           if (o.verify) {
             const v = await o.verify(prompt, VERIFIER_SYSTEM);
@@ -326,14 +373,13 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
               }
             };
             const ask = async (nudge: string) => {
-              // A call that never returns is a timeout, and the backoff retries it.
-              const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T> => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`timeout after ${ms} ms`)), ms))]);
-              const m = await withBackoff(() => withTimeout(complete(choice!.model as never, { systemPrompt: VERIFIER_SYSTEM, messages: [{ role: "user", content: prompt + nudge, timestamp: Date.now() }] }, { apiKey: choice!.config.apiKey, temperature: 0, maxTokens: 2000, ...(Object.keys(providerExtras(choice!.config)).length ? {} : {}) }), 300_000));
-              const u = usageOf(m);
-              usage.input += u.input;
-              usage.output += u.output;
-              usage.cost += u.cost;
-              return m.content.filter((c) => c.type === "text").map((c) => (c as { text: string }).text).join("\n");
+              // One completion straight to the provider's OpenAI-compatible endpoint: the Pi client
+              // streams and stalled for minutes on long sections where the endpoint answers in seconds.
+              const m = await withBackoff(() => askDirect(choice!, prompt + nudge, 600_000));
+              usage.input += m.input;
+              usage.output += m.output;
+              usage.cost += m.cost;
+              return m.text;
             };
             try {
               answer = parseAnswer(await ask(""));
@@ -347,8 +393,11 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
         } catch (e) {
           log(`verifier failed on ${r.input}: ${e instanceof Error ? e.message.slice(0, 160) : String(e)}`);
           answer = { xrefs: [], defines: [], notes: "verifier call failed" };
+          verifierFailed = true;
         }
         judgments = consensus(r, answer, refs, candidates, level, front);
+        // Without a second opinion there is no consensus: every judgment stays open.
+        if (verifierFailed) judgments = judgments.map((j) => ({ ...j, agree: false, deterministic: false, verifier: "(verifier call failed)" }));
       }
       const ev = evidenceByPath.get(r.path.replace(/\\/g, "/")) ?? [];
       const conflict = judgments.some((j) => !j.agree) || ev.some((i) => i.level === "fail");

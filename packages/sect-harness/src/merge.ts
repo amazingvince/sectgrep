@@ -100,6 +100,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
   const held = new Map<string, string>();
   for (const s of report.sections) if (s.tier !== "auto") held.set(s.id, "conflict");
   const bodies = new Map<string, string>();
+  const amendedBy = new Map<string, string[]>();
   // A node other nodes name as their parent is structural: its listing is derived.
   const parents = new Set<string>();
   for (const s of report.sections) {
@@ -107,8 +108,9 @@ export function mergeRun(o: MergeOptions): MergeResult {
     if (!existsSync(from)) continue;
     const split = splitFrontMatter(readFileSync(from, "utf-8"));
     bodies.set(s.id, split?.body ?? "");
-    const parent = ((YAML.parse(split?.front ?? "") ?? {}) as { parent?: unknown }).parent;
-    if (parent && typeof parent === "string") parents.add(parent);
+    const fm = (YAML.parse(split?.front ?? "") ?? {}) as { parent?: unknown; amended_by?: unknown };
+    if (fm.parent && typeof fm.parent === "string") parents.add(fm.parent);
+    if (Array.isArray(fm.amended_by)) amendedBy.set(s.id, fm.amended_by.map(String));
   }
   for (let changed = true; changed; ) {
     changed = false;
@@ -118,6 +120,13 @@ export function mergeRun(o: MergeOptions): MergeResult {
       const blocker = linkTargets(bodies.get(s.id) ?? "").find((t) => held.has(t) && !known.has(t));
       if (blocker) {
         held.set(s.id, `links to ${blocker}, which is held`);
+        changed = true;
+        continue;
+      }
+      // An amended Expression travels with its notice: without the notice its Actions do not exist.
+      const notice = (amendedBy.get(s.id) ?? []).map((r) => r.split("#")[0]).find((n) => held.has(n) && !known.has(n));
+      if (notice) {
+        held.set(s.id, `amended by ${notice}, which is held`);
         changed = true;
       }
     }

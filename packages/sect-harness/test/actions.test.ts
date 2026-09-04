@@ -14,9 +14,12 @@ describe("actions applied in code (D.2 step 9)", () => {
   const body = "# § 1.1 Rules\n\n(a) First.\n\n(b) Second, with a cage or well.\n\n(1) Nested one.\n\n(2) Nested two.\n\n(c) Third.\n";
 
   it("replaces a paragraph with the quoted text, sub-paragraphs included", () => {
-    const r = applyAction(body, base("1", { target_anchor: "b", text: "(b) New second.\n\n(1) New nested." }));
-    expect(r.why).toBeUndefined();
+    const r = applyActions(body, [base("1", { target_anchor: "b", text: "(b) New second.\n\n(1) New nested." })]);
+    expect(r.unapplied).toEqual([]);
     expect(r.body).toBe("# § 1.1 Rules\n\n(a) First.\n\n(b) New second.\n\n(1) New nested.\n\n(c) Third.\n");
+    // Only the introductory text revised: the nested paragraphs stay.
+    const intro = applyActions(body, [base("1b", { target_anchor: "b", instruction: "Revising paragraph (b) introductory text.", text: "(b) Second, revised." })]);
+    expect(intro.body).toBe("# § 1.1 Rules\n\n(a) First.\n\n(b) Second, revised.\n\n(1) Nested one.\n\n(2) Nested two.\n\n(c) Third.\n");
   });
 
   it("makes a word-level edit in the named paragraph, or everywhere when told", () => {
@@ -29,12 +32,17 @@ describe("actions applied in code (D.2 step 9)", () => {
 
   it("redesignates, adds in order, removes and reserves", () => {
     expect(redesignation("Redesignate paragraph (c) as paragraph (d); and adding a new paragraph (c).")).toEqual([{ from: "c", to: "d" }]);
-    const re = applyAction(body, base("4", { kind: "redesignate", instruction: "Redesignate paragraph (c) as paragraph (d) and add a new paragraph (c).", text: "(c) Inserted third." }));
+    const re = applyActions(body, [base("4", { kind: "redesignate", instruction: "Redesignate paragraph (c) as paragraph (d) and add a new paragraph (c).", text: "(c) Inserted third." })]);
     expect(re.body).toContain("(c) Inserted third.\n\n(d) Third.");
-    const added = applyAction(body, base("5", { kind: "add", target_anchor: "d", text: "(d) Fourth." }));
+    const added = applyActions(body, [base("5", { kind: "add", target_anchor: "d", text: "(d) Fourth." })]);
     expect(added.body.trimEnd().endsWith("(c) Third.\n\n(d) Fourth.")).toBe(true);
-    const nested = applyAction(body, base("6", { kind: "add", target_anchor: "b-3", text: "(3) Nested three." }));
+    const nested = applyActions(body, [base("6", { kind: "add", target_anchor: "b", text: "(3) Nested three." })]);
     expect(nested.body).toContain("(2) Nested two.\n\n(3) Nested three.\n\n(c) Third.");
+    // Inline first sub-paragraph, then roman ones under it.
+    const roman = applyActions("# § 1.1 Rules\n\n(a) First.\n", [base("6b", { kind: "add", text: "(e) Special rules. (1) Except as follows:\n\n(i) One.\n\n(ii) Two.\n\n(2) Other." })]);
+    // A sub-paragraph whose parent is inline is a person's to place; the rest lands.
+    expect(roman.body).toContain("(e) Special rules. (1) Except as follows:\n\n(2) Other.");
+    expect(roman.partial?.[0]?.notes.join(" ")).toMatch(/inline in its parent/);
     const removed = applyAction(body, base("7", { kind: "remove", target_anchor: "b", instruction: "Remove and reserve paragraph (b)." }));
     expect(removed.body).toBe("# § 1.1 Rules\n\n(a) First.\n\n(b) [Reserved]\n\n(c) Third.\n");
     const gone = applyAction(body, base("8", { kind: "remove", target_anchor: "b", instruction: "Remove paragraph (b)." }));
@@ -49,6 +57,8 @@ describe("actions applied in code (D.2 step 9)", () => {
     ]);
     expect(r.applied.map((a) => a.action_id)).toEqual(["N#11"]);
     expect(r.unapplied.map((u) => `${u.action.action_id}: ${u.why}`)).toEqual(["N#10: paragraph (z) not found"]);
+    const partial = applyActions(body, [base("12", { target_anchor: "b", text: "(b) * * * Second, in part." })]);
+    expect(partial.unapplied[0]?.why).toMatch(/asterisks/);
     expect(r.body).toContain("(a) First, revised.");
   });
 
