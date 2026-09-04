@@ -1,0 +1,12 @@
+name: cfr-title-29
+kind: base
+title: "Title 29 - Labor"
+publisher: "Office of the Federal Register; GPO eCFR bulk XML (not the official legal edition)"
+precedence: 100
+id_prefix: "CFR:29-"
+id_pattern: "(?i)(?:\\b29\\s*C\\.?F\\.?R\\.?\\s*(?:§\\s*)?|§\\s*|\\bsection\\s+)(?P<part>\\d{1,4})\\.(?P<section>\\d{1,4}[a-z]?(?:-\\d+)?)(?:\\s*\\((?P<p1>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?(?:\\s*\\((?P<p2>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?"
+id_template: "CFR:29-{part}.{section}"
+anchor_template: "{p1}-{p2}"
+legal_status: unofficial-xml
+version: "2026-08-31"
+acquire: "https://www.govinfo.gov/bulkdata/ECFR/title-29/ECFR-title29.xml"
