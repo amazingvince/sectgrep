@@ -6,7 +6,8 @@ import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { ingest, sectionPrompt } from "../src/ingest.js";
 import { mergeRun } from "../src/merge.js";
-import { bareReferences, isExplicit, preResolve } from "../src/refs.js";
+import { bareReferences, knownFromNodes, preResolve } from "../src/refs.js";
+import { cfrSource } from "./registry-helpers.js";
 import { resolveConflict } from "../src/resolve.js";
 import { trimResult } from "../src/sect-tools.js";
 import { verifyRun, type VerifyReport } from "../src/verifier.js";
@@ -15,14 +16,23 @@ const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z
 const tmp = () => mkdtempSync(path.join(tmpdir(), "sect-gn2-"));
 
 describe("pre-resolution of explicit citations (G-N2)", () => {
-  const known = { ids: new Map([["CFR:77-1.1", "Purpose"], ["CFR:77-1.2", "Fixed ladders"], ["CFR:1-1.2", "Scope"], ["CFR:77-1", "General"], ["CFR:77-2.5", "Other"]]) };
+  const known = knownFromNodes(
+    [
+      { id: "CFR:77", title: "Title 77", level: "title", parent: null, source: "cfr-title-77" },
+      { id: "CFR:77-1", title: "General", level: "part", parent: "CFR:77", source: "cfr-title-77" },
+      { id: "CFR:77-2", title: "Ladders", level: "part", parent: "CFR:77", source: "cfr-title-77" },
+      { id: "CFR:77-1.1", title: "Purpose", level: "section", parent: "CFR:77-1", source: "cfr-title-77" },
+      { id: "CFR:77-1.2", title: "Fixed ladders", level: "section", parent: "CFR:77-1", source: "cfr-title-77" },
+      { id: "CFR:77-2.5", title: "Other", level: "section", parent: "CFR:77-2", source: "cfr-title-77" },
+      { id: "CFR:1-1.2", title: "Scope", level: "section", parent: null, source: "cfr-title-1" },
+    ],
+    [cfrSource(77), cfrSource(1)],
+  );
   const anchors = new Map([["CFR:77-1.1", new Set(["a", "b", "b-1"])], ["CFR:77-2.5", new Set(["a"])]]);
 
-  it("finds the four explicit forms and leaves prose alone", () => {
-    const body = "# § 1.1 Purpose\n\nSee § 2.5(a), part 1, 1 CFR 1.2 and paragraph (b)(1) of this section; also paragraphs (a) and (b) of this section.";
-    expect(bareReferences(body)).toEqual(["§ 2.5(a)", "part 1", "1 CFR 1.2", "paragraph (b)(1) of this section"]);
-    expect(isExplicit("§ 2.5(a)")).toBe(true);
-    expect(isExplicit("this part")).toBe(false);
+  it("finds the registry's forms, containers by level and number, paragraphs and ancestors, and leaves prose alone", () => {
+    const body = "# § 1.1 Purpose\n\nSee § 2.5(a), part 1, 1 CFR 1.2 and paragraph (b)(1) of this section; also paragraphs (a) and (b) of this section, this part and this title.";
+    expect([...bareReferences(body, known, "CFR:77-1.1")].sort()).toEqual(["§ 2.5(a)", "part 1", "1 CFR 1.2", "paragraph (b)(1) of this section", "this part", "this title"].sort());
   });
 
   it("links a citation with exactly one real target in code, keeps an anchor only when the target has it, and leaves the rest to the agent", () => {
@@ -35,11 +45,11 @@ describe("pre-resolution of explicit citations (G-N2)", () => {
     expect(byText["part 1"]).toMatchObject({ id: "CFR:77-1" });
     expect(byText["1 CFR 1.2"]).toMatchObject({ id: "CFR:1-1.2" });
     expect(byText["paragraph (b)(1) of this section"]).toMatchObject({ id: "CFR:77-1.1", anchor: "b-1" });
-    // § 1.2 exists in two titles: the home title wins (spec-changes #11).
+    // § 1.2 exists in two sources: the node's own source wins (spec-changes #11).
     expect(byText["§ 1.2"]).toMatchObject({ id: "CFR:77-1.2" });
     // Paragraph (c) is not an anchor of this section; § 9.9 is nowhere.
     expect([...r.remaining].sort()).toEqual(["paragraph (c) of this section", "§ 9.9"].sort());
-    // A number only other titles have stays with the agent.
+    // From a node of no known source, a number two sources have stays with the agent.
     expect(preResolve("See § 1.2.", "CFR:5-1.1", known).remaining).toEqual(["§ 1.2"]);
   });
 

@@ -11,9 +11,9 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import path from "node:path";
 import YAML from "yaml";
 import { evidenceChecks, type EvidenceIssue } from "./evidence.js";
-import { bareReferences, candidatesFor, collectTitles, type Known } from "./refs.js";
+import { bareReferences, candidatesFor, collectKnown, hasChildren, isDeterministic, type Candidate, type Known } from "./refs.js";
 import { verifierModelFromEnv, type ModelChoice } from "./model.js";
-import { loadRecords, type StagedRecord, type XrefResolution } from "./tools.js";
+import { loadRecords, type StagedRecord } from "./tools.js";
 
 export interface VerifierAnswer {
   xrefs: Array<{ text: string; id: string | null; anchor?: string | null; confidence: number; reason?: string }>;
@@ -93,13 +93,13 @@ export interface VerifyOptions {
   log?: (line: string) => void;
 }
 
-export { candidatesFor, collectTitles, type Known };
+export { candidatesFor, collectKnown, isDeterministic, type Known };
 
 export const VERIFIER_SYSTEM = `You are the Verifier of sectgrep (spec D.3). You check one section of a regulatory corpus, blind: you do not see the ingest agent's answers, and you decide every judgment field yourself from the section and the candidates given. You never invent an id: an id you give must be one of the candidates listed for that reference, or null. Answer with one JSON object and nothing else:
 {"xrefs":[{"text":"<the reference exactly as listed>","id":"<candidate id or null>","anchor":"<paragraph anchor or null>","confidence":0.0-1.0,"reason":"<one short sentence>"}],"defines":["<term the section defines, as written, without emphasis marks>"],"overrides":["<ids, only for an overlay that replaces sections>"],"narrows":[{"id":"<id>","anchor":"<anchor or null>"}],"action_targets":["<ids, only for a notice>"],"notes":"<anything a person should see, or empty>"}
-Rules: a reference to a section number that exists in exactly one title is that section; a bare "part N" is the part in the section's own title; "paragraph (x) of this section" is the section itself with anchor x; a reference whose candidates are all in other titles and the text names no title is uncertain (confidence below 0.5); a term is defined only by a sentence of the form "Term means ..." or "Term is defined as ...". Keep reasons short.`;
+Rules: a citation in a form a source's id pattern recognizes is the id that pattern builds, when that id is a candidate; a citation that names no source is the candidate in the section's own source when there is one, and is uncertain (confidence below 0.5) when only other sources offer it; a container named by its level and number (a part, chapter, subpart, article) is that node in the section's own source; "paragraph (x) of this section" is the section itself with anchor x; "this <level>" is the nearest ancestor of that level; a term is defined only by a sentence of the form "Term means ..." or "Term is defined as ...". Keep reasons short.`;
 
-export function verifierPrompt(rel: string, inputText: string, refs: string[], candidates: Map<string, Array<{ id: string; title: string; anchor?: string }>>, kind: string): string {
+export function verifierPrompt(rel: string, inputText: string, refs: string[], candidates: Map<string, Candidate[]>, kind: string): string {
   const lines = [`Section file: ${rel} (source kind: ${kind}).`, ""];
   if (refs.length) {
     lines.push("Bare references in the body and the candidate ids the corpus offers for each:");
@@ -134,12 +134,6 @@ export function parseAnswer(text: string): VerifierAnswer {
 const norm = (s: string) => s.toLowerCase().replace(/[*_`]/g, "").replace(/\s+/g, " ").trim();
 const idOf = (x: { id: string; anchor?: string | null }) => `${x.id}${x.anchor ? "#" + x.anchor : ""}`;
 
-/** Whether an ingest reference was deterministic: an explicit citation with exactly one candidate, which it chose. */
-export function isDeterministic(x: XrefResolution, candidates: Array<{ id: string; anchor?: string }>): boolean {
-  if (x.deterministic) return true;
-  return /§§?\s*\d/.test(x.text) && candidates.length === 1 && candidates[0].id === x.id;
-}
-
 /** Counts and the agreement rate over a run's verdicts. */
 export function summarize(verdicts: SectionVerdict[], evidenceFails: number): { counts: VerifyReport["counts"]; agreement_rate: number } {
   const judgments = verdicts.flatMap((v) => v.judgments);
@@ -151,7 +145,7 @@ export function summarize(verdicts: SectionVerdict[], evidenceFails: number): { 
 }
 
 /** Field-by-field comparison of the ingest record and the verifier's answer. */
-export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: string[], candidates: Map<string, Array<{ id: string; title: string; anchor?: string }>>, level: SamplingLevel, front: { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> }): Judgment[] {
+export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: string[], candidates: Map<string, Candidate[]>, level: SamplingLevel, front: { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> }): Judgment[] {
   const out: Judgment[] = [];
   // The verifier may write the anchor into the id ("CFR:4-21.8#e"); ids compare without anchors.
   const split = (v: { id: string | null; anchor?: string | null }) => {
@@ -205,7 +199,7 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   const inputDir = path.resolve(o.input);
   const records = loadRecords(runDir);
   if (!records.length) throw new Error(`${o.runDir} has no .ingest records; ingest first`);
-  const known = collectTitles([path.resolve(o.corpus), inputDir]);
+  const known = collectKnown([path.resolve(o.corpus), inputDir]);
   const level = o.level ?? "normal";
   const choice = o.verify ? undefined : (o.model ?? verifierModelFromEnv());
   if (!o.verify && (!choice?.model || !choice.config.apiKey)) throw new Error(`no verifier model: provider ${choice?.config.provider}, model ${choice?.config.model}; set SECT_VERIFIER_MODEL and the key in .env`);
@@ -225,14 +219,15 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
       const r = todo[next++];
       const text = readFileSync(path.join(inputDir, r.input), "utf-8");
       const split = splitFrontMatter(text);
-      const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }>; level?: string };
+      const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> };
       // The spans to judge: the references the harness detects, plus the spans the ingest agent
       // linked (their text only, never their targets), so every judgment field gets a second opinion.
-      const refs = [...new Set([...bareReferences(split?.body ?? text), ...r.xrefs.map((x) => x.text)])].slice(0, 24);
+      const refs = [...new Set([...bareReferences(split?.body ?? text, known, r.id), ...r.xrefs.map((x) => x.text)])].slice(0, 24);
       const candidates = new Map(refs.map((t) => [t, candidatesFor(t, r.id, known)]));
       const judgmentsPossible = r.xrefs.length || refs.length || r.defines.length || sourceKind !== "base";
       let judgments: Judgment[] = [];
-      if (judgmentsPossible && front.level !== "title" && front.level !== "chapter" && front.level !== "part" && front.level !== "subpart" && front.level !== "subchapter" && front.level !== "subjectgroup") {
+      // A node with children is structural: a listing, staged by the harness, not a judgment.
+      if (judgmentsPossible && !hasChildren(known, r.id)) {
         const prompt = verifierPrompt(r.input, text, refs, candidates, sourceKind);
         let answer: VerifierAnswer;
         try {

@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { bareReferences, ingest, rawHashOf } from "../src/ingest.js";
+import { knownFromNodes } from "../src/refs.js";
+import { cfrSource } from "./registry-helpers.js";
 import { claimRun, insideRun, lockSource, readLedger, runIdFor } from "../src/staging.js";
 import { ALLOWED_TOOLS, applyXrefs, guardToolCall, harnessTools, stageSection, type RunContext } from "../src/tools.js";
 
@@ -110,7 +112,15 @@ describe("harness tools", () => {
     const r = applyXrefs("See § 1.2 and again § 1.2; also [§ 1.3](CFR:77-1.3).", [{ text: "§ 1.2", id: "CFR:77-1.2", confidence: 1 }, { text: "§ 1.3", id: "CFR:77-1.3", confidence: 1 }]);
     expect(r.body).toBe("See [§ 1.2](CFR:77-1.2) and again § 1.2; also [§ 1.3](CFR:77-1.3).");
     expect(r.applied).toBe(1);
-    expect(bareReferences("See § 1.2 and [§ 1.3](CFR:77-1.3), part 1926, 29 CFR 1904.7.")).toEqual(["§ 1.2", "part 1926", "29 CFR 1904.7"]);
+    const known = knownFromNodes(
+      [
+        { id: "CFR:77", title: "Title 77", level: "title", parent: null, source: "cfr-title-77" },
+        { id: "CFR:77-1926", title: "Construction", level: "part", parent: "CFR:77", source: "cfr-title-77" },
+        { id: "CFR:77-1.1", title: "Purpose", level: "section", parent: "CFR:77-1926", source: "cfr-title-77" },
+      ],
+      [cfrSource(77), cfrSource(29)],
+    );
+    expect([...bareReferences("See § 1.2 and [§ 1.3](CFR:77-1.3), part 1926, 29 CFR 1904.7.", known, "CFR:77-1.1")].sort()).toEqual(["§ 1.2", "part 1926", "29 CFR 1904.7"].sort());
   });
 });
 

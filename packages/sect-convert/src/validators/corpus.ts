@@ -44,6 +44,12 @@ export interface SourceInfo {
   precedence: number;
   id_prefix: string;
   legal_status?: string;
+  /** Citation forms into this source and how their captures build an id and an anchor (spec B.2). */
+  id_pattern?: string;
+  id_template?: string;
+  anchor_template?: string;
+  /** The source's own date: the snapshot or edition its Expressions come from. */
+  version?: string;
 }
 
 export interface Doc {
@@ -116,7 +122,7 @@ export function loadSources(root: string): Map<string, SourceInfo> {
       if (statSync(p).isDirectory()) walk(p);
       else if (name === "_source.yaml") {
         const y = (YAML.parse(readFileSync(p, "utf-8")) ?? {}) as Record<string, unknown>;
-        out.set(dir, { dir, name: String(y.name ?? path.basename(dir)), kind: String(y.kind ?? "base"), precedence: Number(y.precedence ?? 0), id_prefix: String(y.id_prefix ?? ""), legal_status: y.legal_status ? String(y.legal_status) : undefined });
+        out.set(dir, { dir, name: String(y.name ?? path.basename(dir)), kind: String(y.kind ?? "base"), precedence: Number(y.precedence ?? 0), id_prefix: String(y.id_prefix ?? ""), id_pattern: y.id_pattern ? String(y.id_pattern) : undefined, id_template: y.id_template ? String(y.id_template) : undefined, anchor_template: y.anchor_template ? String(y.anchor_template) : undefined, version: y.version ? String(y.version).slice(0, 10) : undefined, legal_status: y.legal_status ? String(y.legal_status) : undefined });
       }
     }
   };

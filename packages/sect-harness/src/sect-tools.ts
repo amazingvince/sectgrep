@@ -26,7 +26,7 @@ export interface SectOptions {
 
 /** What an ingest turn needs of each verb; the rest of the server's schema is left out. */
 const COMPACT: Record<string, { params: string[]; description: string }> = {
-  sect_search: { params: ["query", "limit", "scope", "source"], description: 'Ranked search over the corpus; a citation ("29 CFR 1904.7") is answered structurally. Returns ids, titles and the matching lines.' },
+  sect_search: { params: ["query", "limit", "scope", "source"], description: "Ranked search over the corpus; a citation in a source's own form is answered structurally. Returns ids, titles and the matching lines." },
   sect_read: { params: ["id", "as_of"], description: "One section by id (or id#anchor) with its structural context." },
   sect_map: { params: ["scope", "depth"], description: "Table of contents under a Work id." },
 };
@@ -40,7 +40,7 @@ const HIT = /^\s*\d+\.\s+[A-Z][A-Z0-9]*:\S+/;
  * with one line of context each; the whole is capped.
  */
 export function trimResult(text: string, query: string, maxChars = 2500): string {
-  const terms = [...new Set((query.toLowerCase().match(/[a-z0-9§][a-z0-9§.'-]*/g) ?? []).filter((t) => t.length >= 3))];
+  const terms = [...new Set((query.toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}.'-]*/gu) ?? []).filter((t) => t.length >= 3))];
   const lines = text.split("\n");
   const keep = new Array<boolean>(lines.length).fill(false);
   for (let i = 0; i < lines.length; i++) {

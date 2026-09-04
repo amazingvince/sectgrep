@@ -9,7 +9,7 @@ import path from "node:path";
 import YAML from "yaml";
 import { evidenceChecks } from "./evidence.js";
 import { mergeRun, type MergeResult } from "./merge.js";
-import { candidatesFor, collectTitles } from "./refs.js";
+import { candidatesFor, collectKnown } from "./refs.js";
 import { collectIds, loadRecords, stageSection, type RunContext, type XrefResolution } from "./tools.js";
 import { consensus, reviewMarkdown, summarize, type Judgment, type Resolution, type SectionVerdict, type VerifierAnswer, type VerifyReport } from "./verifier.js";
 
@@ -118,7 +118,7 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   const staged = stageSection(cx, { input: record.input, context: record.context, defines, xrefs, flags: keptFlags, resolutions: [...(readResolutions(runDir, section) ?? []), ...resolutions] });
 
   // Evidence and consensus again for this section, against the verifier's stored answer.
-  const known = collectTitles([cx.corpus, inputDir]);
+  const known = collectKnown([cx.corpus, inputDir]);
   const text = readFileSync(path.join(inputDir, record.input), "utf-8");
   const split = splitFrontMatter(text);
   const front = (YAML.parse(split?.front ?? "") ?? {}) as { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ target_id: string }> };

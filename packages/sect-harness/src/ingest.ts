@@ -15,7 +15,7 @@ import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
 import { connectSect } from "./sect-tools.js";
 import { claimRun, finishRun, lockSource, runDir, runIdFor, type RunEntry } from "./staging.js";
-import { collectTitles, preResolve } from "./refs.js";
+import { collectKnown, preResolve } from "./refs.js";
 import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary, type XrefResolution } from "./tools.js";
 
 export { bareReferences } from "./refs.js";
@@ -165,18 +165,18 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   const cx: RunContext = { runId, runDir: dir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
   cx.knownIds = collectIds([cx.corpus, inputDir]);
   cx.preResolved = new Map();
-  const known = collectTitles([cx.corpus, inputDir]);
+  const known = collectKnown([cx.corpus, inputDir]);
   mkdirSync(path.join(dir, o.source), { recursive: true });
   const files = walkMarkdown(inputDir).map((f) => path.relative(inputDir, f).replace(/\\/g, "/"));
-  // Structural nodes (title, chapter, part, subpart) carry a heading and a listing of their
-  // children, not rule text: the harness stages them with WS2's context, and the agent's turns
-  // go to sections.
-  const levelOf = (rel: string) => {
+  // A node other nodes name as their parent is structural: it carries a heading and a listing
+  // of its children, not rule text. The harness stages it with WS2's context; the agent's turns
+  // go to the leaves, whatever the levels are called.
+  const idOf = (rel: string) => {
     const split = splitFrontMatter(readFileSync(path.join(inputDir, rel), "utf-8"));
-    return String(((YAML.parse(split?.front ?? "") ?? {}) as { level?: string }).level ?? "section");
+    return String(((YAML.parse(split?.front ?? "") ?? {}) as { id?: string }).id ?? "");
   };
-  const structural = files.filter((f) => levelOf(f) !== "section");
-  const sectionFiles = files.filter((f) => levelOf(f) === "section");
+  const structural = files.filter((f) => (known.children.get(idOf(f)) ?? 0) > 0);
+  const sectionFiles = files.filter((f) => !(known.children.get(idOf(f)) ?? 0));
   const sections = o.limit ? sectionFiles.slice(0, o.limit) : sectionFiles;
   // The source's registry entry travels with the sections: the run directory is a corpus root
   // and the source is its one subdirectory, so validators and `sect index` read it as a corpus.

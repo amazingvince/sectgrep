@@ -54,8 +54,6 @@ function corpusIds(corpus: string): Set<string> {
 
 const linkTargets = (body: string): string[] => [...body.matchAll(/\]\(([A-Z][A-Z0-9]*:[^)\s#]+)(?:#[a-z0-9-]+)?\)/g)].map((m) => m[1]);
 
-const STRUCTURAL = new Set(["title", "subtitle", "chapter", "subchapter", "part", "subpart", "subjectgroup"]);
-
 /** A listing line whose target is held becomes plain text with a marker: the listing is derived, not rule text. */
 function delinkHeld(body: string, held: Map<string, string>): { body: string; delinked: string[] } {
   const delinked: string[] = [];
@@ -97,19 +95,21 @@ export function mergeRun(o: MergeOptions): MergeResult {
   const held = new Map<string, string>();
   for (const s of report.sections) if (s.tier !== "auto") held.set(s.id, "conflict");
   const bodies = new Map<string, string>();
-  const levels = new Map<string, string>();
+  // A node other nodes name as their parent is structural: its listing is derived.
+  const parents = new Set<string>();
   for (const s of report.sections) {
     const from = path.join(runDir, s.path);
     if (!existsSync(from)) continue;
     const split = splitFrontMatter(readFileSync(from, "utf-8"));
     bodies.set(s.id, split?.body ?? "");
-    levels.set(s.id, String(((YAML.parse(split?.front ?? "") ?? {}) as { level?: string }).level ?? "section"));
+    const parent = ((YAML.parse(split?.front ?? "") ?? {}) as { parent?: unknown }).parent;
+    if (parent && typeof parent === "string") parents.add(parent);
   }
   for (let changed = true; changed; ) {
     changed = false;
     for (const s of report.sections) {
       // A structural node's listing is derived: its held entries are de-linked at merge, not blocking.
-      if (held.has(s.id) || STRUCTURAL.has(levels.get(s.id) ?? "section")) continue;
+      if (held.has(s.id) || parents.has(s.id)) continue;
       const blocker = linkTargets(bodies.get(s.id) ?? "").find((t) => held.has(t) && !known.has(t));
       if (blocker) {
         held.set(s.id, `links to ${blocker}, which is held`);

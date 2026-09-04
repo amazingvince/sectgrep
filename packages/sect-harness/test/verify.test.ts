@@ -9,6 +9,8 @@ import { ingest } from "../src/ingest.js";
 import { mergeRun, rollback } from "../src/merge.js";
 import { drawSample, grade, nextLevel, plan, type SamplingState } from "../src/sampling.js";
 import { candidatesFor, consensus, parseAnswer, verifyRun, type VerifierAnswer } from "../src/verifier.js";
+import { knownFromNodes } from "../src/refs.js";
+import { cfrSource } from "./registry-helpers.js";
 
 const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
 const fixture = path.resolve(here, "../../../fixtures/corpus");
@@ -46,12 +48,24 @@ describe("evidence checks (D.3 layer 2)", () => {
 });
 
 describe("consensus and candidates", () => {
-  const known = { ids: new Map([["CFR:77-1.1", "Purpose"], ["CFR:77-1.2", "Fixed ladders"], ["CFR:1-1.2", "Scope"], ["CFR:77-1", "General"]]) };
+  const known = knownFromNodes(
+    [
+      { id: "CFR:77", title: "Title 77", level: "title", parent: null, source: "cfr-title-77" },
+      { id: "CFR:77-1", title: "General", level: "part", parent: "CFR:77", source: "cfr-title-77" },
+      { id: "CFR:77-1.1", title: "Purpose", level: "section", parent: "CFR:77-1", source: "cfr-title-77" },
+      { id: "CFR:77-1.2", title: "Fixed ladders", level: "section", parent: "CFR:77-1", source: "cfr-title-77" },
+      { id: "CFR:1-1", title: "General provisions", level: "part", parent: null, source: "cfr-title-1" },
+      { id: "CFR:1-1.2", title: "Scope", level: "section", parent: "CFR:1-1", source: "cfr-title-1" },
+    ],
+    [cfrSource(77), cfrSource(1)],
+  );
   it("offers only real ids as candidates, home title first", () => {
     expect(candidatesFor("§ 1.2", "CFR:77-1.1", known).map((c) => c.id)).toEqual(["CFR:77-1.2", "CFR:1-1.2"]);
     expect(candidatesFor("1 CFR 1.2", "CFR:77-1.1", known).map((c) => c.id)).toEqual(["CFR:1-1.2"]);
-    expect(candidatesFor("part 1", "CFR:77-1.1", known).map((c) => c.id)).toEqual(["CFR:77-1"]);
+    // Two sources have a part 1: the node's own source first, and the choice is a judgment.
+    expect(candidatesFor("part 1", "CFR:77-1.1", known).map((c) => c.id)).toEqual(["CFR:77-1", "CFR:1-1"]);
     expect(candidatesFor("paragraph (b)(1) of this section", "CFR:77-1.1", known)[0]).toMatchObject({ id: "CFR:77-1.1", anchor: "b-1" });
+    expect(candidatesFor("this part", "CFR:77-1.1", known)[0]).toMatchObject({ id: "CFR:77-1" });
     expect(candidatesFor("§ 9.9", "CFR:77-1.1", known)).toEqual([]);
   });
 
