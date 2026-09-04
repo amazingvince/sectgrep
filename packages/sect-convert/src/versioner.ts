@@ -42,7 +42,7 @@ export function sectionDatesFrom(json: VersionsJson, titleDate?: string | null):
   return out;
 }
 
-export const versionsUrl = (title: number): string => `https://www.ecfr.gov/api/versioner/v1/versions/title-${title}.json?issue_date%5Bgte%5D=1900-01-01`;
+export const versionsUrl = (title: number, page = 1): string => `https://www.ecfr.gov/api/versioner/v1/versions/title-${title}.json?issue_date%5Bgte%5D=1900-01-01&page=${page}`;
 
 /** Read the cached versions file for a title XML's directory, if any. */
 export function readSectionDates(cacheDir: string, title: number): SectionDates | null {
@@ -68,9 +68,16 @@ export function readTitleDate(cacheDir: string): string | null {
 export async function fetchSectionDates(title: number, cacheDir: string): Promise<SectionDates> {
   const cached = readSectionDates(cacheDir, title);
   if (cached) return cached;
-  const res = await fetch(versionsUrl(title));
-  if (!res.ok) throw new Error(`${versionsUrl(title)}: ${res.status}`);
-  const json = (await res.json()) as VersionsJson;
+  // The endpoint pages at a thousand versions; a large title runs to a dozen pages.
+  const json: VersionsJson = { content_versions: [] };
+  for (let page = 1, pages = 1; page <= pages; page++) {
+    const res = await fetch(versionsUrl(title, page));
+    if (!res.ok) throw new Error(`${versionsUrl(title, page)}: ${res.status}`);
+    const part = (await res.json()) as VersionsJson & { meta?: { total_pages?: string | number } };
+    json.content_versions.push(...(part.content_versions ?? []));
+    json.meta = { ...part.meta, result_count: String(json.content_versions.length) };
+    pages = Number(part.meta?.total_pages ?? 1) || 1;
+  }
   const titleDate = readTitleDate(cacheDir) ?? json.meta?.latest_issue_date ?? null;
   mkdirSync(cacheDir, { recursive: true });
   writeFileSync(path.join(cacheDir, "versions.json"), JSON.stringify({ ...json, fetched: new Date().toISOString(), title_date: titleDate }, null, 1) + "\n", "utf-8");

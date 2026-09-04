@@ -15,8 +15,19 @@ import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
 import { connectSect } from "./sect-tools.js";
 import { claimRun, finishRun, lockSource, runDir, runIdFor, type RunEntry } from "./staging.js";
-import { composeExpressions } from "./notice.js";
-import { ancestorsOf, collectKnown, preResolve } from "./refs.js";
+import { composeExpressions, holdFailedCompositions } from "./notice.js";
+import { ancestorsOf, collectKnown, preResolve, type Known } from "./refs.js";
+
+/** `--only a,b`: a leaf is chosen when its input path contains any of the parts. */
+export const matchesOnly = (rel: string, only: string): boolean => only.split(",").map((s) => s.trim()).filter(Boolean).some((part) => rel.includes(part));
+
+/** A subset run keeps links to the chosen leaves, their ancestors, and what the corpus already holds. */
+export function subsetKeepIds(known: Known, leafIds: string[], corpus: string): Set<string> {
+  const keep = new Set<string>(leafIds);
+  for (const id of leafIds) for (const a of ancestorsOf(known, id)) keep.add(a.id);
+  for (const id of collectKnown([corpus]).ids.keys()) keep.add(id);
+  return keep;
+}
 import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary, type XrefResolution } from "./tools.js";
 
 export { bareReferences } from "./refs.js";
@@ -37,6 +48,8 @@ export interface IngestOptions {
   limit?: number;
   /** Only leaves whose input path contains this text, with their ancestors (a part of a title). */
   only?: string;
+  /** Keep the records an interrupted run already staged; the model sees only what is missing, then the fix rounds. */
+  resume?: boolean;
   skillPath?: string;
   model?: ModelChoice;
   log?: (line: string) => void;
@@ -184,7 +197,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   };
   const idOfFile = new Map(files.map((f) => [f, idOf(f)]));
   const leafFiles = files.filter((f) => !(known.children.get(idOfFile.get(f)!) ?? 0));
-  const chosen = o.only ? leafFiles.filter((f) => f.includes(o.only!)) : leafFiles;
+  const chosen = o.only ? leafFiles.filter((f) => matchesOnly(f, o.only!)) : leafFiles;
   const sections = o.limit ? chosen.slice(0, o.limit) : chosen;
   let structural = files.filter((f) => (known.children.get(idOfFile.get(f)!) ?? 0) > 0);
   if (o.only) {
@@ -193,9 +206,18 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
     const keep = new Set<string>();
     for (const f of sections) for (const a of ancestorsOf(known, idOfFile.get(f)!)) keep.add(a.id);
     structural = structural.filter((f) => keep.has(idOfFile.get(f)!));
-    cx.keepIds = new Set([...keep, ...sections.map((f) => idOfFile.get(f)!), ...collectKnown([cx.corpus]).ids.keys()]);
+    cx.keepIds = subsetKeepIds(known, sections.map((f) => idOfFile.get(f)!), cx.corpus);
   }
   const structuralIds = new Set(structural.map((f) => idOfFile.get(f)!));
+  // Resuming: what an interrupted run staged stands; only the missing leaves get a model turn.
+  let pending = sections;
+  if (o.resume) {
+    const prior = loadRecords(dir).filter((r) => !r.derived && existsSync(path.join(dir, r.path)));
+    cx.staged.push(...prior);
+    const done = new Set(prior.map((r) => r.input));
+    pending = sections.filter((rel) => !done.has(rel));
+    log(`resume: ${prior.length} record(s) kept, ${pending.length} leaf(s) still to stage`);
+  }
   // Step 9: after the leaves are staged, each notice's Actions compose the new Expressions.
   const composeNotices = () => {
     if (sourceKind !== "notice") return;
@@ -204,6 +226,8 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
       const c = composeExpressions(cx, r.path, cx.corpus, r.input);
       log(`${r.id}: ${c.derived.length} Expression(s) composed${c.unapplied.length ? `; unapplied: ${c.unapplied.map((u) => `${u.action_id} (${u.why})`).join("; ")}` : ""}${c.skipped.length ? `; skipped: ${c.skipped.map((s) => `${s.target_id} (${s.why})`).join("; ")}` : ""}`);
     }
+    const held = holdFailedCompositions(cx);
+    if (held.length) log(`held for a person (composition failed validation): ${held.join(", ")}`);
   };
   /** What the prompt asks for beyond a base section, from the input's own fields. */
   const hintsFor = (front: Record<string, unknown>): string[] => {
@@ -240,6 +264,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   let fixRounds = 0;
   try {
     for (const rel of structural) {
+      if (o.resume && cx.staged.some((s) => s.input === rel)) continue;
       try {
         const split = splitFrontMatter(readFileSync(path.join(inputDir, rel), "utf-8"));
         const front = (YAML.parse(split?.front ?? "") ?? {}) as { context?: string; defines?: string[]; level?: string };
@@ -296,8 +321,8 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
         const pool = Math.max(1, o.concurrency ?? 4);
         let next = 0;
         const worker = async () => {
-          while (next < sections.length) {
-            const rel = sections[next++];
+          while (next < pending.length) {
+            const rel = pending[next++];
             let lastError = "";
             for (let attempt = 0; attempt < 2; attempt++) {
               try {
@@ -372,6 +397,8 @@ export interface ResubmitOptions {
   sectBin?: string;
   rawRoot?: string;
   work?: string;
+  /** The same subset filter the run was ingested with, so listings stay de-linked outside it. */
+  only?: string;
   log?: (line: string) => void;
 }
 
@@ -387,13 +414,35 @@ export function resubmit(o: ResubmitOptions): { runId: string; staged: number; s
   const inputDir = path.resolve(o.input);
   const cx: RunContext = { runId, runDir: dir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
   cx.knownIds = collectIds([cx.corpus, inputDir]);
-  const records = loadRecords(dir);
+  let records = loadRecords(dir);
+  if (o.only) {
+    // The subset may be narrower than the run was: leaves outside it and ancestors nothing kept needs are dropped.
+    const known = collectKnown([cx.corpus, inputDir]);
+    const leaves = records.filter((r) => !r.derived && !known.children.get(r.id) && matchesOnly(r.input, o.only!));
+    const keep = new Set(leaves.map((r) => r.id));
+    for (const r of leaves) for (const a of ancestorsOf(known, r.id)) keep.add(a.id);
+    records = records.filter((r) => keep.has(r.id));
+    cx.keepIds = subsetKeepIds(known, leaves.map((r) => r.id), cx.corpus);
+    log(`subset ${o.only}: ${leaves.length} leaf record(s) and ${records.length - leaves.length} ancestor(s) kept`);
+  }
   for (const r of records) {
+    if (r.derived) continue;
     try {
-      stageSection(cx, { input: r.input, context: r.context, defines: r.defines, xrefs: r.xrefs, flags: r.flags.filter((f) => !f.startsWith("unresolved: ")) });
+      stageSection(cx, { input: r.input, context: r.context, defines: r.defines, xrefs: r.xrefs, flags: r.flags.filter((f) => !f.startsWith("unresolved: ")), overrides: r.overrides, narrows: r.narrows, actions: r.actions });
     } catch (e) {
       log(`re-stage of ${r.input} failed: ${e instanceof Error ? e.message : String(e)}`);
     }
+  }
+  // A notice's Expressions are composed again from the corpus's current text.
+  const kindYaml = path.join(inputDir, "_source.yaml");
+  const kind = existsSync(kindYaml) ? String(((YAML.parse(readFileSync(kindYaml, "utf-8")) ?? {}) as { kind?: string }).kind ?? "base") : "base";
+  if (kind === "notice") {
+    for (const r of [...cx.staged]) {
+      const c = composeExpressions(cx, r.path, cx.corpus, r.input);
+      log(`${r.id}: ${c.derived.length} Expression(s) composed${c.unapplied.length ? `; unapplied: ${c.unapplied.map((u) => `${u.action_id} (${u.why})`).join("; ")}` : ""}`);
+    }
+    const held = holdFailedCompositions(cx);
+    if (held.length) log(`held for a person (composition failed validation): ${held.join(", ")}`);
   }
   const strays = removeStrayFiles(cx);
   if (strays.length) log(`removed ${strays.length} stray file(s): ${strays.slice(0, 8).join(", ")}`);

@@ -135,8 +135,14 @@ export function evidenceChecks(o: EvidenceOptions): EvidenceReport {
         issue(d, "amended_by", "fail", `${ref}: no such Action`);
         continue;
       }
-      if (action.target_id !== d.front.id) issue(d, "amended_by", "fail", `${ref} targets ${action.target_id}, not this section`);
-      const quoted = tokens(String(action.text ?? ""));
+      const above = new Set<string>();
+      for (let p = d.front.parent ? String(d.front.parent) : null, n = 0; p && n < 12; n++) {
+        above.add(p);
+        const pd = (byId.get(p) ?? [])[0];
+        p = pd?.front.parent ? String(pd.front.parent) : null;
+      }
+      if (action.target_id !== d.front.id && !above.has(action.target_id)) issue(d, "amended_by", "fail", `${ref} targets ${action.target_id}, not this section nor a container above it`);
+      const quoted = String(action.kind ?? "") === "remove" ? [] : tokens(String(action.text ?? ""));
       if (quoted.length && spanMatch(quoted, tokens(d.body)).score < 0.92) issue(d, "amended_by", "fail", `${ref}: the notice's text is not present in this Expression`);
       if (action.effective && date && String(action.effective).slice(0, 10) !== date) issue(d, "amended_by", "fail", `${ref} is effective ${action.effective} but this Expression ${date}`);
       if (d.front.supersedes) {

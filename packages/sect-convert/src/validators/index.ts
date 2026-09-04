@@ -561,8 +561,15 @@ export function actionIntegrity(doc: Doc, cx: Context): Issue[] {
       out.push(issue(7, "error", doc, `amended_by ${ref}: no such Action in ${noticeId}`));
       continue;
     }
-    if (action.target_id !== doc.front.id) out.push(issue(7, "error", doc, `amended_by ${ref}: Action target ${action.target_id} is not this section`));
+    // The target is this section, or a container above it for a part-wide word change.
+    const ancestors = new Set<string>();
+    for (let p = doc.front.parent ? String(doc.front.parent) : null, n = 0; p && n < 12; n++) {
+      ancestors.add(p);
+      p = (cx.byId.get(p) ?? [])[0]?.front.parent ? String((cx.byId.get(p) ?? [])[0].front.parent) : null;
+    }
+    if (action.target_id !== doc.front.id && !ancestors.has(action.target_id)) out.push(issue(7, "error", doc, `amended_by ${ref}: Action target ${action.target_id} is not this section nor a container above it`));
     const quoted = tokens(String(action.text ?? ""));
+    if (String(action.kind ?? "") === "remove") continue;
     if (!quoted.length) out.push(issue(7, "warning", doc, `amended_by ${ref}: Action carries no text to check`));
     else {
       const s = spanMatch(quoted, body);
@@ -591,6 +598,14 @@ export function validateStaging(o: ValidateOptions): ValidateReport {
   if (o.skipIndex) summaries.push({ n: 1, name: VALIDATOR_NAMES[1], checked: 0, errors: 0, warnings: 0, skipped: "skipped by option" });
   else {
     const r = validateIndex(staging, o.sectBin);
+    // The index validator sees the staging alone; a target the corpus already holds resolves at merge.
+    for (const i of r.issues) {
+      const t = /link target `([^`]+)` does not resolve/.exec(i.message)?.[1] ?? /(?:parent|supersedes|superseded_by) `([^`]+)` (?:does not resolve|is not a known)/.exec(i.message)?.[1];
+      if (t && i.level === "error" && cx.byId.has(t.split("@")[0])) {
+        i.level = "warning";
+        i.message += " in the staging (it resolves in the corpus)";
+      }
+    }
     issues.push(...r.issues);
     summaries.push({ n: 1, name: VALIDATOR_NAMES[1], checked: r.skipped ? 0 : cx.staging.docs.length, errors: r.issues.filter((i) => i.level === "error").length, warnings: r.issues.filter((i) => i.level === "warning").length, skipped: r.skipped });
   }

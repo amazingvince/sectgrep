@@ -6,11 +6,11 @@
 // publisher's shapes: targets, dates and paths come from the corpus and the notice.
 
 import { loadCorpus, splitFrontMatter, type Doc } from "@sectgrep/convert";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
-import { applyActions, type Action } from "./actions.js";
-import type { RunContext, StagedRecord } from "./tools.js";
+import { applyActions, phraseTable, wordEdit, type Action } from "./actions.js";
+import { validateRun, type RunContext, type StagedRecord } from "./tools.js";
 
 export interface Composed {
   /** Records for the derived Expressions, one per target Work. */
@@ -66,8 +66,27 @@ export function composeExpressions(cx: RunContext, noticeRel: string, corpusRoot
   const derived: StagedRecord[] = [];
   const unapplied: Composed["unapplied"] = [];
   const skipped: Composed["skipped"] = [];
+  // An Action on a structural node that edits words ("wherever it appears in the part") applies
+  // to every leaf under it; the leaves' new Expressions all cite the one Action.
+  const leavesUnder = (id: string): string[] => {
+    const out: string[] = [];
+    const walk = (p: string) => {
+      for (const d of corpus.docs) {
+        if (String(d.front.parent ?? "") !== p || d.front.superseded_by) continue;
+        const cid = String(d.front.id);
+        if (hasChildren.has(cid)) walk(cid);
+        else if (!out.includes(cid)) out.push(cid);
+      }
+    };
+    walk(id);
+    return out;
+  };
   const byTarget = new Map<string, Action[]>();
-  for (const a of actions) byTarget.set(a.target_id, [...(byTarget.get(a.target_id) ?? []), a]);
+  for (const a of actions) {
+    const wordwide = hasChildren.has(a.target_id) && (phraseTable(a.text ?? "", a.instruction ?? "").length > 0 || (wordEdit(a.instruction ?? "")?.everywhere ?? false));
+    const targets = wordwide ? leavesUnder(a.target_id) : [a.target_id];
+    for (const t of targets) byTarget.set(t, [...(byTarget.get(t) ?? []), wordwide ? { ...a, target_id: t, target_anchor: null } : a]);
+  }
   const copiedSources = new Set<string>();
   for (const [target, list] of byTarget) {
     const prior = currentExpression(byId.get(target) ?? [], target);
@@ -156,4 +175,39 @@ export function composeExpressions(cx: RunContext, noticeRel: string, corpusRoot
     derived.push(record);
   }
   return { derived, unapplied, skipped };
+}
+
+/**
+ * A composed Expression the validators reject (a revision the engine placed wrongly) is a
+ * person's to compose: it and its prior copy leave the staging, and the notice's record says
+ * which Actions wait. The rest of the run goes on.
+ */
+export function holdFailedCompositions(cx: RunContext): string[] {
+  const derived = cx.staged.filter((r) => r.derived);
+  if (!derived.length) return [];
+  const report = validateRun(cx);
+  const norm = (p: string) => p.replace(/\\/g, "/");
+  const bad = new Set(report.issues.filter((i) => i.level === "error").map((i) => norm(i.path)));
+  const held: string[] = [];
+  for (const r of derived) {
+    if (!bad.has(norm(r.path))) continue;
+    const priorRel = fileFor(r.path, r.derived!.from.split("@")[1] ?? "");
+    for (const rel of [r.path, priorRel]) {
+      const f = path.join(cx.runDir, rel);
+      if (existsSync(f)) rmSync(f);
+      cx.extraFiles?.delete(norm(rel));
+    }
+    const meta = path.join(cx.runDir, ".ingest", `${r.id.replace(/[^A-Za-z0-9._-]+/g, "_")}.json`);
+    if (existsSync(meta)) rmSync(meta);
+    cx.staged = cx.staged.filter((s) => s.id !== r.id);
+    held.push(r.id);
+    const notice = cx.staged.find((s) => s.input === r.input && !s.derived);
+    if (notice) {
+      const why = report.issues.filter((i) => i.level === "error" && norm(i.path) === norm(r.path)).slice(0, 2).map((i) => i.message.slice(0, 120)).join("; ");
+      notice.flags.push(`composition held for a person: ${r.id} (${r.derived!.actions.join(", ")}) failed validation: ${why}`);
+      const nmeta = path.join(cx.runDir, ".ingest", `${notice.id.replace(/[^A-Za-z0-9._-]+/g, "_")}.json`);
+      if (existsSync(nmeta)) writeFileSync(nmeta, JSON.stringify({ ...(JSON.parse(readFileSync(nmeta, "utf-8")) as object), flags: notice.flags }, null, 2) + "\n", "utf-8");
+    }
+  }
+  return held;
 }

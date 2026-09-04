@@ -1,0 +1,461 @@
+staged CFR:4-11.5 (0 xrefs, 0 defines)
+44/227 done
+section I/A/2/2.2/4-2.2.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-2.4 (0 xrefs, 0 defines)
+staged CFR:4-1 (0 xrefs, 0 defines, flags: Heading label is doubled ("Part 1 - Part 1"), likely a converter duplication of the part designation.; Leaf is a reserved placeholder containing no operative text beyond the heading; nothing substantive to ingest.)
+46/227 done
+staged CFR:4-84-199 (0 xrefs, 0 defines, flags: Reserved placeholder with no substantive text; nothing to link and no table structure to recover.)
+47/227 done
+47/227 done
+staged CFR:4-2.3 (0 xrefs, 0 defines)
+staged CFR:4-11.1 (0 xrefs, 0 defines)
+49/227 done
+49/227 done
+staged CFR:4-2.1 (0 xrefs, 0 defines, flags: Paragraph (a) reads 'productive utilization f employees' — 'of' appears truncated to 'f' (typo/OCR); body copied verbatim as required.)
+staged CFR:4-3.1 (0 xrefs, 0 defines, flags: Citation to "title 5, United States Code" refers to the federal personnel statute, not a corpus source; the search returned only GAO CFR sections that cite it, so the reference is left unlinked.)
+staged CFR:4-2.6 (0 xrefs, 0 defines, flags: Subsection (a) applies the executive-branch preference-eligible standard (5 U.S.C. § 2108) without an explicit citation to that standard.)
+52/227 done
+52/227 done
+staged CFR:4-4.2 (0 xrefs, 0 defines, flags: (b)(2) reads 'communicating to reach GAO employee', apparently garbled from 'to each GAO employee'.)
+53/227 done
+staged CFR:4-3.2 (0 xrefs, 0 defines, flags: Citation 'subchapter II of chapter 33 of title 5, U.S. Code' left unlinked: searches for 'subchapter II', 'chapter 33' and 'title 5' returned only CFR nodes, so no real U.S. Code id exists in the corpus.; The OPM implementing-regulations reference is likewise an external authority with no corpus target and is left unlinked.)
+staged CFR:4-11.2 (0 xrefs, 0 defines)
+55/227 done
+55/227 done
+55/227 done
+staged CFR:4-3.3 (0 xrefs, 0 defines, flags: Reference to subchapter VI of chapter 33 of title 5, U.S. Code (the Federal civil-service provisions) is unresolved; the corpus holds no U.S. Code source, so it is left unlinked.; Reference to Office of Personnel Management implementing regulations is also unresolved; no OPM regulation source was found in the corpus.)
+56/227 done
+staged CFR:4-2.2 (0 xrefs, 0 defines, flags: Reference (a), Chapter 7 of Title 31 U.S.C., is unresolved: the corpus holds no U.S. Code node for it, so Subchapters III and IV cannot be linked either.; Reference (b), Title 5, United States Code, is unresolved: the search returned only CFR Title 4, Part 5, not the Title 5 U.S.C. work.)
+staged CFR:4-4.3 (0 xrefs, 0 defines, flags: Paragraph (a)(4)(ii) reads as an incomplete sentence ("Unless proposed by the Comptroller General ... has been concurred in by ..."); likely verbatim in the source but worth checking against the original.; Subsection (b)'s lead-in says "reduce in grade" without "/pay level", unlike the rest of the section — an apparent internal inconsistency in the source.)
+58/227 done
+58/227 done
+staged CFR:4-11.3 (0 xrefs, 0 defines)
+staged CFR:4-5.1 (1 xrefs, 0 defines, flags: The citation to 31 U.S.C. 733(c) in paragraph (b) (2) was not linked by the harness and remains unresolved.)
+staged CFR:4-5.3 (1 xrefs, 0 defines, flags: Bare reference 'title 5' (section 5401(a) of title 5, United States Code) left unresolved: the corpus search returned only sibling CFR sections (CFR:4-5.4, CFR:4-5.5, CFR:4-5), no US Code source to link.; The blockquote in the body is a verbatim excerpt of 5 U.S.C. 5401 reproduced as quoted authority, not this section's own rule text.)
+61/227 done
+61/227 done
+61/227 done
+section I/A/11/11.4/4-11.4.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-7.2 (0 xrefs, 0 defines)
+section I/A/2/2.5/4-2.5.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-5.5 (0 xrefs, 0 defines, flags: Unresolved references: chapter 57 of title 5, U.S. Code has no source in the corpus; searches returned only unrelated CFR sections and this section itself.; The generic phrase 'the implementing regulations for the Executive Branch' (the Federal Travel Regulation) is not a formal citation and was left unlinked.)
+staged CFR:4-4.4 (0 xrefs, 0 defines, flags: Bare citation 'chapter 45' (5 U.S.C. ch. 45, the Incentive Awards chapter) has no node in this corpus; left unlinked.; Bare citation 'title 5' (title 5, United States Code) has no node in this corpus; left unlinked.)
+64/227 done
+64/227 done
+64/227 done
+staged CFR:4-11.4 (0 xrefs, 0 defines)
+staged CFR:4-5.4 (0 xrefs, 0 defines, flags: Reference "chapter 55 of title 5, U.S. Code" (the federal pay statute) returned no U.S. Code node in the corpus; left unlinked.; "Office of Personnel Management implementing regulations" is a general reference with no specific regulation cited; left unlinked.; The corpus contains CFR:4-5.4@2012-09-30 with text identical to this leaf; possible duplicate or prior CFR publication of the same section.)
+staged CFR:4-5.2 (3 xrefs, 1 defines, flags: Converter detected no defined term, but (f) defines "Allowable former rate of basic pay" by heading plus "This means".; (e)(1) carries an unusual colon after "Any GAO employee", which reads like source punctuation rather than a list and may deserve a human check.)
+staged CFR:4-5.6 (0 xrefs, 0 defines, flags: 'chapter 59' could not be linked: the corpus holds no U.S. Code source, so no real id was returned for it.; 'title 5' likewise remains unlinked for the same reason.; 'the implementing regulations for the Executive Branch' cites no specific instrument and was not among the named bare references; it is left unlinked.)
+68/227 done
+68/227 done
+staged CFR:4-7.5 (0 xrefs, 1 defines, flags: Converter detected no defined term, but (a) contains a definition of "Suspension" ("Suspension means placing an employee..."); added to defines.; In (d), item (1) runs inline on the same line as the lead-in rather than as a separate paragraph like (2).)
+69/227 done
+69/227 done
+staged CFR:4-7.1 (0 xrefs, 0 defines, flags: Bare reference "chapter 71" is unresolvable in this corpus: it is the Federal Service Labor-Management Relations Statute, an external U.S. Code provision, so it is left unlinked.; Bare reference "title 5" is likewise unresolvable here (the corpus holds CFR sources, not the U.S. Code); it is part of the same unlinked chapter 71 of title 5 citation in paragraph (b).)
+70/227 done
+70/227 done
+staged CFR:4-7.7 (0 xrefs, 0 defines)
+71/227 done
+staged CFR:4-7.4 (0 xrefs, 0 defines, flags: Reference 'subchapters II, IV, and V of chapter 73 of title 5, United States Code' unresolved: searches for 'chapter 73' and 'title 5' returned no U.S. Code work, so the citation is left unlinked.)
+staged CFR:4-21.1 (3 xrefs, 0 defines)
+73/227 done
+73/227 done
+staged CFR:4-7.8 (0 xrefs, 0 defines, flags: Reference 'chapter 79 of title 5, United States Code' unresolved: searches for 'chapter 79' and 'title 5' returned no USC title 5 node, only unrelated CFR chapters.; Reference to the 'Office of Personnel Management implementing regulations' carries no citation to a specific regulation part and was not resolved to an id.)
+74/227 done
+section I/A/6/6.1/4-6.1.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-21.10 (0 xrefs, 0 defines)
+staged CFR:4-4.1 (0 xrefs, 0 defines, flags: Reference "chapter 41" (5 U.S.C. ch. 41, Training) could not be linked: its single search returned only unrelated 1 and 4 C.F.R. hits, so no U.S. Code source appears in the corpus.; Reference "title 5" (5 U.S.C.) likewise unlinked; the nearest hits were sibling sections 4 C.F.R. 5.4-5.5 that cite chapters of title 5, not the code itself.; "Office of Personnel Management implementing regulations" is a generic reference with no citable target (the implementing rules are 5 C.F.R. part 410); left unlinked.)
+76/227 done
+76/227 done
+staged CFR:4-2.5 (0 xrefs, 0 defines, flags: The citations in paragraph (g) to section 3110(a)(2) and (a)(3) of title 5 (U.S. Code, nepotism) are unresolved: a search for "title 5" returned only other 4 CFR sections that cite title 5 (e.g., 4 CFR 5.4 and 5.5), not the statute itself.)
+77/227 done
+staged CFR:4-21.14 (0 xrefs, 0 defines)
+staged CFR:4-21.11 (1 xrefs, 0 defines)
+79/227 done
+staged CFR:4-8.1 (1 xrefs, 0 defines, flags: Bare reference 'title 5' left unresolved: the search returned only GAO regulation sections (CFR:4-5.4, CFR:4-5.5, CFR:4-5) that cite title 5, U.S. Code; no United States Code source exists in the corpus, so this citation is not linked.)
+staged CFR:4-21.12 (0 xrefs, 0 defines, flags: Acronym EPDS in paragraph (b) is used without expansion in this leaf.)
+81/227 done
+81/227 done
+81/227 done
+staged CFR:4-9.1 (0 xrefs, 0 defines, flags: The citation 'section 3131 of title 5, United States Code' could not be resolved: the search for 'title 5' returned only GAO CFR Part 4 sections that themselves cite title 5 U.S.C. (CFR:4-5.5@2012-09-30, CFR:4-5.4@2012-09-30, CFR:4-5@2012-09-30), not a Title 5 container or a 5 U.S.C. § 3131 node.; The blockquote reproduces 5 U.S.C. § 3131 in full, carrying its own '§ 3131' heading and numbered paragraphs (1)–(14); treat it as quoted statute, not as section structure of this node.)
+staged CFR:4-21.4 (0 xrefs, 0 defines)
+83/227 done
+83/227 done
+staged CFR:4-21.3 (3 xrefs, 0 defines, flags: The phrase "A agency or intervenor" in paragraph (b) is a typo in the source text, not a conversion artifact.)
+84/227 done
+staged CFR:4-7.6 (1 xrefs, 1 defines, flags: Converter detected no defined terms, but paragraph (a) embeds a 'Furloughed means' definition, which is listed in defines.)
+85/227 done
+section I/B/21/21.0/4-21.0.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-21.6 (0 xrefs, 0 defines)
+staged CFR:4-21.2 (1 xrefs, 0 defines)
+staged CFR:4-21.5 (0 xrefs, 0 defines, flags: Statutory citations (41 U.S.C., 15 U.S.C., 10 U.S.C., 31 U.S.C., 40 U.S.C., and Public Law 104-106) remain as plain text; only the CFR cross-references are linked.)
+staged CFR:4-21.7 (0 xrefs, 0 defines)
+staged CFR:4-22.10 (0 xrefs, 0 defines)
+90/227 done
+staged CFR:4-22.1 (0 xrefs, 0 defines)
+91/227 done
+91/227 done
+91/227 done
+91/227 done
+91/227 done
+staged CFR:4-22.11 (1 xrefs, 0 defines)
+staged CFR:4-21.8 (2 xrefs, 0 defines, flags: The citation to 31 U.S.C. 3554(c) in paragraph (f)(5) has no linked corpus target and remains unlinked.; The italicized lead-ins in paragraphs (e) and (f) ('Recommendation for reimbursement of costs.', 'Recommendation on the amount of costs.') are run-in headings, not defined terms.)
+93/227 done
+93/227 done
+staged CFR:4-22.15 (0 xrefs, 0 defines)
+staged CFR:4-7.3 (6 xrefs, 10 defines, flags: The designated-municipalities list in paragraph (i) lost its three-group structure (In Maryland, In Virginia, Other Municipalities) and is rendered as flattened blockquote paragraphs.; The entry 'Chevy Chase, sections 1, 2, 3, and 4 Martin's Additions 1, 2, 3, and 4 to Chevy Chase' appears to merge two separate municipality entries.; 'Glendarden' in the Maryland list is likely a misspelling of Glenarden; verify against the official text.; Paragraph (f)(16) substantially duplicates (f)(14); possible source or transcription anomaly.; Converter detected no defined terms although paragraph (a) defines Contribution, Election, Employee, Employer/employing authority, Federal workplace, Nonpartisan election, Partisan, Political fund, and Political party; supplied in defines.)
+95/227 done
+95/227 done
+staged CFR:4-21.0 (2 xrefs, 4 defines, flags: Paragraph (d)'s citation to Subchapter V, Chapter 35 of Title 31, United States Code points to the U.S. Code, which is not in the corpus; the reference is left unresolved.; The converter detected no defined terms, but paragraphs (a), (b), and (c) define Interested party, Intervenor, and Federal agency/agency in the 'means' form, so I supplied them.; Paragraph (f)'s GAO website URL carries bracket-and-asterisk markup ([*https://epds.gao.gov/login*]) that looks like a conversion artifact; a human should confirm the link formatting.; Paragraphs (d), (e), (f), and (h) define Days, Adverse agency action, EPDS, and Alternative dispute resolution using 'is', 'are', or 'encompasses' rather than the 'means' form, so they are not listed under defines.)
+staged CFR:4-6.1 (1 xrefs, 0 defines, flags: Bare reference "title 5" (the statute, United States Code) could not be resolved: the one permitted search returned only unrelated CFR title 1 sections, so it is left unlinked.; Harness-linked "subpart E" points to CFR:4-28-E, but the body reads "subpart E, title 5, United States Code", i.e. the statutory subpart of title 5 on attendance and leave; a person should verify that target.; The body also cites the Office of Personnel Management implementing regulations on "Attendance and Leave" (5 CFR part 630), which was not listed as a reference for linking.)
+97/227 done
+97/227 done
+staged CFR:4-22.16 (2 xrefs, 0 defines, flags: Citation to title 18, United States Code, secs. 287 and 1001 (false claims/false statements penalties) could not be resolved to any id in the corpus; left unlinked.; Generic reference to the Federal Rules of Evidence is not linked to a specific source.)
+staged CFR:4-22.18 (0 xrefs, 0 defines, flags: The bracketed '[Rule 18]' in the heading is a parallel citation to a corresponding rule of another rule set; it is not operative text and was left unlinked.)
+99/227 done
+99/227 done
+staged CFR:4-22.19 (0 xrefs, 0 defines)
+staged CFR:4-22.14 (1 xrefs, 0 defines, flags: Bracketed annotations '[Rule 14]' and '[Rule 8(b)]' cite rule provisions outside this corpus (Federal Rules adopted via part 22's appendix) and were left as plain text, not links.)
+staged CFR:4-22.12 (1 xrefs, 0 defines)
+102/227 done
+staged CFR:4-22.20 (0 xrefs, 0 defines)
+103/227 done
+103/227 done
+section I/B/21/21.13/4-21.13.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-21.9 (1 xrefs, 0 defines, flags: The citations to § 21.8(e) and § 21.8(f) link to the whole section CFR:4-21.8 without paragraph anchors; paragraph-level anchors (e, f) would be more precise if those anchors exist.)
+104/227 done
+staged CFR:4-22.2 (1 xrefs, 0 defines, flags: Heading and inline text carry legacy annotations ('[Rule 2]', '[Rule 22]') mapping to the superseded rule numbering; they are not operative text.; Subsection (a) embeds administrative contact details (address, telephone, facsimile, e-mail) that are subject to change.)
+105/227 done
+staged CFR:4-22.13 (1 xrefs, 0 defines)
+106/227 done
+106/227 done
+staged CFR:4-22.25 (0 xrefs, 0 defines)
+107/227 done
+staged CFR:4-22.21 (1 xrefs, 0 defines, flags: Bracketed '[Rule 21]' appears in the heading and inline; it annotates the parallel Board rule number rather than operative text.)
+108/227 done
+staged CFR:4-22.23 (0 xrefs, 0 defines)
+staged CFR:4-22.29 (1 xrefs, 0 defines)
+110/227 done
+staged CFR:4-22.27 (0 xrefs, 0 defines)
+staged CFR:4-22.24 (0 xrefs, 0 defines, flags: The parenthetical "(ADR)" only introduces the abbreviation for Alternative Dispute Resolution; the subsection contains no term-definition sentence.)
+112/227 done
+staged CFR:4-22.28 (0 xrefs, 0 defines, flags: The quoted terms “days” and “filed” carry special meanings in this rule, but neither is stated in “means”/“is defined as” form, so the converter detected no definitions.)
+staged CFR:4-22.22 (0 xrefs, 0 defines)
+staged CFR:4-22.17 (1 xrefs, 0 defines, flags: Bracketed annotations in the heading and body ([Rule 17], [Rule 16(a)], [Rule 16(p)], [Rule 6(b)]) are editorial parallel citations to internal rule numbers, not regulatory text.)
+115/227 done
+115/227 done
+115/227 done
+115/227 done
+115/227 done
+staged CFR:4-22.3 (1 xrefs, 0 defines)
+staged CFR:4-22.5 (1 xrefs, 0 defines)
+117/227 done
+117/227 done
+staged CFR:4-22.9 (0 xrefs, 0 defines)
+staged CFR:4-25.1 (0 xrefs, 0 defines)
+staged CFR:4-25.11 (0 xrefs, 0 defines)
+120/227 done
+120/227 done
+120/227 done
+staged CFR:4-25.12 (0 xrefs, 0 defines)
+staged CFR:4-25.13 (0 xrefs, 0 defines, flags: Paragraph (d) incorporates future posted traffic directives by issuance rather than by citation; the text of those directives lies outside this source.)
+122/227 done
+122/227 done
+staged CFR:4-22.8 (2 xrefs, 0 defines, flags: Bracketed annotations such as [Rule 4(a)], [Rule 8(f)], and [Rule 10] are parallel citations to the part's numbered rules duplicating the linked section references; kept as plain text.)
+staged CFR:4-25.10 (0 xrefs, 0 defines)
+124/227 done
+124/227 done
+staged CFR:4-25.15 (0 xrefs, 0 defines)
+staged CFR:4-22.7 (1 xrefs, 0 defines, flags: The inline citation to § 22.3(c) links to section 22.3 as a whole; the paragraph (c) anchor is not encoded in the link id.)
+staged CFR:4-25.3 (0 xrefs, 0 defines)
+staged CFR:4-22.26 (0 xrefs, 0 defines)
+staged CFR:4-25.14 (0 xrefs, 0 defines)
+129/227 done
+staged CFR:4-25.2 (0 xrefs, 0 defines)
+130/227 done
+130/227 done
+130/227 done
+130/227 done
+130/227 done
+staged CFR:4-25.8 (0 xrefs, 0 defines)
+staged CFR:4-25.6 (0 xrefs, 0 defines)
+staged CFR:4-25.4 (0 xrefs, 0 defines)
+133/227 done
+133/227 done
+133/227 done
+staged CFR:4-22.4 (5 xrefs, 0 defines, flags: The cited sub-paragraph (a)(1)(ii) has no anchor of its own in the corpus, so the self-reference is anchored to paragraph (a) of § 22.4, the paragraph containing it.; unresolved anchor: "paragraph (a)(1)(ii) of this section" named CFR:4-22.4##a, which the target does not have; linked to the section)
+staged CFR:4-25.5 (0 xrefs, 0 defines)
+staged CFR:4-25.7 (0 xrefs, 0 defines)
+staged CFR:4-25.9 (0 xrefs, 0 defines)
+137/227 done
+137/227 done
+staged CFR:4-25.16 (0 xrefs, 0 defines)
+138/227 done
+staged CFR:4-27.3 (0 xrefs, 0 defines)
+139/227 done
+staged CFR:4-27.2 (0 xrefs, 0 defines, flags: The clauses 'hereinafter the Chair' and 'hereinafter the Vice Chair' introduce shorthand office names in 'hereinafter' form, not 'means'-style definitions, so no term was recorded under defines.)
+140/227 done
+140/227 done
+staged CFR:4-28.4 (0 xrefs, 0 defines)
+141/227 done
+staged CFR:4-28.8 (0 xrefs, 0 defines)
+142/227 done
+staged CFR:4-22.6 (1 xrefs, 0 defines, flags: Rule 56 of the Federal Rules of Civil Procedure, cited in paragraph (d)(1), is an external reference with no target in this corpus.; Bracketed designations such as [Rule 6], [Rule 4], and [Rules 6(b) and 6(c)] are editorial rule-number annotations carried in the source text, not conversion damage.; The citations to 'paragraphs (b) and (c) of this section' in paragraphs (a) and (d)(4) were not harness-linked, though they target paragraphs of this same node.)
+143/227 done
+143/227 done
+staged CFR:4-28.47 (0 xrefs, 0 defines)
+staged CFR:4-28.10 (0 xrefs, 0 defines)
+145/227 done
+staged CFR:4-27.1 (1 xrefs, 0 defines, flags: "Hereinafter the Board" is a short-form designation of the Government Accountability Office Personnel Appeals Board, not a defined term; no defined terms detected, correctly.)
+146/227 done
+146/227 done
+staged CFR:4-28.2 (0 xrefs, 0 defines, flags: The term "prohibited discrimination" carries no definition here; it is supplied by cross-reference to § 28.95 in paragraphs (c)(1), (c)(2), (c)(4), and (d).)
+staged CFR:4-21.13 (3 xrefs, 0 defines)
+staged CFR:4-28.1 (1 xrefs, 0 defines, flags: Bare references to 'Chapter 7' / 'chapter 7' of title 31, United States Code (subchapters III and IV) matched no U.S. Code source in the corpus and are left unlinked.; Statutory citations 31 U.S.C. 751-755 and 31 U.S.C. 753 also cannot be linked; the corpus contains no U.S. Code material.)
+149/227 done
+149/227 done
+149/227 done
+staged CFR:4-28.50 (0 xrefs, 0 defines)
+150/227 done
+staged CFR:4-28.49 (0 xrefs, 0 defines, flags: The parentheticals '(named)' and '(as appropriate)' read as fill-in instructions carried over from a form; a human should confirm no blank fields or words were lost when blanks were collapsed.)
+staged CFR:4-28.58 (0 xrefs, 0 defines)
+staged CFR:4-28.13 (0 xrefs, 0 defines)
+153/227 done
+153/227 done
+staged CFR:4-28.9 (1 xrefs, 0 defines)
+154/227 done
+154/227 done
+staged CFR:4-28.56 (0 xrefs, 0 defines)
+staged CFR:4-28.55 (0 xrefs, 0 defines)
+staged CFR:4-28.46 (1 xrefs, 0 defines)
+157/227 done
+staged CFR:4-28.48 (0 xrefs, 0 defines)
+158/227 done
+staged CFR:4-28.59 (0 xrefs, 0 defines)
+159/227 done
+159/227 done
+staged CFR:4-28.3 (2 xrefs, 21 defines, flags: Unresolved references: "Subchapter IV", "chapter 7", "Chapter 7", "Title 31" and "title 31" all name parts of 31 U.S.C. chapter 7 (subchapter IV, the PAB provisions), but the corpus contains no U.S. Code source, so none are linked.; The same statute citation is spelled with inconsistent capitalization in the Charge and Petition definitions: "Subchapter IV of chapter 7 of Title 31" versus "Subchapter IV of Chapter 7 of title 31".; Citations "31 U.S.C. 751" (in the Board definition) and "31 U.S.C. 752" (in the General Counsel definition) were not pre-linked by the harness and are likewise unresolvable for lack of a U.S. Code source in the corpus.)
+160/227 done
+staged CFR:4-28.60 (0 xrefs, 0 defines)
+staged CFR:4-28.11 (0 xrefs, 0 defines, flags: Unresolved reference: "Subchapter IV of Chapter 7 of Title 31, United States Code" (GAO personnel provisions underlying the Board's jurisdiction) has no United States Code target in the corpus and is left unlinked.; All candidates returned for that statutory citation were wrong subjects (a DOL CFR subchapter, 4 CFR Part 7 sections, a Title VI nondiscrimination part) and were rejected rather than linked.)
+staged CFR:4-28.12 (1 xrefs, 0 defines, flags: Unresolved reference: 'chapter 7 of title 31, United States Code' (31 U.S.C. ch. 7, subchs. III-IV, GAO personnel provisions), cited in (d)(1) and (d)(2); no title 31 U.S. Code source is in the corpus, so the bare 'chapter 7' and 'title 31' citations are left unlinked.)
+staged CFR:4-28.57 (0 xrefs, 0 defines)
+164/227 done
+164/227 done
+164/227 done
+164/227 done
+164/227 done
+staged CFR:4-28.66 (0 xrefs, 0 defines, flags: Mentions the Federal Rules of Evidence only as non-binding guidance; left unlinked as a general reference, not a pinpoint citation.)
+staged CFR:4-28.67 (0 xrefs, 0 defines)
+staged CFR:4-28.68 (0 xrefs, 0 defines)
+167/227 done
+167/227 done
+staged CFR:4-28.63 (0 xrefs, 0 defines)
+staged CFR:4-28.62 (1 xrefs, 0 defines)
+169/227 done
+169/227 done
+169/227 done
+staged CFR:4-28.87 (0 xrefs, 0 defines)
+staged CFR:4-28.86 (0 xrefs, 0 defines)
+171/227 done
+171/227 done
+staged CFR:4-28.69 (0 xrefs, 0 defines)
+172/227 done
+staged CFR:4-28.65 (0 xrefs, 0 defines)
+staged CFR:4-28.80 (0 xrefs, 0 defines, flags: Explanatory (non-regulatory) note under the rule; its permissive language ('may be permitted') is guidance, not operative rule text, and it contains no citations or defined terms.)
+staged CFR:4-28.81 (0 xrefs, 0 defines)
+staged CFR:4-28.16 (0 xrefs, 0 defines, flags: The phrase 'Federal Register' is bolded in the source text, with the trailing period inside the bold in the first instance; styling only, no substantive effect.)
+176/227 done
+176/227 done
+176/227 done
+staged CFR:4-28.88 (1 xrefs, 0 defines)
+177/227 done
+177/227 done
+staged CFR:4-28.89 (0 xrefs, 0 defines)
+178/227 done
+staged CFR:4-28.19 (0 xrefs, 0 defines)
+staged CFR:4-28.90 (0 xrefs, 0 defines)
+180/227 done
+staged CFR:4-28.24 (1 xrefs, 0 defines)
+181/227 done
+181/227 done
+staged CFR:4-28.21 (0 xrefs, 0 defines)
+staged CFR:4-28.23 (0 xrefs, 0 defines)
+staged CFR:4-28.61 (2 xrefs, 3 defines, flags: The two citations to 5 U.S.C. 7701(a), the statute defining 'appealable action' and 'regulation', are not among the harness-linked references and have no corpus id.)
+staged CFR:4-28.15 (2 xrefs, 0 defines)
+staged CFR:4-28.22 (2 xrefs, 0 defines)
+186/227 done
+186/227 done
+186/227 done
+186/227 done
+staged CFR:4-28.26 (1 xrefs, 0 defines)
+staged CFR:4-28.25 (1 xrefs, 0 defines)
+188/227 done
+188/227 done
+188/227 done
+staged CFR:4-28.27 (0 xrefs, 0 defines)
+189/227 done
+staged CFR:4-28.28 (0 xrefs, 0 defines)
+staged CFR:4-28.17 (1 xrefs, 0 defines, flags: Citation '31 U.S.C. 732 (b)(2) or (f)(1)' in (a)(1) carries an irregular space between the section number and paragraph designators, apparently as in the source; worth verifying.)
+191/227 done
+staged CFR:4-28.29 (0 xrefs, 0 defines)
+staged CFR:4-28.91 (0 xrefs, 0 defines, flags: The citation "section 732(f) of Title 31, U.S.C." could not be resolved in the corpus: the search for "Title 31" returned only 29 CFR Part 31 (Department of Labor nondiscrimination rules), a different source, so the reference is left unlinked.)
+193/227 done
+193/227 done
+193/227 done
+staged CFR:4-28.40 (0 xrefs, 0 defines)
+194/227 done
+staged CFR:4-28.41 (1 xrefs, 0 defines)
+staged CFR:4-28.96 (3 xrefs, 0 defines)
+196/227 done
+staged CFR:4-28.92 (0 xrefs, 0 defines, flags: Unresolved reference: 'Subchapters III and IV of Chapter 7 of Title 31, U.S.C.' in (b)(1) and (b)(2) is an external U.S. Code citation; corpus searches returned no matching id, so it is left unlinked.)
+staged CFR:4-28.20 (3 xrefs, 0 defines, flags: Paragraph (a)'s parenthetical points to the definitions in § 28.3 without naming which term's definition applies (presumably "pleadings").)
+198/227 done
+198/227 done
+198/227 done
+staged CFR:4-28.44 (0 xrefs, 0 defines)
+199/227 done
+staged CFR:4-28.42 (3 xrefs, 0 defines, flags: Paragraph (a) provides that a party includes an intervenor; this is an inclusion rather than a 'means' definition, so it is not recorded under defines.)
+staged CFR:4-28.100 (0 xrefs, 0 defines, flags: Parent container ids (I/B/28, I/B/28/D, I/B/28/D/28.100) did not resolve via sect_map/sect_read; placement in context is derived from the input path (Part 28, Subpart D, § 28.100).)
+staged CFR:4-28.18 (3 xrefs, 0 defines, flags: "subchapter IV" left unlinked: the search surfaced only CFR subchapters (e.g., 29 CFR chapter IV), not subchapter IV of 31 U.S.C. chapter 7, the Board's jurisdictional statute.; "chapter 7" left unlinked: the best hits were sections of 4 CFR part 7, a different instrument from chapter 7 of title 31, United States Code.; "title 31" left unlinked: the best hits were 29 CFR part 31; title 31 of the United States Code does not appear to be in the corpus.; "Federal Rules of Civil Procedure" in paragraph (f) is a generic reference with no pinpoint citation and was not resolved to a corpus node.)
+202/227 done
+202/227 done
+202/227 done
+staged CFR:4-28.111 (0 xrefs, 0 defines, flags: Citation "Chapter 71" is unlinked: corpus search returned no United States Code source, only unrelated CFR sections.; Citation "Title 5" is unlinked: corpus search returned only CFR titles; together the two citations form one statutory reference, Chapter 71 of Title 5, U.S.C. (Federal Service Labor-Management Relations Statute), outside this corpus.)
+203/227 done
+staged CFR:4-28.110 (1 xrefs, 0 defines, flags: The closing sentence names "representation proceedings" as a term of art ("referred to in these regulations as"), not a "means"-form definition, so it was not staged as a defined term.)
+204/227 done
+staged CFR:4-28.112 (1 xrefs, 0 defines)
+staged CFR:4-28.97 (0 xrefs, 0 defines)
+staged CFR:4-28.43 (0 xrefs, 0 defines, flags: The citation "§ 28.42(c)(2) and (d)(4)" is linked only at section level to § 28.42; the specific paragraphs (c)(2) and (d)(4) are not separately anchored.)
+207/227 done
+staged CFR:4-28.113 (2 xrefs, 0 defines, flags: The citation to 18 U.S.C. 1001 in paragraph (a)(5) is an external U.S. Code reference and appears in the text without a link.)
+208/227 done
+208/227 done
+208/227 done
+staged CFR:4-28.99 (1 xrefs, 0 defines)
+staged CFR:4-28.101 (0 xrefs, 0 defines, flags: Citation 'Title VII' (42 U.S.C. 2000e-16) left unlinked: search found only EEOC interpretive sections, no U.S. Code source in the corpus.; Citation 'Title I' (42 U.S.C. 12101 et seq.) left unlinked for the same reason - nearest hits were EEOC provisions citing the ADA, not the statute itself.)
+staged CFR:4-28.114 (0 xrefs, 0 defines)
+211/227 done
+211/227 done
+211/227 done
+staged CFR:4-28.121 (4 xrefs, 0 defines, flags: The citation "Chapter 71 of Title 5, United States Code" could not be resolved; the corpus contains no copy of that statute, so the reference is left unlinked.; "GAO Order 2711.1" is cited in paragraphs (a) and (c) but is external to the corpus and was not proposed for linking.; Paragraph (a) defines unfair labor practices only by pointing to GAO Order 2711.1, i.e. a definitional cross-reference to an external order rather than a definition in this text.)
+212/227 done
+staged CFR:4-28.124 (0 xrefs, 0 defines)
+staged CFR:4-28.115 (1 xrefs, 0 defines)
+214/227 done
+staged CFR:4-28.45 (0 xrefs, 0 defines, flags: The text cites paragraph (d)(2) of § 28.42, but the pre-linked target is the whole section (CFR:4-28.42) without a paragraph anchor; a narrower anchor could be added if that target exposes one.)
+staged CFR:4-28.120 (1 xrefs, 0 defines, flags: Citation 'Chapter 71 of Title 5, U.S.C.' (Federal Service Labor-Management Relations Statute) is not present in the corpus; searches returned only CFR sections citing it, so the bare references 'Chapter 71' and 'Title 5' are left unlinked.)
+216/227 done
+216/227 done
+216/227 done
+staged CFR:4-28.122 (0 xrefs, 0 defines)
+staged CFR:4-28.116 (0 xrefs, 0 defines, flags: GAO is used in paragraph (b) without expansion or definition anywhere in this section.; Subparagraphs (i) and (ii) are nested under (d)(3) but are never cited by designation in the parent text; nesting rests on their subject matter.)
+218/227 done
+218/227 done
+staged CFR:4-28.131 (0 xrefs, 0 defines, flags: Citation in paragraph (d) is a range, §§ 28.19 through 28.25; only the start § 28.19 was linked by the harness, the endpoint § 28.25 is not individually linked.; In paragraph (b), 'the reasons therefore' appears to be a source typo for 'therefor'; the text was copied verbatim.)
+219/227 done
+staged CFR:4-28.140 (4 xrefs, 0 defines)
+220/227 done
+staged CFR:4-28.123 (2 xrefs, 0 defines, flags: Paragraph (c) cites Regulations issued by the Assistant Secretary of Labor for Employment Standards, an external source that was not linked.; 'These Rules' in paragraph (c) refers to the containing regulations themselves, the same chapter targeted by 'this chapter'.)
+staged CFR:4-28.95 (1 xrefs, 1 defines, flags: Unresolved reference: "Title I" of the Americans with Disabilities Act of 1990 (42 U.S.C. 12101 et seq.) — the search returned only citing EEOC regulations (29 CFR parts 38 and 1601), no statute node, so it is left unlinked.; The statutory citations in paragraphs (a) through (g) (e.g., 42 U.S.C. 2000e-16, 29 U.S.C. 631, 29 U.S.C. 206(d), 29 U.S.C. 791, 42 U.S.C. 2000ff-1, 42 U.S.C. 2000gg-1, 31 U.S.C. 732(f)(2)) are not linked as cross-references.; Paragraph (h)'s reference to "paragraphs (a) through (g) of this section" is an internal cross-reference that is not linked.; Converter detected no defined term; the lead-in sentence does define "Prohibited discrimination", so it is listed here.)
+staged CFR:4-28.147 (0 xrefs, 0 defines, flags: General allusion to "rules requiring written submissions" carries no rule number and was not linked to any specific section.)
+223/227 done
+223/227 done
+223/227 done
+staged CFR:4-28.160 (2 xrefs, 0 defines)
+224/227 done
+staged CFR:4-28.148 (0 xrefs, 0 defines)
+staged CFR:4-28.146 (1 xrefs, 1 defines, flags: The converter detected no defined term, but paragraph (b)(2) is a 'means' definition of Decision-making personnel, which is listed in defines.; Paragraph (b)(1) introduces Interested party with a non-exhaustive 'includes' enumeration and paragraph (a) opens with an 'are' definition of ex parte communications; neither matches the 'means' form, so neither is listed in defines.)
+226/227 done
+226/227 done
+staged CFR:4-28.155 (0 xrefs, 0 defines)
+227/227 done
+staged CFR:4-28.133 (5 xrefs, 0 defines, flags: The plural citation "paragraphs (e)(1) and (2) of this section" in paragraph (e)(3) is not among the harness-linked references and was not resolved here; it appears to target this section's paragraphs (e)(1) and (e)(2).)
+228/227 done
+staged CFR:4-28.149 (1 xrefs, 0 defines)
+staged CFR:4-28.161 (0 xrefs, 0 defines, flags: The abbreviation 'PAB' in paragraph (b) is not defined in this section; it presumably stands for Personnel Appeals Board as defined elsewhere in the part.)
+230/227 done
+staged CFR:4-29 (0 xrefs, 0 defines, flags: Reserved part: heading only, with no body text in the source — an empty section is expected here, not truncation.)
+231/227 done
+staged CFR:4-28.145 (0 xrefs, 0 defines)
+232/227 done
+232/227 done
+staged CFR:4-81.5 (0 xrefs, 0 defines)
+staged CFR:4-28.132 (3 xrefs, 0 defines)
+staged CFR:4-81.4 (1 xrefs, 0 defines)
+staged CFR:4-28.98 (2 xrefs, 0 defines, flags: Paragraphs (f)(1) and (f)(2) duplicate (e)(1) and (e)(2) verbatim and do not match the heading of paragraph (f); apparent drafting duplication in the source.; The references to 'paragraph (e)(1)' inside (f)(1)(i) and (f)(1)(ii) sit under paragraph (f) and are left unlinked; they appear to be erroneous self-references.; The cross-reference 'paragraphs (c) and (e) of this section' in paragraph (a) is not linked.)
+staged CFR:4-81.2 (1 xrefs, 0 defines, flags: Subsection (b) contains term-substitution instructions ('Counsel to the Inspector General' for 'Chief Quality Officer' and 'Inspector General' for 'Comptroller General') that operate part-wide for OIG-record requests but are not 'means'-style definitions, so they are not captured in defines.)
+237/227 done
+237/227 done
+237/227 done
+237/227 done
+section I/B/28/G/28.130/4-28.130.md attempt 1 failed: the agent finished without calling section_stage
+staged CFR:4-81.7 (1 xrefs, 0 defines)
+staged CFR:4-81.3 (1 xrefs, 7 defines, flags: Converter detected no defined terms although each paragraph (a)-(f) defines one; supplied Identifiable, Records, Records available to the public, Disclose, disclosure, Person, and Compelling need in defines.)
+239/227 done
+239/227 done
+239/227 done
+staged CFR:4-28.141 (0 xrefs, 0 defines, flags: 'the Board' and 'the Chair of the Board' are used without a local definition; the hearing body is defined elsewhere in these rules.)
+staged CFR:4-81.8 (0 xrefs, 0 defines)
+241/227 done
+staged CFR:4-75.1 (0 xrefs, 0 defines, flags: Citation "chapter 101 of 41 CFR part 41" could not be resolved: corpus searches ("chapter 101", "part 41") returned only unrelated Title 29 CFR sections, so both bare references are left unlinked.)
+242/227 done
+staged CFR:4-83.10 (0 xrefs, 0 defines)
+staged CFR:4-81.6 (2 xrefs, 0 defines, flags: Executive Order 12958 (Classified National Security Information) is cited by name in paragraph (b) but is not linked to any corpus node.; Paragraph (g) uses the abbreviation 'OIG' without defining it in this section or part.)
+staged CFR:4-82.1 (0 xrefs, 0 defines)
+staged CFR:4-28.130 (1 xrefs, 0 defines, flags: The quoted phrase is verbatim wording of an outside instrument (the statute conferring the Board's functions), reproduced without a pinpoint citation in this section.)
+246/227 done
+246/227 done
+246/227 done
+246/227 done
+staged CFR:4-83.13 (0 xrefs, 0 defines)
+247/227 done
+247/227 done
+staged CFR:4-83.17 (1 xrefs, 0 defines)
+staged CFR:4-83.18 (1 xrefs, 0 defines)
+249/227 done
+249/227 done
+staged CFR:4-83.15 (0 xrefs, 0 defines, flags: Source text misspells 'official' as 'offical' in (c)(3); retained verbatim.; The lead-in in (c) ends with 'either—' but items (3)–(5) are not part of the either/or choice; structure is as in the source.)
+250/227 done
+staged CFR:4-83.14 (1 xrefs, 0 defines)
+staged CFR:4-83.2 (1 xrefs, 0 defines)
+252/227 done
+252/227 done
+staged CFR:4-83.12 (2 xrefs, 0 defines, flags: Compound citation "paragraphs (c) and (d) of this section" in paragraph (e)(2)(ii) was not in the harness's linked-citation list; it points to paragraphs (c) and (d) of this same section.)
+253/227 done
+staged CFR:4-83.16 (1 xrefs, 0 defines)
+staged CFR:4-83.1 (1 xrefs, 0 defines, flags: "Systems of personnel records" is used as a defined term but is only supplied by cross-reference to § 83.3(g); no definition appears in this section.; The § 83.3(g) citation resolves to § 83.3 (CFR:4-83.3) at section level; the definition itself sits in paragraph (g) of that section.; The statutory citation to the Privacy Act (5 U.S.C. 552a) is left unlinked in the corpus.)
+255/227 done
+staged CFR:4-83.3 (1 xrefs, 8 defines, flags: Converter detected no defined terms, but the paragraph defines eight terms; they are listed in defines.; Source typo in paragraph (g): 'indentifying particular' should read 'identifying particular'; text copied verbatim.)
+256/227 done
+256/227 done
+staged CFR:4-83.20 (0 xrefs, 0 defines)
+257/227 done
+staged CFR:4-83.19 (1 xrefs, 0 defines)
+258/227 done
+staged CFR:4-81.1 (3 xrefs, 0 defines, flags: Cross-reference in (c) cites paragraph (a) of § 81.4, but its inline link target CFR:4-81.4 names no paragraph anchor.)
+staged CFR:4-83.9 (0 xrefs, 0 defines)
+260/227 done
+staged CFR:4-I-S C (0 xrefs, 0 defines, flags: Heading-only leaf: an empty placeholder marking two subchapters, with no operative text to validate)
+261/227 done
+261/227 done
+staged CFR:4-I-G [RESERVED] (0 xrefs, 0 defines)
+262/227 done
+staged CFR:4-83.7 (3 xrefs, 0 defines, flags: Paragraph (f) reads "reassure that such records are accurate" where "ensure" is evidently intended; text kept verbatim, verify against the source.; Sub-items (i) through (vii) of paragraph (i)(3) run inline in a single paragraph; confirm the converter preserved them as separate paragraphs rather than flattening them.)
+staged CFR:4-83.8 (0 xrefs, 0 defines)
+264/227 done
+264/227 done
+staged CFR:4-83.6 (0 xrefs, 0 defines, flags: Paragraph-specific citations (§§ 83.4(a), 83.4(b), and 83.4(e)) are linked to 4 CFR 83.4 as a whole, without anchors for the named subsections.)
+265/227 done
+staged CFR:4-83.4 (1 xrefs, 0 defines, flags: Reference to Title 13, United States Code in paragraph (i) cites an external statute (census authority) with no matching node in the corpus; left unlinked after searching.; Citation to 31 U.S.C. 3711(f) in paragraph (k) is likewise an external U.S. Code provision absent from the corpus and is unlinked.)
+staged CFR:4-82.2 (2 xrefs, 0 defines, flags: The § 81.7 citation arrived pre-linked to CFR:4-81.7 in the source text; the harness's linked list named only "this chapter" and "this part", so that inline target was not re-verified against the registry.)
+267/227 done
+267/227 done
+staged CFR:4-83.5 (5 xrefs, 1 defines, flags: Paragraph (j)(1) contains likely garbled text: 'involved in a processed before GAO' probably read 'in a proceeding pending before GAO' in the original.; Paragraph (b)(5) opens a parenthesis before 'which include room numbers' that is never closed.; Paragraph (g) opens with a parenthetical that defines 'Personnel Appeal Files' (GAO Personnel Appeals Board petition and appeal records, excluding the Board General Counsel's investigative files), which the converter did not detect as a definition.)
+268/227 done
+staged CFR:4-83.11 (1 xrefs, 0 defines, flags: Reference 'section 2951 of title 5, United States Code' in paragraph (e) is unresolved: corpus search (limit 3) returned no Title 5 or § 2951 node, so it is left unlinked.; The citation to 5 CFR parts 293, 294, and 297 in paragraph (d)(4) was not harness-linked and was not among the references I was asked to resolve; left unlinked.; The GAO/U.S. OPM/GSA Memorandum of Understanding (Appendix I), FPM Supplement 293-31, and FPM Chapters 293, 294, and 297 are external documents not held in the corpus and are left unlinked.; Paragraph (g)(2) reads 'U.S. OMP regulations', an apparent typographical error for 'U.S. OPM' in the source; body accepted verbatim.)
+269/227 done
+staged CFR:4-83.21 (0 xrefs, 0 defines, flags: The citation in (a)(3) to section 3056 of Title 18, United States Code is left unlinked: a search for "Title 18" returned only unrelated Title 29 CFR sections and no United States Code node for 18 U.S.C. 3056.; In (a) the citation group runs §§ 83.6(c), 83.12, 83.13, 83.14, and 83.15, but only § 83.6(c) carries a link in the leaf.; The citations to 31 U.S.C. 716(e)(1) and 718(b)(3) in (a)(1) are not linked in the leaf.)
+270/227 done

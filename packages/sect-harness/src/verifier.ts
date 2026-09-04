@@ -326,7 +326,9 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
               }
             };
             const ask = async (nudge: string) => {
-              const m = await withBackoff(() => complete(choice!.model as never, { systemPrompt: VERIFIER_SYSTEM, messages: [{ role: "user", content: prompt + nudge, timestamp: Date.now() }] }, { apiKey: choice!.config.apiKey, temperature: 0, maxTokens: 2000, ...(Object.keys(providerExtras(choice!.config)).length ? {} : {}) }));
+              // A call that never returns is a timeout, and the backoff retries it.
+              const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T> => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`timeout after ${ms} ms`)), ms))]);
+              const m = await withBackoff(() => withTimeout(complete(choice!.model as never, { systemPrompt: VERIFIER_SYSTEM, messages: [{ role: "user", content: prompt + nudge, timestamp: Date.now() }] }, { apiKey: choice!.config.apiKey, temperature: 0, maxTokens: 2000, ...(Object.keys(providerExtras(choice!.config)).length ? {} : {}) }), 300_000));
               const u = usageOf(m);
               usage.input += u.input;
               usage.output += u.output;

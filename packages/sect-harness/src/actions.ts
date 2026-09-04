@@ -45,6 +45,21 @@ export function wordEdit(instruction: string): { remove: string; add: string | n
   return { remove: rm[1], add: add?.[1] ?? null, everywhere: /wherever|each place|everywhere|throughout/i.test(instruction) };
 }
 
+/** "Remove ... Add ..." table text: the phrases to replace, in order. */
+export function phraseTable(text: string, instruction: string): Array<{ remove: string; add: string }> {
+  if (!/\btable\b|left column|right column/i.test(instruction)) return [];
+  const q = [...text.matchAll(/[“"]([^”"]+)[”"]/g)].map((m) => m[1]);
+  const out: Array<{ remove: string; add: string }> = [];
+  for (let i = 0; i + 1 < q.length; i += 2) out.push({ remove: q[i], add: q[i + 1] });
+  return out;
+}
+
+/** "adding the words “X” between the words “Y” and “Z”": what to insert and where. */
+export function insertBetween(instruction: string): { insert: string; before: string; after: string } | null {
+  const m = /add(?:s|ing)?\s+(?:the\s+)?(?:words?|phrase)\s+[“"]([^”"]+)[”"]\s+between\s+(?:the\s+)?(?:words?|phrase)\s+[“"]([^”"]+)[”"]\s+and\s+[“"]([^”"]+)[”"]/i.exec(instruction);
+  return m ? { insert: m[1], before: m[2], after: m[3] } : null;
+}
+
 /** The redesignation an instruction states: paragraph (x) becomes (y). */
 export function redesignation(instruction: string): Array<{ from: string; to: string }> {
   const out: Array<{ from: string; to: string }> = [];
@@ -72,6 +87,32 @@ export function applyAction(body: string, a: Action): { body: string; why?: stri
   const ins = a.instruction ?? "";
   const edit = wordEdit(ins);
   if (a.kind === "stay") return { body };
+  // A table of phrases to replace throughout.
+  const table = phraseTable(text, ins);
+  if (table.length) {
+    let out = body;
+    let hits = 0;
+    for (const { remove, add } of table) {
+      if (out.includes(remove)) {
+        hits++;
+        out = out.split(remove).join(add);
+      }
+    }
+    return hits ? { body: out } : { body, why: "none of the table's phrases occur here" };
+  }
+  // Words inserted between two others.
+  const between = insertBetween(ins);
+  if (between && !text) {
+    const span = anchor ? paragraphSpan(body, anchor) : null;
+    if (anchor && !span) return { body, why: `paragraph (${anchor}) not found` };
+    const [s, e] = span ? [span.start, span.end] : [0, lines.length];
+    const region = lines.slice(s, e).join("\n");
+    const seam = `${between.before} ${between.after}`;
+    if (!region.includes(seam)) return { body, why: `the words "${between.before}" and "${between.after}" are not adjacent in ${anchor ? `paragraph (${anchor})` : "the section"}` };
+    return { body: [...lines.slice(0, s), ...region.replace(seam, `${between.before} ${between.insert} ${between.after}`).split("\n"), ...lines.slice(e)].join("\n") };
+  }
+  // A revision printed with asterisks keeps unquoted text in place: a person splices it.
+  if (text && /(?:^|\n)\s*\*\s?\*\s?\*/.test(text)) return { body, why: "a partial revision marked with asterisks; the unquoted text is not given" };
   // A word-level instruction, in the named paragraph or everywhere.
   if (edit && (a.kind === "remove" || a.kind === "amend") && !text) {
     const span = anchor ? paragraphSpan(body, anchor) : null;
@@ -111,6 +152,35 @@ export function applyAction(body: string, a: Action): { body: string; why?: stri
   if (!text) return { body, why: "no amendment text to apply" };
   const paras = splitParas(text);
   if (a.kind === "amend") {
+    // Several top-level labeled paragraphs quoted at once ("revising (a), (b) introductory text,
+    // (b)(1) and (2)"): each replaces its own paragraph, nested ones travel with their parent.
+    const groups: Array<{ anchor: string | null; paras: string[] }> = [];
+    // A quoted "(1)" under a "(b)" is relative: only a lettered label opens a new group.
+    for (const p of paras) {
+      const an = leadingAnchor(p);
+      if (an && /^[a-z]$/.test(an)) groups.push({ anchor: an, paras: [p] });
+      else if (groups.length) groups[groups.length - 1].paras.push(p);
+      else groups.push({ anchor: an, paras: [p] });
+    }
+    if (groups.length > 1 && groups.every((g) => g.anchor)) {
+      let out = body;
+      for (const g of groups) {
+        const span = paragraphSpan(out, g.anchor!);
+        if (!span) {
+          // A paragraph the section lacks is added in order.
+          const r = applyAction(out, { ...a, kind: "add", target_anchor: g.anchor, text: g.paras.join("\n\n") });
+          if (r.why) return { body, why: r.why };
+          out = r.body;
+          continue;
+        }
+        const ls = out.split("\n");
+        // A quoted introductory text keeps the nested paragraphs it does not restate.
+        const nested = g.paras.slice(1).some((p) => leadingAnchor(p)?.includes("-"));
+        const end = nested ? span.end : (paragraphAnchors(out).find((x) => x.anchor.startsWith(g.anchor + "-"))?.line ?? span.end + 1) - 1;
+        out = [...ls.slice(0, span.start), ...g.paras.join("\n\n").split("\n"), "", ...ls.slice(Math.max(end, span.start + 1))].join("\n").replace(/\n{3,}/g, "\n\n");
+      }
+      return { body: out };
+    }
     if (anchor) {
       const span = paragraphSpan(body, anchor);
       if (!span) return { body, why: `paragraph (${anchor}) not found` };
@@ -154,7 +224,7 @@ export function applyActions(body: string, actions: Action[]): Applied {
   const applied: Action[] = [];
   const unapplied: Array<{ action: Action; why: string }> = [];
   for (const a of actions) {
-    const header = !a.text && !a.target_anchor && !wordEdit(a.instruction ?? "") && !redesignation(a.instruction ?? "").length && a.kind !== "remove";
+    const header = !a.text && !a.target_anchor && !wordEdit(a.instruction ?? "") && !insertBetween(a.instruction ?? "") && !redesignation(a.instruction ?? "").length && a.kind !== "remove";
     if (header) continue;
     const r = applyAction(out, a);
     if (r.why) unapplied.push({ action: a, why: r.why });

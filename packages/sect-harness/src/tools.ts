@@ -9,6 +9,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, wri
 import path from "node:path";
 import type { TSchema } from "typebox";
 import YAML from "yaml";
+import { phraseTable, wordEdit } from "./actions.js";
 import { insideRun } from "./staging.js";
 
 export interface RunContext {
@@ -193,9 +194,14 @@ export interface StageParams {
   actions?: ActionChoice[];
 }
 
-/** A listing line whose target is outside the subset being ingested loses its link, not its text. */
+/**
+ * A subset run: a listing line whose target is outside the subset loses its link and says so;
+ * an inline link to a node absent from the run and the corpus loses its link syntax, keeping
+ * the citation text verbatim (the registry pattern still finds it as a bare citation).
+ */
 export function delinkOutside(body: string, keep: Set<string>): string {
-  return body.replace(/^(\s*[-*]\s*)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([A-Z][A-Z0-9]*:[^)\s#]+)(?:#[a-z0-9-]+)?\)\s*$/gm, (m, bullet: string, text: string, id: string) => (keep.has(id) ? m : `${bullet}${text} (not in this corpus)`));
+  const listed = body.replace(/^(\s*[-*]\s*)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([A-Z][A-Z0-9]*:[^)\s#]+)(?:#[a-z0-9-]+)?\)\s*$/gm, (m, bullet: string, text: string, id: string) => (keep.has(id) ? m : `${bullet}${text} (not in this corpus)`));
+  return listed.replace(/\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([A-Z][A-Z0-9]*:[^)\s#]+)(?:#[a-z0-9-]+)?\)/g, (m, text: string, id: string) => (keep.has(id) ? m : text));
 }
 
 export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
@@ -287,6 +293,9 @@ export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
         if (a.kind) w.kind = a.kind;
       }
     }
+    // A word-level instruction (a phrase table, words removed) is a removal whatever it was called: the
+    // quoted text is what leaves the Expression, and the checks read the kind.
+    for (const w of ws2) if (phraseTable(String(w.text ?? ""), String(w.instruction ?? "")).length || wordEdit(String(w.instruction ?? ""))) w.kind = "remove";
     actions = ws2.map((a) => ({ action_id: String(a.action_id), target_id: String(a.target_id), target_anchor: a.target_anchor ? String(a.target_anchor) : null, kind: String(a.kind ?? "amend") }));
   }
   // What was linked in code and what a person decided both stand in provenance.
@@ -294,7 +303,17 @@ export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
   if (det.length) prov.deterministic_xrefs = det;
   else delete prov.deterministic_xrefs;
   if (p.resolutions?.length) prov.resolutions = [...new Set(p.resolutions)];
-  const { body, applied } = applyXrefs(cx.keepIds ? delinkOutside(split.body, cx.keepIds) : split.body, xrefs);
+  // A link anchor the target does not have (a paragraph that exists only after an amendment) falls
+  // back to the section, and says so; the agent's references get the same treatment above.
+  let dropped = 0;
+  const bodyIn = (cx.keepIds ? delinkOutside(split.body, cx.keepIds) : split.body).replace(/\]\(([A-Z][A-Z0-9]*:[^)\s#]+)#([a-z0-9-]+)\)/g, (m, id: string, anchor: string) => {
+    const known = cx.knownIds?.get(id);
+    if (!known || known.has(anchor)) return m;
+    dropped++;
+    return `](${id})`;
+  });
+  if (dropped) flags.push(`${dropped} link anchor(s) the target does not have were dropped to the section`);
+  const { body, applied } = applyXrefs(bodyIn, xrefs);
   const outRel = stagingPathFor(cx, p.input);
   const outPath = safeStaging(cx, outRel);
   mkdirSync(path.dirname(outPath), { recursive: true });

@@ -132,6 +132,41 @@ function paragraphs(e: Elem | undefined, skip: string[] = []): string[] {
  * CFR line names exactly one title; a rule that touches several titles keeps them bare, because
  * the title is then a judgment the converter must not make.
  */
+/**
+ * "4. Amend § 28.95 by: a. Revising paragraph (c); b. ...; c. Redesignating (e) as (g) and adding
+ * (e), (f) and (h). The revision and additions read as follows: (c) ... (e) ... (f) ... (h) ..."
+ * The block follows the last lettered instruction; each quoted paragraph belongs to the
+ * instruction that names its label. What names no instruction stays with the block's owner.
+ */
+export function distributeGroupText(actions: ActionCandidate[]): void {
+  const lettered = (a: ActionCandidate) => /^[a-z]\.\s/i.test(a.instruction);
+  let i = 0;
+  while (i < actions.length) {
+    if (!lettered(actions[i])) {
+      i++;
+      continue;
+    }
+    let j = i;
+    while (j < actions.length && lettered(actions[j]) && actions[j].target_id.split("#")[0] === actions[i].target_id.split("#")[0]) j++;
+    const group = actions.slice(i, j);
+    const owner = group[group.length - 1];
+    if (group.length > 1 && owner.text && group.slice(0, -1).every((a) => !a.text)) {
+      const paras = owner.text.split(/\n{2,}/).map((p) => p.trim()).filter((p) => p && !/^#{1,6}\s/.test(p) && !/^\*\s?\*\s?\*/.test(p) && !/reads? as follows:?$/i.test(p));
+      const buckets = new Map<ActionCandidate, string[]>(group.map((a) => [a, []]));
+      let current: ActionCandidate | null = null;
+      for (const p of paras) {
+        const label = /^\s*(?:\*{1,2})?((?:\([a-z0-9]{1,4}\))+)/i.exec(p)?.[1];
+        const anchor = label ? label.replace(/[()]/g, "-").replace(/^-|-$/g, "").toLowerCase() : null;
+        // A top-level label picks the instruction naming it; a nested one follows its parent.
+        if (anchor && !anchor.includes("-")) current = group.find((a) => (a.anchors ?? (a.target_anchor ? [a.target_anchor] : [])).some((x) => x === anchor || x.startsWith(anchor + "-"))) ?? current;
+        (buckets.get(current ?? owner) ?? []).push(p);
+      }
+      for (const a of group) a.text = (buckets.get(a) ?? []).join("\n\n");
+    }
+    i = j;
+  }
+}
+
 export function linkProse(text: string, cfrLine: string): string {
   const titles = new Set((cfrLine.match(/\b(\d+)\s+CFR\b/gi) ?? []).map((m) => /\d+/.exec(m)![0]));
   if (titles.size !== 1) return text;
@@ -209,6 +244,7 @@ export function convertFr(xml: string, opts: FrOptions = {}): FrNotice {
       }
     }
     flush();
+    distributeGroupText(actions.slice(before));
     if (n === before && rPart) {
       // A whole part removed carries no AMDPAR: the heading reads "PART 42—[REMOVED AND RESERVED]"
       // and the REGTEXT is one sentence, "the Department removes and reserves 29 CFR Part 42".

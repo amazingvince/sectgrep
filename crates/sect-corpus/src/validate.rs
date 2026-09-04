@@ -154,9 +154,26 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
             match cx.actions.get(a.as_str()).copied() {
                 None => cx.err(d, format!("amended_by `{a}` is not a known Action")),
                 Some((act, _)) => {
-                    if act.target_id != id {
-                        cx.err(d, format!("Action `{a}` targets `{}`, not this section", act.target_id));
-                    } else if let Some(text) = &act.text {
+                    // The target is this section, or a container above it: a part-wide word change
+                    // amends every leaf under the part through the one Action.
+                    let mut above = false;
+                    let mut p = d.front.parent.clone();
+                    let mut hops = 0;
+                    while let Some(pid) = p {
+                        if pid == act.target_id {
+                            above = true;
+                            break;
+                        }
+                        hops += 1;
+                        if hops > 12 {
+                            break;
+                        }
+                        p = cx.by_id.get(pid.as_str()).and_then(|v| v.first()).and_then(|x| x.front.parent.clone());
+                    }
+                    if act.target_id != id && !above {
+                        cx.err(d, format!("Action `{a}` targets `{}`, not this section nor a container above it", act.target_id));
+                    } else if let (Some(text), false) = (&act.text, act.kind == "remove") {
+                        // A removal's quoted text is what leaves the Expression; it is not looked for.
                         let norm = |s: &str| s.split_whitespace().collect::<Vec<_>>().join(" ");
                         if !norm(&d.body).contains(&norm(text)) {
                             cx.err(d, format!("Action `{a}` quoted text is not present in this Expression"));

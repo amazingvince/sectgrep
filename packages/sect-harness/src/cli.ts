@@ -110,7 +110,7 @@ if (cmd === "verify") {
     console.error("usage: sect-harness resubmit --run staging/<run_id> --input DIR --source NAME --corpus ROOT [--staging staging] [--sect BIN] [--raw-root .] [--work work]");
     process.exit(2);
   }
-  const r = resubmit({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, sectBin: arg("sect"), rawRoot: arg("raw-root"), work: arg("work") });
+  const r = resubmit({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, sectBin: arg("sect"), rawRoot: arg("raw-root"), work: arg("work"), only: arg("only") });
   console.log(`${r.runId}: ${r.staged} section(s) re-staged, ${r.strays.length} stray file(s) removed; ${r.summary ? `submitted: ${r.summary.xrefs_resolved} reference(s), ${r.summary.low_confidence.length} low-confidence, ${r.summary.flags.length} flag(s)` : `not submitted: ${r.errors} validator error(s)`}`);
   process.exit(r.summary ? 0 : 1);
 } else if (cmd !== "ingest" || !arg("input") || !arg("source") || !arg("corpus")) {
@@ -128,6 +128,7 @@ ingest({
   concurrency: arg("concurrency") ? Number(arg("concurrency")) : process.env.SECT_INGEST_CONCURRENCY ? Number(process.env.SECT_INGEST_CONCURRENCY) : undefined,
   limit: arg("limit") ? Number(arg("limit")) : undefined,
   only: arg("only"),
+  resume: process.argv.includes("--resume"),
   dryRun: process.argv.includes("--dry-run"),
   skillPath: arg("skill"),
   log: process.argv.includes("--json") ? (l) => console.error(l) : undefined,
