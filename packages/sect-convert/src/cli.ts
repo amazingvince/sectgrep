@@ -16,6 +16,7 @@ import { PRESETS, presetFor } from "./ocr/presets.js";
 import { pageGeometry, pngSize, renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber } from "./ocr/transcriber.js";
 import { loadDotEnv, modelConfig, providerExtras } from "./env.js";
+import { fetchSectionDates, readSectionDates, readTitleDate } from "./versioner.js";
 
 // The nearest .env (gitignored) supplies keys and model choices; the shell wins over it.
 loadDotEnv();
@@ -42,16 +43,29 @@ async function fetchTitle(title: number, rawRoot: string): Promise<void> {
   console.log(`fetched title ${title} (latest amended ${t.latest_amended_on}, up to date as of ${t.up_to_date_as_of}) -> ${file} (${xml.length} bytes)`);
 }
 
-function convert(): void {
+async function convert(): Promise<void> {
   const xmlPath = arg("xml");
   const out = arg("out");
   const title = Number(arg("title"));
   if (!xmlPath || !out || !title) {
-    console.error("usage: sect-convert ecfr --xml <ECFR-titleN.xml> --title N --out <corpus root> [--raw <provenance path>] [--effective YYYY-MM-DD]");
+    console.error("usage: sect-convert ecfr --xml <ECFR-titleN.xml> --title N --out <corpus root> [--raw <provenance path>] [--effective YYYY-MM-DD] [--no-dates]");
     process.exit(2);
   }
   const xml = readFileSync(xmlPath, "utf8");
-  const r = convertEcfr(xml, { title, rawPath: arg("raw") ?? xmlPath.replace(/\\/g, "/"), effective: arg("effective") });
+  // Per-section dates from the versioner, cached beside the XML; --no-dates keeps the title date.
+  const cacheDir = dirname(xmlPath);
+  let sectionDates: Record<string, string> | undefined;
+  let titleDate: string | null = readTitleDate(cacheDir);
+  if (!process.argv.includes("--no-dates")) {
+    try {
+      const d = readSectionDates(cacheDir, title) ?? (await fetchSectionDates(title, cacheDir));
+      sectionDates = d.dates;
+      titleDate = d.title_date ?? titleDate;
+    } catch (e) {
+      console.error(`versioner dates unavailable (${e instanceof Error ? e.message : String(e)}); sections take the title date`);
+    }
+  }
+  const r = convertEcfr(xml, { title, rawPath: arg("raw") ?? xmlPath.replace(/\\/g, "/"), effective: arg("effective"), sectionDates, titleDate });
   for (const f of r.files) {
     const p = join(out, f.path);
     mkdirSync(dirname(p), { recursive: true });
@@ -67,7 +81,9 @@ function convert(): void {
     counts[kind] = rows.length;
     writeFileSync(join(workDir, `${kind}.jsonl`), rows.map((c) => JSON.stringify(c)).join("\n") + (rows.length ? "\n" : ""), "utf8");
   }
+  const spread = Object.entries(r.dates.spread).sort().map(([y, n]) => `${y}: ${n}`).join(", ");
   console.log(`converted Title ${title} (${r.titleName}): ${r.sections} sections, ${r.nodes} nodes, effective ${r.effective} -> ${out}/cfr-title-${title}/ (${r.files.length} files; ${counts.effdnot} effdnot, ${counts.crossref} crossref candidates -> ${workDir})`);
+  if (sectionDates) console.log(`section dates from the versioner: ${r.dates.dated} dated, ${r.dates.missing} without a date, ${r.dates.late} after the title date ${titleDate ?? "(unknown)"}; by year ${spread}`);
 }
 
 const cmd = process.argv[2];
@@ -77,7 +93,10 @@ if (cmd === "fetch") {
     process.exit(1);
   });
 } else if (cmd === "ecfr") {
-  convert();
+  convert().catch((e) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
 } else if (cmd === "fr-fetch") {
   // Federal Register rules by document number, or the newest rules touching a CFR title/part,
   // into raw/fr/<year>/<docnum>.xml with a sidecar of the API metadata.

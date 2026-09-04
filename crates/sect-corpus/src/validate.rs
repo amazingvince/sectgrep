@@ -72,6 +72,18 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
             actions.insert(a.action_id.as_str(), (a, d));
         }
     }
+    // A section's Expression is dated when its own text took effect (per-section dates from the
+    // versioner); a link in it is read as of the corpus, so a target is active if it has an
+    // Expression by the citing section's date or by the source's latest date.
+    let mut latest: HashMap<&str, _> = HashMap::new();
+    for d in docs {
+        if let Some(e) = d.front.effective {
+            let v = latest.entry(d.source.as_str()).or_insert(e);
+            if e > *v {
+                *v = e;
+            }
+        }
+    }
     let mut cx = Ctx { docs, sources, by_id, by_expr, actions, issues: Vec::new() };
     let mut seen_expr: HashSet<String> = HashSet::new();
 
@@ -213,9 +225,10 @@ pub fn validate(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -> 
                 continue;
             }
             if let (Some(eff), Some(_)) = (d.front.effective, tgt.front.effective) {
-                let active = cx.by_id.get(l.target.as_str()).map(|v| v.iter().any(|x| x.front.effective.map(|e| e <= eff).unwrap_or(false))).unwrap_or(false);
+                let as_of = latest.get(d.source.as_str()).copied().map(|l| if l > eff { l } else { eff }).unwrap_or(eff);
+                let active = cx.by_id.get(l.target.as_str()).map(|v| v.iter().any(|x| x.front.effective.map(|e| e <= as_of).unwrap_or(false))).unwrap_or(false);
                 if !active {
-                    cx.err(d, format!("link target `{}` is not active at this section's effective date {eff}", l.target));
+                    cx.err(d, format!("link target `{}` is not active at this section's effective date {eff} nor at the source's latest date {as_of}", l.target));
                 }
             }
         }

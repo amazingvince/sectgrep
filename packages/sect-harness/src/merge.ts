@@ -29,6 +29,8 @@ export interface MergeResult {
   commit: string | null;
   indexed: boolean;
   corpus: string;
+  /** Auto-tier sections already in the corpus with the same content (a re-merge after a resolution). */
+  unchanged: number;
 }
 
 /** Ids already in the corpus, from every front matter under it. */
@@ -117,6 +119,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
   }
   const blocked = [...held].filter(([, why]) => why !== "conflict");
   let merged = 0;
+  let unchanged = 0;
   for (const s of report.sections) {
     if (held.has(s.id)) continue;
     const from = path.join(runDir, s.path);
@@ -135,7 +138,12 @@ export function mergeRun(o: MergeOptions): MergeResult {
     mkdirSync(path.dirname(to), { recursive: true });
     const { body, delinked } = delinkHeld(split.body, held);
     if (delinked.length) log(`${s.id}: ${delinked.length} listing entr${delinked.length === 1 ? "y" : "ies"} de-linked (held: ${delinked.join(", ")})`);
-    writeFileSync(to, `---\n${YAML.stringify(front, { lineWidth: 0 }).trimEnd()}\n---\n${body.startsWith("\n") ? "" : "\n"}${body}`, "utf-8");
+    const out = `---\n${YAML.stringify(front, { lineWidth: 0 }).trimEnd()}\n---\n${body.startsWith("\n") ? "" : "\n"}${body}`;
+    if (existsSync(to) && readFileSync(to, "utf-8") === out) {
+      unchanged++;
+      continue;
+    }
+    writeFileSync(to, out, "utf-8");
     merged++;
   }
   let indexed = false;
@@ -164,8 +172,8 @@ export function mergeRun(o: MergeOptions): MergeResult {
     const note = ["", "## Blocked by conflicts", "", "Auto-tier sections held because they link to a held section of this run; they merge when the conflict is resolved.", "", ...blocked.map(([id, why]) => `- ${id}: ${why}`), ""].join("\n");
     if (existsSync(reviewFile) && !readFileSync(reviewFile, "utf-8").includes("## Blocked by conflicts")) appendFileSync(reviewFile, note, "utf-8");
   }
-  appendFileSync(path.join(review, "merges.jsonl"), JSON.stringify({ run_id: runId, source: o.source, merged, held: held.size, blocked: blocked.length, commit, indexed, date: new Date().toISOString() }) + "\n", "utf-8");
-  return { run_id: runId, merged, held: held.size, blocked: blocked.length, commit, indexed, corpus };
+  appendFileSync(path.join(review, "merges.jsonl"), JSON.stringify({ run_id: runId, source: o.source, merged, unchanged, held: held.size, blocked: blocked.length, commit, indexed, date: new Date().toISOString() }) + "\n", "utf-8");
+  return { run_id: runId, merged, held: held.size, blocked: blocked.length, commit, indexed, corpus, unchanged };
 }
 
 /** Rollback: `git revert` of a merge commit, then the index. */

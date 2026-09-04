@@ -28,6 +28,8 @@ export interface RunContext {
   staged: StagedRecord[];
   /** Every id in the corpus and the input with its anchors: a reference to anything else is not real. */
   knownIds?: Map<string, Set<string>>;
+  /** Per input file, the references the harness linked before the agent's turn. */
+  preResolved?: Map<string, XrefResolution[]>;
   log?: (line: string) => void;
 }
 
@@ -72,6 +74,8 @@ export interface XrefResolution {
   anchor?: string | null;
   confidence: number;
   search?: string;
+  /** Linked in code before any model call: an explicit citation with one real target. */
+  deterministic?: boolean;
 }
 
 export interface StagedRecord {
@@ -90,6 +94,8 @@ export interface SubmitSummary {
   sections_added: number;
   sections_changed: number;
   xrefs_resolved: number;
+  /** Of those, linked in code (explicit citations with one real target). */
+  xrefs_deterministic: number;
   low_confidence: Array<{ id: string; text: string; target: string; confidence: number }>;
   flags: Array<{ id: string; flag: string }>;
   validators: ValidateReport["validators"];
@@ -156,7 +162,7 @@ function findBare(body: string, needle: string): number {
  * prefix, defined terms, resolved references as links, the run in provenance. The body is
  * copied, never rewritten, so validator 2 holds by construction.
  */
-export function stageSection(cx: RunContext, p: { input: string; context: string; defines?: string[]; xrefs?: XrefResolution[]; flags?: string[] }): StagedRecord {
+export function stageSection(cx: RunContext, p: { input: string; context: string; defines?: string[]; xrefs?: XrefResolution[]; flags?: string[]; resolutions?: string[] }): StagedRecord {
   const src = safeInput(cx, p.input);
   const raw = readFileSync(src, "utf-8");
   const split = splitFrontMatter(raw);
@@ -189,6 +195,11 @@ export function stageSection(cx: RunContext, p: { input: string; context: string
       xrefs.push({ ...x, anchor: null });
     } else xrefs.push(x);
   }
+  // What was linked in code and what a person decided both stand in provenance.
+  const det = xrefs.filter((x) => x.deterministic).map((x) => x.text);
+  if (det.length) prov.deterministic_xrefs = det;
+  else delete prov.deterministic_xrefs;
+  if (p.resolutions?.length) prov.resolutions = [...new Set(p.resolutions)];
   const { body, applied } = applyXrefs(split.body, xrefs);
   const outRel = stagingPathFor(cx, p.input);
   const outPath = safeStaging(cx, outRel);
@@ -255,6 +266,7 @@ export function submitRun(cx: RunContext, notes?: string): SubmitSummary {
     sections_added: cx.staged.length,
     sections_changed: 0,
     xrefs_resolved: cx.staged.reduce((n, s) => n + s.xrefs.length, 0),
+    xrefs_deterministic: cx.staged.reduce((n, s) => n + s.xrefs.filter((x) => x.deterministic).length, 0),
     low_confidence: cx.staged.flatMap((s) => s.xrefs.filter((x) => x.confidence < 0.8).map((x) => ({ id: s.id, text: x.text, target: `${x.id}${x.anchor ? "#" + x.anchor : ""}`, confidence: x.confidence }))),
     flags: cx.staged.flatMap((s) => s.flags.map((f) => ({ id: s.id, flag: f }))),
     validators: report.validators,
@@ -340,7 +352,10 @@ export function harnessTools(cx: RunContext): AgentTool[] {
       executionMode: "sequential",
       async execute(_id: string, raw: unknown) {
         const params = raw as { input: string; context: string; defines?: string[]; xrefs?: XrefResolution[]; flags?: string[] };
-        const r = stageSection(cx, params);
+        // The harness's own links come first; the agent's stand for the rest.
+        const pre = cx.preResolved?.get(params.input) ?? [];
+        const own = (params.xrefs ?? []).filter((x) => !pre.some((p) => p.text === x.text));
+        const r = stageSection(cx, { ...params, xrefs: [...pre, ...own] });
         cx.log?.(`staged ${r.id} (${r.xrefs.length} xrefs, ${r.defines.length} defines${r.flags.length ? ", flags: " + r.flags.join("; ") : ""})`);
         return { content: [{ type: "text", text: `staged ${r.id} -> staging/${cx.runId}/${r.path}; ${r.xrefs.length} reference(s) linked, ${r.defines.length} term(s)` }], details: r };
       },

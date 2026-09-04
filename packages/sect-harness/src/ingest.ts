@@ -7,7 +7,7 @@
 
 import { Agent } from "@mariozechner/pi-agent-core";
 import type { Usage } from "@mariozechner/pi-ai";
-import { loadDotEnv, providerExtras, splitFrontMatter } from "@sectgrep/convert";
+import { loadDotEnv, splitFrontMatter } from "@sectgrep/convert";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -15,7 +15,10 @@ import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
 import { connectSect } from "./sect-tools.js";
 import { claimRun, finishRun, lockSource, runDir, runIdFor, type RunEntry } from "./staging.js";
-import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary } from "./tools.js";
+import { collectTitles, preResolve } from "./refs.js";
+import { collectIds, guardToolCall, harnessTools, loadRecords, removeStrayFiles, stageSection, stagingPathFor, submitRun, validateRun, type RunContext, type SubmitSummary, type XrefResolution } from "./tools.js";
+
+export { bareReferences } from "./refs.js";
 
 export interface IngestOptions {
   /** WS2's output for one source: a directory in the B.2 layout (`sect-convert ecfr --out`). */
@@ -42,6 +45,8 @@ export interface RunUsage {
   cost: number;
   calls: number;
   document_tokens: number;
+  /** References linked in code, without a model turn. */
+  deterministic: number;
 }
 
 export interface IngestResult {
@@ -86,26 +91,43 @@ export function rawHashOf(inputDir: string): string {
   return h.digest("hex");
 }
 
-/** Bare references in a body that are not yet links: what the agent is asked to resolve. */
-export function bareReferences(body: string): string[] {
-  const seen = new Set<string>();
-  // Headings carry the section's own number, which is not a citation.
-  const plain = body.replace(/^\s*#.*$/gm, " ").replace(/\[([^\]]*)\]\([^)]*\)/g, " ");
-  for (const m of plain.matchAll(/§§?\s*\d{1,4}\.\d{1,4}[a-z]?(?:-\d+)?(?:\([a-z0-9]{1,4}\))*|\bparts?\s+\d{1,4}\b|\d{1,2}\s+CFR\s+(?:parts?\s+)?\d{1,4}(?:\.\d{1,4}[a-z]?)?/gi)) seen.add(m[0].replace(/\s+/g, " ").trim());
-  return [...seen].slice(0, 20);
+const HEAD_CHARS = 12_000;
+
+/** Sentences of a text holding any of the given spans, for the part of a long section the prompt does not show. */
+function sentencesWith(text: string, spans: string[]): string[] {
+  const out: string[] = [];
+  for (const s of spans) {
+    if (!s) continue;
+    const at = text.indexOf(s);
+    if (at < 0) continue;
+    const start = Math.max(text.lastIndexOf(". ", at) + 1, text.lastIndexOf("\n", at) + 1, 0);
+    const ends = [text.indexOf(". ", at + s.length), text.indexOf("\n", at + s.length)].filter((i) => i >= 0).map((i) => i + 1);
+    out.push(text.slice(start, ends.length ? Math.min(...ends) : text.length).trim());
+  }
+  return [...new Set(out)];
 }
 
-function sectionPrompt(rel: string, content: string, refs: string[]): string {
-  const lines = [
-    `Ingest this section from the input file \`${rel}\`. Follow SKILL-ingest.md: read it, resolve its bare references, then call section_stage exactly once with input="${rel}", your context prefix, the terms it defines, the references you resolved, and any flags.`,
-    refs.length ? `Bare references to resolve with sect_search (skip any you cannot resolve to a real id; note them in flags): ${refs.join("; ")}` : "No bare references were detected; still check the body for any and resolve them.",
-    "",
-    "```markdown",
-    content.length > 40_000 ? content.slice(0, 40_000) + "\n[truncated]" : content,
-    "```",
-  ];
+/**
+ * The per-section prompt: what the harness already linked, what remains to resolve, the terms
+ * the converter detected, and the body (its head, with the sentences that matter from the rest).
+ */
+export function sectionPrompt(rel: string, body: string, linked: XrefResolution[], remaining: string[], ws2Defines: string[]): string {
+  const lines = [`Section \`${rel}\`.`];
+  if (linked.length) lines.push(`Already linked by the harness, do not search for them: ${linked.map((x) => `"${x.text}" -> ${x.id}${x.anchor ? "#" + x.anchor : ""}`).join("; ")}.`);
+  lines.push(remaining.length ? `Resolve with sect_search (limit 3, one search each): ${remaining.map((r) => `"${r}"`).join("; ")}.` : "No reference remains to resolve: do not search.");
+  lines.push(ws2Defines.length ? `Terms the converter detected as defined: ${ws2Defines.join("; ")}.` : "The converter detected no defined term.");
+  lines.push(`Then call section_stage once with input="${rel}", context, defines, xrefs (only the ones you resolved) and flags.`, "", "```markdown");
+  const long = body.length > HEAD_CHARS;
+  lines.push(long ? body.slice(0, HEAD_CHARS) + "\n[the rest of the section is not shown]" : body, "```");
+  if (long) {
+    const extra = sentencesWith(body.slice(HEAD_CHARS), [...remaining, ...ws2Defines.map((d) => `*${d}*`), ...ws2Defines]);
+    if (extra.length) lines.push("", "Sentences beyond the shown text that hold a reference or a definition:", ...extra.map((s) => `- ${s.slice(0, 400)}`));
+  }
   return lines.join("\n");
 }
+
+/** The tools a section needs: search and the map for the remaining references, read for a doubt, stage. */
+const PER_SECTION_TOOLS = new Set(["sect_search", "sect_map", "sect_read", "section_stage"]);
 
 function usageOf(agent: Agent): { input: number; output: number; cost: number; calls: number } {
   let input = 0;
@@ -136,12 +158,14 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   if (claim.existing) {
     log(`run ${runId} already submitted (${claim.existing.finished}); nothing to do`);
     const summary = existsSync(path.join(dir, "submit.json")) ? (JSON.parse(readFileSync(path.join(dir, "submit.json"), "utf-8")) as SubmitSummary) : null;
-    const usage = existsSync(path.join(dir, "usage.json")) ? (JSON.parse(readFileSync(path.join(dir, "usage.json"), "utf-8")) as RunUsage) : { input: 0, output: 0, cost: 0, calls: 0, document_tokens: 0 };
+    const usage = existsSync(path.join(dir, "usage.json")) ? (JSON.parse(readFileSync(path.join(dir, "usage.json"), "utf-8")) as RunUsage) : { input: 0, output: 0, cost: 0, calls: 0, document_tokens: 0, deterministic: 0 };
     return { runId, runDir: dir, reused: true, sections: summary?.sections_added ?? 0, staged: summary?.sections_added ?? 0, failed: [], fixRounds: 0, usage, summary, errors: 0, entry: claim.existing };
   }
   const release = lockSource(o.staging, o.source);
   const cx: RunContext = { runId, runDir: dir, source: o.source, inputDir, corpus: path.resolve(o.corpus), rawRoot: path.resolve(o.rawRoot ?? "."), work: path.resolve(o.work ?? "work"), sectBin: o.sectBin ?? process.env.SECT_BIN, staged: [], log };
   cx.knownIds = collectIds([cx.corpus, inputDir]);
+  cx.preResolved = new Map();
+  const known = collectTitles([cx.corpus, inputDir]);
   mkdirSync(path.join(dir, o.source), { recursive: true });
   const files = walkMarkdown(inputDir).map((f) => path.relative(inputDir, f).replace(/\\/g, "/"));
   // Structural nodes (title, chapter, part, subpart) carry a heading and a listing of their
@@ -159,7 +183,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
   if (existsSync(path.join(inputDir, "_source.yaml"))) writeFileSync(path.join(dir, o.source, "_source.yaml"), readFileSync(path.join(inputDir, "_source.yaml")), "utf-8");
   else throw new Error(`${o.input} has no _source.yaml; point --input at the converted source directory`);
   const failed: Array<{ input: string; error: string }> = [];
-  const usage: RunUsage = { input: 0, output: 0, cost: 0, calls: 0, document_tokens: 0 };
+  const usage: RunUsage = { input: 0, output: 0, cost: 0, calls: 0, document_tokens: 0, deterministic: 0 };
   for (const rel of sections) {
     const split = splitFrontMatter(readFileSync(path.join(inputDir, rel), "utf-8"));
     usage.document_tokens += tokenCount(split?.body ?? "");
@@ -179,8 +203,11 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
       for (const rel of sections) {
         try {
           const split = splitFrontMatter(readFileSync(path.join(inputDir, rel), "utf-8"));
-          const front = (YAML.parse(split?.front ?? "") ?? {}) as { context?: string; defines?: string[] };
-          stageSection(cx, { input: rel, context: String(front.context ?? ""), defines: front.defines ?? [], xrefs: [], flags: ["dry-run: WS2 context kept, no references resolved"] });
+          const front = (YAML.parse(split?.front ?? "") ?? {}) as { id?: string; context?: string; defines?: string[] };
+          // Explicit citations are linked in code even without a model.
+          const { resolved } = preResolve(split?.body ?? "", String(front.id ?? ""), known, cx.knownIds);
+          usage.deterministic += resolved.length;
+          stageSection(cx, { input: rel, context: String(front.context ?? ""), defines: front.defines ?? [], xrefs: resolved, flags: ["dry-run: WS2 context kept, only explicit citations linked"] });
         } catch (e) {
           failed.push({ input: rel, error: e instanceof Error ? e.message : String(e) });
         }
@@ -189,17 +216,24 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
       const choice = o.model ?? modelFromEnv();
       if (!choice.model || !choice.config.apiKey) throw new Error(`no model available: provider ${choice.config.provider}, model ${choice.config.model}; copy .env.example to .env, or pass --dry-run`);
       const skill = readFileSync(o.skillPath ?? path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "../../../docs/SKILL-ingest.md"), "utf-8");
-      const sect = await connectSect({ bin: cx.sectBin ?? "sect", corpus: cx.corpus });
+      // Compact tool schemas and trimmed results: the agent carries them on every call.
+      const sect = await connectSect({ bin: cx.sectBin ?? "sect", corpus: cx.corpus, compact: true });
       try {
-        const tools = [...sect.tools, ...harnessTools(cx)];
+        const tools = [...sect.tools, ...harnessTools(cx)].filter((t) => PER_SECTION_TOOLS.has(t.name));
         const runOne = async (rel: string, extra?: string) => {
           const content = readFileSync(path.join(inputDir, rel), "utf-8");
-          const body = splitFrontMatter(content)?.body ?? content;
+          const split = splitFrontMatter(content);
+          const body = split?.body ?? content;
+          const front = (YAML.parse(split?.front ?? "") ?? {}) as { id?: string; defines?: string[] };
+          // Explicit citations with one real target are linked here, before the agent's turn.
+          const { resolved, remaining } = preResolve(body, String(front.id ?? ""), known, cx.knownIds);
+          cx.preResolved!.set(rel, resolved);
+          if (!extra) usage.deterministic += resolved.length;
           const agent = new Agent({
             initialState: { systemPrompt: skill, model: choice.model!, tools },
             beforeToolCall: async ({ toolCall }) => guardToolCall(cx, toolCall as { name: string; arguments: Record<string, unknown> }),
           });
-          const prompt = sectionPrompt(rel, content, bareReferences(body)) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
+          const prompt = sectionPrompt(rel, body, resolved, remaining, front.defines ?? []) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
           await agent.prompt(prompt);
           await agent.waitForIdle();
           const u = usageOf(agent);
@@ -258,6 +292,8 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
         await sect.close();
       }
     }
+    // Counted from what stands in staging, not per attempt (a retried section would count twice).
+    usage.deterministic = cx.staged.reduce((n, s) => n + s.xrefs.filter((x) => x.deterministic).length, 0);
     writeFileSync(path.join(dir, "usage.json"), JSON.stringify(usage, null, 2) + "\n", "utf-8");
     let summary: SubmitSummary | null = null;
     let errors = 0;

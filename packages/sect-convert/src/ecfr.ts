@@ -15,6 +15,10 @@ export interface ConvertOptions {
   rawPath: string;
   /** Effective date (YYYY-MM-DD). Defaults to the AMDDATE in the XML. */
   effective?: string;
+  /** Per-section dates from the versioner (identifier "21.8" to YYYY-MM-DD); a section without one takes the title date. */
+  sectionDates?: Record<string, string>;
+  /** The title's up-to-date-as-of date: no section may be dated after it. */
+  titleDate?: string | null;
   ingestRun?: string;
 }
 
@@ -266,7 +270,18 @@ export interface Candidate {
   dates: string[];
 }
 
-export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string; candidates: Candidate[]; records: NodeRec[] } {
+export interface DateStats {
+  /** Sections dated from the versioner. */
+  dated: number;
+  /** Sections the versioner had no date for (the title date stands). */
+  missing: number;
+  /** Sections whose versioner date was after the title date (the title date stands). */
+  late: number;
+  /** Sections per year of their effective date. */
+  spread: Record<string, number>;
+}
+
+export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string; dates: DateStats; candidates: Candidate[]; records: NodeRec[] } {
   const doc = parseXml(xml);
   const root = doc.documentElement;
   // The first AMDDATE: under ECFRBRWS in bulk XML, directly under ECFR in versioner XML.
@@ -401,9 +416,39 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
   const childrenOf = new Map<string, NodeRec[]>();
   for (const n of nodes) if (n.parent) (childrenOf.get(n.parent) ?? childrenOf.set(n.parent, []).get(n.parent)!).push(n);
 
+  // A section's Expression is dated when its current text took effect; the title date bounds it.
+  const dates: DateStats = { dated: 0, missing: 0, late: 0, spread: {} };
+  const sectionDate = (n: NodeRec): string => {
+    if (!opts.sectionDates) return effective;
+    const d = opts.sectionDates[n.id.slice(`CFR:${t}-`.length)];
+    if (!d) dates.missing++;
+    else if (opts.titleDate && d > opts.titleDate) dates.late++;
+    else {
+      dates.dated++;
+      return d;
+    }
+    return effective;
+  };
+  // A structural node's listing is in force from its earliest section, so an as-of query at a
+  // section's date still finds the tree above it.
+  const dateOfNode = new Map<string, string>();
+  const effectiveOf = (n: NodeRec): string => {
+    const memo = dateOfNode.get(n.id);
+    if (memo) return memo;
+    let d: string;
+    if (n.level === "section") d = sectionDate(n);
+    else {
+      const kids = (childrenOf.get(n.id) ?? []).map(effectiveOf);
+      d = kids.length ? kids.reduce((a, b) => (a < b ? a : b)) : effective;
+    }
+    dateOfNode.set(n.id, d);
+    return d;
+  };
   const files: OutFile[] = [];
   for (const n of nodes) {
     const kids = childrenOf.get(n.id) ?? [];
+    const nodeEffective = effectiveOf(n);
+    if (n.level === "section") dates.spread[nodeEffective.slice(0, 4)] = (dates.spread[nodeEffective.slice(0, 4)] ?? 0) + 1;
     const heading = n.level === "section" ? `# ${n.label} ${n.title}` : `# ${n.label} - ${n.title}`;
     const toc = kids.map((k) => `- [${k.label} ${k.title}](${k.id})`).join("\n");
     // A structural node's own text (an editorial note, a reserved marker) comes before its listing.
@@ -417,7 +462,7 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
       `level: ${q(n.level)}`,
       `parent: ${q(n.parent)}`,
       `order: ${n.order}`,
-      `effective: ${effective}`,
+      `effective: ${nodeEffective}`,
       "supersedes: null",
       "superseded_by: null",
       "amended_by: []",
@@ -462,5 +507,5 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     "",
   ].join("\n");
   files.push({ path: `cfr-title-${t}/_source.yaml`, text: sourceYaml });
-  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName, candidates, records: nodes };
+  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName, dates, candidates, records: nodes };
 }

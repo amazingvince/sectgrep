@@ -11,7 +11,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import path from "node:path";
 import YAML from "yaml";
 import { evidenceChecks, type EvidenceIssue } from "./evidence.js";
-import { bareReferences } from "./ingest.js";
+import { bareReferences, candidatesFor, collectTitles, type Known } from "./refs.js";
 import { verifierModelFromEnv, type ModelChoice } from "./model.js";
 import { loadRecords, type StagedRecord, type XrefResolution } from "./tools.js";
 
@@ -35,6 +35,21 @@ export interface Judgment {
   ingest_confidence?: number;
   ingest_search?: string;
   verifier_reason?: string;
+  /** A person decided it (`ingest`, `verifier`, `none`, or an id); the two runs no longer matter. */
+  resolved?: string;
+  resolved_value?: string;
+}
+
+export interface Resolution {
+  id: string;
+  field: Judgment["field"];
+  text?: string;
+  ingest: string;
+  verifier: string;
+  pick: string;
+  value: string;
+  why?: string;
+  date: string;
 }
 
 export interface SectionVerdict {
@@ -54,6 +69,8 @@ export interface VerifyReport {
   counts: { sections: number; auto: number; conflict: number; judgments: number; deterministic: number; agreements: number; evidence_fails: number };
   agreement_rate: number;
   usage: { input: number; output: number; cost: number; calls: number };
+  /** Decisions people made on conflicts of this run, in order. */
+  resolutions?: Resolution[];
 }
 
 export type SamplingLevel = "normal" | "tightened" | "reduced";
@@ -76,69 +93,7 @@ export interface VerifyOptions {
   log?: (line: string) => void;
 }
 
-interface Known {
-  ids: Map<string, string>; // id -> title
-}
-
-/** Ids and titles under the given roots. */
-export function collectTitles(roots: string[]): Known {
-  const ids = new Map<string, string>();
-  const walk = (d: string) => {
-    if (!existsSync(d)) return;
-    for (const n of readdirSync(d)) {
-      if (n.startsWith(".")) continue;
-      const p = path.join(d, n);
-      if (statSync(p).isDirectory()) walk(p);
-      else if (n.endsWith(".md")) {
-        const head = readFileSync(p, "utf-8").slice(0, 600);
-        const id = /^id:\s*"?([^"\n]+?)"?\s*$/m.exec(head)?.[1]?.trim();
-        const title = /^title:\s*"?([^"\n]*?)"?\s*$/m.exec(head)?.[1]?.trim() ?? "";
-        if (id) ids.set(id, title);
-      }
-    }
-  };
-  for (const r of roots) walk(r);
-  return { ids };
-}
-
-/**
- * Candidate ids for a bare reference, from the corpus and the input only: every known id whose
- * section number matches (any title), a part id for "part N", and the section itself with the
- * paragraph anchor for "paragraph (x) of this section".
- */
-export function candidatesFor(text: string, selfId: string, known: Known): Array<{ id: string; title: string; anchor?: string }> {
-  const out: Array<{ id: string; title: string; anchor?: string }> = [];
-  const homeTitle = /^CFR:(\d+)-/.exec(selfId)?.[1];
-  const sec = /(?:§§?|\bsections?)\s*(\d{1,4}\.\d{1,4}[a-z]?(?:-\d+)?)((?:\([a-z0-9]{1,4}\))*)/i.exec(text) ?? /(\d{1,2})\s+CFR\s+(?:parts?\s+)?(\d{1,4}\.\d{1,4}[a-z]?)/i.exec(text);
-  if (sec) {
-    const number = sec[0].match(/\d{1,4}\.\d{1,4}[a-z]?(?:-\d+)?/)?.[0] ?? "";
-    const titleWanted = /(\d{1,2})\s+CFR/i.exec(text)?.[1];
-    const anchor = (sec[2] ?? "").replace(/\s+/g, "").split(/[()]+/).filter(Boolean).join("-") || undefined;
-    for (const [id, title] of known.ids) {
-      const m = /^CFR:(\d+)-(.+)$/.exec(id);
-      if (!m || m[2] !== number) continue;
-      if (titleWanted && m[1] !== titleWanted) continue;
-      out.push({ id, title, anchor });
-    }
-    out.sort((a, b) => (a.id.startsWith(`CFR:${homeTitle}-`) ? -1 : 0) - (b.id.startsWith(`CFR:${homeTitle}-`) ? -1 : 0));
-  }
-  const part = /\bparts?\s+(\d{1,4})\b/i.exec(text);
-  if (part && !sec) {
-    for (const [id, title] of known.ids) {
-      const m = /^CFR:(\d+)-(\d+)$/.exec(id);
-      if (m && m[2] === part[1] && (!homeTitle || m[1] === homeTitle)) out.push({ id, title });
-    }
-  }
-  if (/paragraphs?\s*\(/i.test(text) && /of this section/i.test(text)) {
-    const anchor = (text.match(/\(([a-z0-9]{1,4})\)/gi) ?? []).map((p) => p.replace(/[()]/g, "")).join("-");
-    out.push({ id: selfId, title: known.ids.get(selfId) ?? "", anchor });
-  }
-  // "this part", "this regulation", "these regulations": the section's own part; "this section": itself.
-  const partOfSelf = /^(CFR:\d+-\d+)/.exec(selfId)?.[1];
-  if (/\bthis (part|regulation)\b|\bthese regulations\b/i.test(text) && partOfSelf && known.ids.has(partOfSelf)) out.push({ id: partOfSelf, title: known.ids.get(partOfSelf) ?? "" });
-  if (/^this section$/i.test(text.trim())) out.push({ id: selfId, title: known.ids.get(selfId) ?? "" });
-  return out.slice(0, 6);
-}
+export { candidatesFor, collectTitles, type Known };
 
 export const VERIFIER_SYSTEM = `You are the Verifier of sectgrep (spec D.3). You check one section of a regulatory corpus, blind: you do not see the ingest agent's answers, and you decide every judgment field yourself from the section and the candidates given. You never invent an id: an id you give must be one of the candidates listed for that reference, or null. Answer with one JSON object and nothing else:
 {"xrefs":[{"text":"<the reference exactly as listed>","id":"<candidate id or null>","anchor":"<paragraph anchor or null>","confidence":0.0-1.0,"reason":"<one short sentence>"}],"defines":["<term the section defines, as written, without emphasis marks>"],"overrides":["<ids, only for an overlay that replaces sections>"],"narrows":[{"id":"<id>","anchor":"<anchor or null>"}],"action_targets":["<ids, only for a notice>"],"notes":"<anything a person should see, or empty>"}
@@ -181,7 +136,18 @@ const idOf = (x: { id: string; anchor?: string | null }) => `${x.id}${x.anchor ?
 
 /** Whether an ingest reference was deterministic: an explicit citation with exactly one candidate, which it chose. */
 export function isDeterministic(x: XrefResolution, candidates: Array<{ id: string; anchor?: string }>): boolean {
+  if (x.deterministic) return true;
   return /§§?\s*\d/.test(x.text) && candidates.length === 1 && candidates[0].id === x.id;
+}
+
+/** Counts and the agreement rate over a run's verdicts. */
+export function summarize(verdicts: SectionVerdict[], evidenceFails: number): { counts: VerifyReport["counts"]; agreement_rate: number } {
+  const judgments = verdicts.flatMap((v) => v.judgments);
+  const nonDet = judgments.filter((j) => !j.deterministic);
+  return {
+    counts: { sections: verdicts.length, auto: verdicts.filter((v) => v.tier === "auto").length, conflict: verdicts.filter((v) => v.tier === "conflict").length, judgments: nonDet.length, deterministic: judgments.length - nonDet.length, agreements: nonDet.filter((j) => j.agree).length, evidence_fails: evidenceFails },
+    agreement_rate: nonDet.length ? nonDet.filter((j) => j.agree).length / nonDet.length : 1,
+  };
 }
 
 /** Field-by-field comparison of the ingest record and the verifier's answer. */
@@ -212,9 +178,10 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
     const vs = v ? split(v) : null;
     if (vs?.id && v && v.confidence >= 0.8) out.push({ field: "xref", text: r, ingest: "(left bare)", verifier: idOf({ id: vs.id, anchor: vs.anchor }), agree: false, verifier_reason: v.reason });
   }
+  // Compared without case or emphasis; shown as written, so a resolution keeps the original form.
   const a = new Set(record.defines.map(norm));
   const b = new Set(answer.defines.map(norm));
-  if (a.size || b.size) out.push({ field: "defines", ingest: [...a].join(", ") || "(none)", verifier: [...b].join(", ") || "(none)", agree: a.size === b.size && [...a].every((t) => b.has(t)) });
+  if (a.size || b.size) out.push({ field: "defines", ingest: record.defines.join(", ") || "(none)", verifier: answer.defines.map((d) => d.replace(/[*_`]/g, "").trim()).join(", ") || "(none)", agree: a.size === b.size && [...a].every((t) => b.has(t)) });
   const ov = ((front.overrides ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? String((t as { id?: unknown }).id) : String(t)));
   if (ov.length || answer.overrides?.length) out.push({ field: "overrides", ingest: ov.join(", ") || "(none)", verifier: (answer.overrides ?? []).join(", ") || "(none)", agree: ov.length === (answer.overrides ?? []).length && ov.every((t) => answer.overrides?.includes(t)) });
   const na = ((front.narrows ?? []) as unknown[]).map((t) => (t && typeof t === "object" ? idOf(t as { id: string; anchor?: string }) : String(t)));
@@ -321,15 +288,12 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   };
   await Promise.all(Array.from({ length: Math.max(1, o.concurrency ?? 8) }, worker));
   verdicts.sort((a, b) => a.path.localeCompare(b.path));
-  const judgments = verdicts.flatMap((v) => v.judgments);
-  const nonDet = judgments.filter((j) => !j.deterministic);
   const report: VerifyReport = {
     run_id: runId,
     verifier: o.verify ? { provider: "injected", model: "injected" } : { provider: choice!.config.provider, model: choice!.config.model },
     level,
     sections: verdicts,
-    counts: { sections: verdicts.length, auto: verdicts.filter((v) => v.tier === "auto").length, conflict: verdicts.filter((v) => v.tier === "conflict").length, judgments: nonDet.length, deterministic: judgments.length - nonDet.length, agreements: nonDet.filter((j) => j.agree).length, evidence_fails: evidence.issues.filter((i) => i.level === "fail").length },
-    agreement_rate: nonDet.length ? nonDet.filter((j) => j.agree).length / nonDet.length : 1,
+    ...summarize(verdicts, evidence.issues.filter((i) => i.level === "fail").length),
     usage,
   };
   writeFileSync(path.join(runDir, "verify.json"), JSON.stringify(report, null, 2) + "\n", "utf-8");
@@ -350,7 +314,12 @@ export function reviewMarkdown(r: VerifyReport): string {
       md.push(`- **${j.field}**${j.text ? ` "${j.text}"` : ""}: ingest says \`${j.ingest}\`${j.ingest_confidence !== undefined ? ` (confidence ${j.ingest_confidence})` : ""}${j.ingest_search ? `, search: ${j.ingest_search}` : ""}; verifier says \`${j.verifier}\`${j.verifier_reason ? `, because: ${j.verifier_reason}` : ""}.`);
     }
     for (const e of s.evidence.filter((x) => x.level === "fail")) md.push(`- **evidence ${e.field}**: ${e.message}`);
-    md.push("", "Resolution: [ ] ingest  [ ] verifier  [ ] neither (write the right value): ____________", "");
+    md.push("", `Resolution: \`sect-harness resolve --run ${r.run_id} --id ${s.id} --pick ingest|verifier|none|<id> [--text "<reference>"] [--why "<one sentence>"]\``, "");
+  }
+  if (r.resolutions?.length) {
+    md.push("## Resolved", "", "Decisions people made; each was applied to staging, re-checked, and merged when nothing else held the section.", "");
+    for (const x of r.resolutions) md.push(`- ${x.date} ${x.id}${x.text ? ` "${x.text}"` : " defines"}: ingest \`${x.ingest}\`, verifier \`${x.verifier}\`, chosen \`${x.value}\` (${x.pick})${x.why ? `: ${x.why}` : ""}`);
+    md.push("");
   }
   return md.join("\n") + "\n";
 }

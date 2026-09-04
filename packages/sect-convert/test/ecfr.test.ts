@@ -100,3 +100,33 @@ describe("eCFR converter", () => {
     }
   });
 });
+
+describe("per-section effective dates from the versioner (G-N2)", () => {
+  it("dates each section from the versioner, bounded by the title date, and reports the spread", async () => {
+    const { sectionDatesFrom } = await import("../src/versioner.js");
+    const dates = sectionDatesFrom({ content_versions: [
+      { identifier: "1.2", part: "1", date: "2010-05-05", type: "section" },
+      { identifier: "1.2", part: "1", date: "2003-01-01", type: "section" },
+      { identifier: "1.2", part: "1", date: "2030-01-01", type: "section", removed: true },
+      { identifier: "2.1", part: "2", date: "2099-01-01", type: "section" },
+      { identifier: "Appendix A to Part 1", part: "1", date: "2011-01-01", type: "appendix" },
+    ] });
+    expect(dates).toEqual({ "1.2": "2010-05-05", "2.1": "2099-01-01" });
+    const r = convertEcfr(XML, { title: 1, rawPath: "raw/x.xml", sectionDates: dates, titleDate: "2024-01-01" });
+    const eff = (name: string) => /^effective:\s*(\S+)/m.exec(r.files.find((f) => f.path.endsWith(name))!.text)![1];
+    expect(eff("1-1.2.md")).toBe("2010-05-05");
+    // No versioner date, and a date after the title date: the title date stands.
+    expect(eff("1-1.1.md")).toBe(r.effective);
+    expect(eff("1-2.1.md")).toBe(r.effective);
+    expect(r.dates).toMatchObject({ dated: 1, missing: 1, late: 1 });
+    // The part and the title above § 1.2 are in force from its date; part 2 keeps the title date.
+    const nodeEff = (id: string) => /^effective:\s*(\S+)/m.exec(r.files.find((f) => new RegExp(`^id:\\s*"?${id.replace(/[.]/g, "\\.")}"?\\s*$`, "m").test(f.text))!.text)![1];
+    expect(nodeEff("CFR:1-1")).toBe("2010-05-05");
+    expect(nodeEff("CFR:1")).toBe("2010-05-05");
+    expect(nodeEff("CFR:1-2")).toBe(r.effective);
+    for (const f of r.files.filter((f) => /^level:\s*section/m.test(f.text))) expect(eff(f.path) <= "2024-01-01").toBe(true);
+    expect(Object.values(r.dates.spread).reduce((a, b) => a + b, 0)).toBe(r.sections);
+    // Without dates every section carries the title date, as before.
+    expect(convertEcfr(XML, { title: 1, rawPath: "raw/x.xml" }).dates).toEqual({ dated: 0, missing: 0, late: 0, spread: { [r.effective.slice(0, 4)]: r.sections } });
+  });
+});

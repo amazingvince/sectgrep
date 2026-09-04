@@ -7,3 +7,5 @@ export * from "./evidence.js";
 export * from "./verifier.js";
 export * from "./sampling.js";
 export * from "./merge.js";
+export * from "./refs.js";
+export * from "./resolve.js";

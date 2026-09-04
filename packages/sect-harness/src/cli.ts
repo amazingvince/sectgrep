@@ -4,10 +4,11 @@
 // One ingest run over WS2's output for one source, into staging/<run_id>/ (spec D.2).
 import { ingest, resubmit } from "./ingest.js";
 import { mergeRun, rollback } from "./merge.js";
+import { resolveConflict } from "./resolve.js";
 import { drawSample, grade, readState, sampleMarkdown, writeState } from "./sampling.js";
 import { verifyRun, type VerifyReport } from "./verifier.js";
 import { loadDotEnv } from "@sectgrep/convert";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 // The nearest .env supplies the keys and model choices for every command; the shell wins over it.
@@ -45,7 +46,7 @@ if (cmd === "verify") {
   }
   try {
     const r = mergeRun({ runDir: arg("run")!, source: arg("source")!, corpus: arg("corpus")!, review, sectBin: arg("sect"), commit: process.argv.includes("--commit") });
-    console.log(`${r.run_id}: ${r.merged} section(s) merged into ${r.corpus}, ${r.held} held for review (${r.blocked} blocked by links to held sections); index ${r.indexed ? "refreshed" : "not refreshed"}; ${r.commit ? `commit ${r.commit.slice(0, 10)}` : "not committed (pass --commit)"}`);
+    console.log(`${r.run_id}: ${r.merged} section(s) merged into ${r.corpus} (${r.unchanged} already there unchanged), ${r.held} held for review (${r.blocked} blocked by links to held sections); index ${r.indexed ? "refreshed" : "not refreshed"}; ${r.commit ? `commit ${r.commit.slice(0, 10)}` : "not committed (pass --commit)"}`);
   } catch (e) {
     console.error(e instanceof Error ? e.message : String(e));
     process.exit(1);
@@ -86,6 +87,23 @@ if (cmd === "verify") {
   }
   const r = grade(path.resolve(arg("run")!), review, arg("id")!, process.argv.includes("--ok"), arg("note"));
   console.log(`${arg("id")}: ${process.argv.includes("--ok") ? "ok" : "error"}; lot ${r.lot?.graded}/${r.lot?.n} graded, ${r.lot?.errors} error(s), ${r.lot?.accepted === null ? "open" : r.lot?.accepted ? "accepted" : "rejected"}; inspection level for ${r.sample.source} is now ${r.level}`);
+} else if (cmd === "resolve") {
+  // sect-harness resolve --run <run_id|DIR> --id ID --pick ingest|verifier|none|<id> --input DIR --source NAME --corpus ROOT
+  //   [--text "<reference>"] [--why "<sentence>"] [--staging DIR] [--review DIR] [--sect BIN] [--skill PATH] [--commit] [--no-merge]
+  if (!arg("run") || !arg("id") || !arg("pick") || !arg("input") || !arg("source") || !arg("corpus")) {
+    console.error('usage: sect-harness resolve --run <run_id> --id <section id> --pick ingest|verifier|none|<id> --input DIR --source NAME --corpus corpus [--text "<reference>"] [--why "<sentence>"] [--staging staging] [--review review] [--sect BIN] [--skill docs/SKILL-ingest.md] [--commit] [--no-merge]');
+    process.exit(2);
+  }
+  const given = arg("run")!;
+  const runDir = existsSync(given) ? given : path.join(arg("staging", "staging")!, given);
+  try {
+    const r = resolveConflict({ runDir, id: arg("id")!, pick: arg("pick")!, text: arg("text"), why: arg("why"), input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, review, sectBin: arg("sect"), rawRoot: arg("raw-root"), work: arg("work"), skillPath: arg("skill"), commit: process.argv.includes("--commit"), noMerge: process.argv.includes("--no-merge") });
+    console.log(`${r.id}: ${r.applied.length} decision(s) applied, tier ${r.tier}${r.remaining ? ` (${r.remaining} still open)` : ""}${r.merge ? `; merged ${r.merge.merged} section(s) (${r.merge.unchanged} unchanged, ${r.merge.held} held)${r.merge.commit ? `, commit ${r.merge.commit.slice(0, 10)}` : ""}` : ""}`);
+    process.exit(0);
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
 } else if (cmd === "resubmit") {
   // sect-harness resubmit --run DIR --input DIR --source NAME --corpus ROOT [--staging DIR] [--sect BIN]
   if (!arg("run") || !arg("input") || !arg("source") || !arg("corpus")) {

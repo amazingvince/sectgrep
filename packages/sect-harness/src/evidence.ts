@@ -150,15 +150,24 @@ export function evidenceChecks(o: EvidenceOptions): EvidenceReport {
       } else issue(d, "amended_by", "warn", "amended_by without supersedes: a first Expression cannot be an amendment");
     }
   }
-  // Prose references the ingest agent linked.
+  // Prose references the ingest agent linked. With per-section dates (G-N2) a section whose text
+  // dates from 2012 may cite one amended in 2024: the link is read as of the source's latest
+  // Expression, so a target active at either date is active.
   const stagingByInput = new Map(staging.docs.map((d) => [d.rel.replace(/\\/g, "/"), d]));
+  const latestBySource = new Map<string, string>();
+  for (const d of all) {
+    const k = d.source?.name ?? "";
+    const dt = dateOf(d.front) ?? "";
+    if (dt > (latestBySource.get(k) ?? "")) latestBySource.set(k, dt);
+  }
   for (const r of o.records ?? []) {
     const d = stagingByInput.get(r.path.replace(/\\/g, "/"));
     if (!d) continue;
     const date = dateOf(d.front);
+    const asOf = latestBySource.get(d.source?.name ?? "") ?? null;
     for (const x of r.xrefs) {
       checked.xrefs++;
-      const target = expressionAt(byId, x.id, date);
+      const target = expressionAt(byId, x.id, date) ?? (asOf && (!date || asOf > date) ? expressionAt(byId, x.id, asOf) : null);
       if (!target) {
         if (byId.has(x.id)) issue(d, "xref", "fail", `"${x.text}" -> ${x.id} is not active at ${date}`);
         else issue(d, "xref", "warn", `"${x.text}" -> ${x.id} is not in the corpus or the staging`);

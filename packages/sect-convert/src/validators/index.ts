@@ -395,6 +395,26 @@ export function activeAt(cx: Context, id: string, date: string | null): boolean 
   });
 }
 
+const latestBySource = new WeakMap<Context, Map<string, string>>();
+
+/** The latest Expression date of a source across the staging and the corpus, at least `floor`. */
+export function latestOf(cx: Context, source: string | undefined, floor: string): string {
+  let m = latestBySource.get(cx);
+  if (!m) {
+    m = new Map();
+    for (const docs of cx.byId.values()) {
+      for (const d of docs) {
+        const k = d.source?.name ?? "";
+        const dt = dateOf(d.front) ?? "";
+        if (dt > (m.get(k) ?? "")) m.set(k, dt);
+      }
+    }
+    latestBySource.set(cx, m);
+  }
+  const l = m.get(source ?? "") ?? "";
+  return l > floor ? l : floor;
+}
+
 export function xrefPrecision(doc: Doc, cx: Context): Issue[] {
   const out: Issue[] = [];
   const notice = doc.front.kind === "notice" || doc.source?.kind === "notice";
@@ -412,7 +432,9 @@ export function xrefPrecision(doc: Doc, cx: Context): Issue[] {
       continue;
     }
     if (ref.where === "superseded_by" || ref.where === "supersedes") continue;
-    if (!notice && date && !activeAt(cx, ref.id, date)) out.push(issue(4, "error", doc, `${ref.where}: link target ${ref.id} is not active at ${date}`));
+    // A section is read as of its source's latest Expression (per-section dates, spec-changes #32):
+    // a 2012 section may cite one amended in 2024.
+    if (!notice && date && !activeAt(cx, ref.id, date) && !activeAt(cx, ref.id, latestOf(cx, doc.source?.name, date))) out.push(issue(4, "error", doc, `${ref.where}: link target ${ref.id} is not active at ${date} nor at the source's latest date ${latestOf(cx, doc.source?.name, date)}`));
     if (ref.anchor) {
       const current = [...targets].sort((a, b) => (dateOf(b.front) ?? "").localeCompare(dateOf(a.front) ?? ""))[0];
       // Paragraph anchors plus one slug per defined term, as the Rust side derives them (spec B.2).
