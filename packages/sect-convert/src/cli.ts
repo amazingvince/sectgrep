@@ -216,7 +216,12 @@ if (cmd === "fetch") {
   const policy = nativeDpi ? { ...preset.scale, nativeDpi: Number(nativeDpi) } : preset.scale;
   const longSide = arg("long-side");
   if (longSide) policy.targetLongSide = Number(longSide);
-  const t = new OpenAICompatibleTranscriber({ baseUrl: arg("server", "http://127.0.0.1:8000/v1")!, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey: process.env.SECT_OCR_API_KEY });
+  // --server defaults to the local server for a local preset and to the hosted gateway otherwise;
+  // the hosted key and retention preference come from the environment.
+  const local = preset.vllmArgs.length > 0 || preset.license === "unknown";
+  const server = arg("server") ?? (local ? "http://127.0.0.1:8000/v1" : hosted.baseUrl);
+  const isHosted = server === hosted.baseUrl;
+  const t = new OpenAICompatibleTranscriber({ baseUrl: server, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey: process.env.SECT_OCR_API_KEY ?? (isHosted ? hosted.apiKey : undefined), extraBody: { ...(preset.requestExtras ?? {}), ...(isHosted ? providerExtras(hosted) : {}) }, kind: isHosted ? "api" : "local" });
   (async () => {
     // --png transcribes a page image rendered elsewhere (no poppler needed on this machine).
     const pngPath = arg("png");

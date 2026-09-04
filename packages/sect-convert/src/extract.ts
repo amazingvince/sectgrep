@@ -12,6 +12,7 @@ import type { Element, ExtractReport, PageInfo } from "./elements/types.js";
 import { cached, renderPageImages, sha256, workDir, writeElements, writeJsonl } from "./elements/work.js";
 import { transcribeDual } from "./ocr/dual.js";
 import { presetFor } from "./ocr/presets.js";
+import { modelConfig, providerExtras } from "./env.js";
 import { renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber, type Transcriber } from "./ocr/transcriber.js";
 import { runPasses, type SourcePattern } from "./passes.js";
@@ -161,9 +162,16 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
 }
 
 function transcribers(o: ExtractOptions): { primary: Transcriber; secondary: Transcriber } {
-  const make = (model: string, baseUrl: string) => {
+  const make = (model: string, baseUrl: string, apiKey?: string, extraBody?: Record<string, unknown>) => {
     const preset = presetFor(model);
-    return new OpenAICompatibleTranscriber({ baseUrl, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey: o.apiKey, extraBody: o.extraBody, kind: /^https?:\/\/(127\.|localhost|0\.0\.0\.0|\[::1\])/.test(baseUrl) ? "local" : "api" });
+    return new OpenAICompatibleTranscriber({ baseUrl, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey, extraBody: { ...(preset.requestExtras ?? {}), ...(extraBody ?? {}) }, kind: /^https?:\/\/(127\.|localhost|0\.0\.0\.0|\[::1\])/.test(baseUrl) ? "local" : "api" });
   };
-  return { primary: make(o.ocrPrimary ?? "allenai/olmOCR-2-7B-1025", o.ocrServer!), secondary: make(o.ocrSecondary ?? "zai-org/GLM-OCR", o.ocrSecondaryServer ?? o.ocrServer!) };
+  // The second reader defaults to the hosted model (GLM 5.3 flash through the gateway, decision
+  // #44) whenever a key is configured; without one it is GLM-OCR on the local server.
+  const hosted = modelConfig();
+  const useHosted = !o.ocrSecondary && !o.ocrSecondaryServer && !!hosted.apiKey;
+  const secondary = useHosted
+    ? make(hosted.model, hosted.baseUrl, o.apiKey ?? hosted.apiKey, o.extraBody ?? providerExtras(hosted))
+    : make(o.ocrSecondary ?? "zai-org/GLM-OCR", o.ocrSecondaryServer ?? o.ocrServer!, o.apiKey, o.extraBody);
+  return { primary: make(o.ocrPrimary ?? "allenai/olmOCR-2-7B-1025", o.ocrServer!, o.apiKey, o.extraBody), secondary };
 }

@@ -21,6 +21,10 @@ export interface ModelPreset {
   maxTokens: number;
   /** Extra `vllm serve` flags the model needs. */
   vllmArgs: string[];
+  /** Other names the same model is reached by (a gateway alias). */
+  aliases?: string[];
+  /** Fields merged into every chat request for this model (a reasoning switch, say). */
+  requestExtras?: Record<string, unknown>;
 }
 
 const OLMOCR_PROMPT = "Attached is one page of a document that you must process. Just return the plain text representation of this document as if you were reading it naturally. Convert equations to LateX and tables to markdown.\nReturn your output as markdown, with a front matter section on top specifying values for the primary_language, is_rotation_valid, rotation_correction, is_table, and is_diagram parameters.";
@@ -42,6 +46,26 @@ export const PRESETS: Record<string, ModelPreset> = {
     maxTokens: 8192,
     vllmArgs: ["--allowed-local-media-path", "/", "--max-model-len", "16384"],
   },
+  // The hosted general model as the second reader of a scanned page (decision #44): a different
+  // family from the local olmOCR-2 primary, reached through the gateway with the ingest key.
+  "glm-5.3-flash": {
+    model: "z-ai/glm-5.3-flash",
+    license: "MIT",
+    prompts: {
+      page: "Transcribe this page exactly as printed, in natural reading order, as Markdown. Keep every word, number and punctuation mark; do not summarize, translate, correct or comment. Render tables as HTML <table> blocks. Return only the transcription.",
+      text: "Transcribe the text on this page exactly as printed, in reading order, as Markdown. Return only the transcription.",
+      table: "Transcribe the table on this page as an HTML <table>, one cell per cell, exactly as printed. Return only the table.",
+    },
+    scale: { targetLongSide: 1540, minDpi: 150, maxPixels: 3_000_000 },
+    // A reasoning model: with thinking on it spent the whole completion budget before writing a
+    // word of a dense page (empty content at the cap, 4 minutes). Transcription needs no thinking.
+    maxTokens: 16384,
+    vllmArgs: [],
+    aliases: ["~z-ai/glm-flash-latest", "z-ai/glm-flash-latest"],
+    // OpenRouter refuses to disable reasoning on this endpoint; minimal effort is accepted and
+    // measured at zero reasoning tokens.
+    requestExtras: { reasoning: { effort: "minimal", exclude: true } },
+  },
   "paddleocr-vl-1.5": {
     model: "PaddlePaddle/PaddleOCR-VL-1.5",
     license: "Apache-2.0",
@@ -54,7 +78,7 @@ export const PRESETS: Record<string, ModelPreset> = {
 
 /** The preset for a served model name, or a generic API preset for anything else. */
 export function presetFor(model: string): ModelPreset {
-  const hit = Object.values(PRESETS).find((p) => p.model === model);
+  const hit = Object.values(PRESETS).find((p) => p.model === model || p.aliases?.includes(model));
   if (hit) return hit;
   return {
     model,
