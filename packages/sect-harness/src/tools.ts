@@ -225,7 +225,13 @@ export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
   // (D.2 step 6); the harness enforces it and keeps the text bare, with a flag.
   const flags = [...(p.flags ?? [])];
   const xrefs: XrefResolution[] = [];
+  let outside = 0;
   for (const x of p.xrefs ?? []) {
+    // A subset run links only into the subset and the corpus it joins.
+    if (cx.keepIds && x.id && !cx.keepIds.has(x.id)) {
+      outside++;
+      continue;
+    }
     const known = cx.knownIds?.get(x.id);
     if (cx.knownIds && x.id && !known) {
       flags.push(`unresolved: "${x.text}" was mapped to ${x.id}, which is not an id in the corpus or the input; left bare`);
@@ -237,6 +243,7 @@ export function stageSection(cx: RunContext, p: StageParams): StagedRecord {
       xrefs.push({ ...x, anchor: null });
     } else xrefs.push(x);
   }
+  if (outside) flags.push(`${outside} reference(s) to nodes outside this subset and its corpus left bare`);
   // Overlay proposals: only real base ids, and only anchors the target has (D.2 step 8).
   let overrides: StagedRecord["overrides"];
   if (p.overrides) {

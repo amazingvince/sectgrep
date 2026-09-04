@@ -1,0 +1,5 @@
+CFR:29-1910: 19 listing entries de-linked (held: CFR:29-1910.1000, CFR:29-1910.1001, CFR:29-1910.1003, CFR:29-1910.1017, CFR:29-1910.1018, CFR:29-1910.1020, CFR:29-1910.1024, CFR:29-1910.1025, CFR:29-1910.1026, CFR:29-1910.1027, CFR:29-1910.1028, CFR:29-1910.1030, CFR:29-1910.1043, CFR:29-1910.1044, CFR:29-1910.1045, CFR:29-1910.1050, CFR:29-1910.1051, CFR:29-1910.1052, CFR:29-1910.1450)
+CFR:29-1910-A: 1 listing entry de-linked (held: CFR:29-1910.5)
+sect index failed: freshness: not written (109 error(s) block the index; fix them or see --validate-only)
+counts: 293 files, 275 works, 293 expressions (18 superseded), 3 sources; 12 added, 0 changed, 0 removed; errors 
+cfr-title-29-7efa0952d1cc: 12 section(s) merged into C:\Users\amazi\code\sect\corpus (0 already there unchanged), 59 held for review (1 blocked by links to held sections); index not refreshed; commit daabadc665

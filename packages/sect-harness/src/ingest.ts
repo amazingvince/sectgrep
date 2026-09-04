@@ -9,7 +9,7 @@ import { Agent } from "@mariozechner/pi-agent-core";
 import type { Usage } from "@mariozechner/pi-ai";
 import { loadDotEnv, splitFrontMatter } from "@sectgrep/convert";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 import { modelFromEnv, type ModelChoice } from "./model.js";
@@ -230,12 +230,16 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
     if (held.length) log(`held for a person (composition failed validation): ${held.join(", ")}`);
   };
   /** What the prompt asks for beyond a base section, from the input's own fields. */
-  const hintsFor = (front: Record<string, unknown>): string[] => {
+  const hintsFor = (front: Record<string, unknown>, body = ""): string[] => {
     if (sourceKind === "overlay") {
+      // Dotted numbers in the item that are not its own id are the likeliest base section numbers.
+      const own = String(front.id ?? "").replace(/^[A-Z][A-Z0-9]*:/, "");
+      const dotted = [...new Set((body.match(/\d{1,4}\.\d{1,4}[a-z]?/g) ?? []).filter((n) => !own.includes(n)))].slice(0, 8);
       const ov = ((front.overrides ?? []) as unknown[]).map(String);
       const na = ((front.narrows ?? []) as Array<{ id?: string; anchor?: string } | string>).map((n) => (typeof n === "string" ? n : `${n.id}${n.anchor ? "#" + n.anchor : ""}`));
       return [
-        "This is an overlay item: decide which base nodes it overrides (replaces whole) and which paragraphs it narrows (changes or excepts), searching the base with sect_search on its subject and the citations in it; give overrides [{id, rationale}] and narrows [{id, anchor, rationale}] with one sentence each, or neither when the item only adopts the base as it stands.",
+        "This is an overlay item: decide which base nodes it overrides (replaces whole) and which paragraphs it narrows (changes or excepts), searching the base with sect_search on its subject and the citations in it; give overrides [{id, rationale}] and narrows [{id, anchor, rationale}] with one sentence each, or neither when the item only adopts the base as it stands. The base is another source in the corpus, not this overlay: search for the base's own section numbers and subjects, never for this item's number.",
+        dotted.length ? `Numbers in the item that may name base sections; search each: ${dotted.join(", ")}.` : "",
         ov.length || na.length ? `The converter proposed overrides: ${ov.join(", ") || "(none)"}; narrows: ${na.join(", ") || "(none)"}. Confirm or correct them.` : "",
       ].filter(Boolean);
     }
@@ -308,7 +312,7 @@ export async function ingest(o: IngestOptions): Promise<IngestResult> {
             initialState: { systemPrompt: skill, model: choice.model!, tools },
             beforeToolCall: async ({ toolCall }) => guardToolCall(cx, toolCall as { name: string; arguments: Record<string, unknown> }),
           });
-          const prompt = sectionPrompt(rel, body, resolved, remaining, front.defines ?? [], hintsFor(front as Record<string, unknown>)) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
+          const prompt = sectionPrompt(rel, body, resolved, remaining, front.defines ?? [], hintsFor(front as Record<string, unknown>, body)) + (extra ? `\n\nThe validators reported on your previous attempt:\n${extra}\nFix the section and call section_stage again.` : "");
           await agent.prompt(prompt);
           await agent.waitForIdle();
           const u = usageOf(agent);
@@ -421,6 +425,11 @@ export function resubmit(o: ResubmitOptions): { runId: string; staged: number; s
     const leaves = records.filter((r) => !r.derived && !known.children.get(r.id) && matchesOnly(r.input, o.only!));
     const keep = new Set(leaves.map((r) => r.id));
     for (const r of leaves) for (const a of ancestorsOf(known, r.id)) keep.add(a.id);
+    // Records outside the subset leave the run for good: the verifier reads the records on disk.
+    for (const r of records) if (!keep.has(r.id)) {
+      const f = path.join(dir, ".ingest", `${r.id.replace(/[^A-Za-z0-9._-]+/g, "_")}.json`);
+      if (existsSync(f)) rmSync(f);
+    }
     records = records.filter((r) => keep.has(r.id));
     cx.keepIds = subsetKeepIds(known, leaves.map((r) => r.id), cx.corpus);
     log(`subset ${o.only}: ${leaves.length} leaf record(s) and ${records.length - leaves.length} ancestor(s) kept`);
@@ -446,6 +455,8 @@ export function resubmit(o: ResubmitOptions): { runId: string; staged: number; s
   }
   const strays = removeStrayFiles(cx);
   if (strays.length) log(`removed ${strays.length} stray file(s): ${strays.slice(0, 8).join(", ")}`);
+  // A refused resubmit leaves no stale submit behind for the merge to trust.
+  if (existsSync(path.join(dir, "submit.json"))) rmSync(path.join(dir, "submit.json"));
   let summary: SubmitSummary | null = null;
   let errors = 0;
   try {

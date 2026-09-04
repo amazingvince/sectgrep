@@ -143,12 +143,16 @@ export function buildContext(o: ValidateOptions): Context {
 /** The element text of a work directory, restricted to the locator's pages when it names them. */
 function elementsText(file: string, dir: string, locator: Record<string, unknown>): SourceText {
   const pages = Array.isArray(locator.pages) ? new Set((locator.pages as unknown[]).map(Number)) : null;
+  // An item cut from a page (an overlay item among others) names its elements; the page alone
+  // would make every item's body a fraction of its source.
+  const seqs = Array.isArray(locator.elements) ? new Set((locator.elements as unknown[]).map(Number)) : null;
   const toks: string[] = [];
   const cells = new Set<string>();
   for (const line of readFileSync(file, "utf-8").split("\n")) {
     if (!line.trim()) continue;
-    const e = JSON.parse(line) as { page: number; type: string; text: string; table_grid?: string[][] };
+    const e = JSON.parse(line) as { page: number; seq?: number; type: string; text: string; table_grid?: string[][] };
     if (pages && !pages.has(e.page)) continue;
+    if (seqs && !seqs.has(Number(e.seq))) continue;
     // Running heads stay in: tokens outside the matched span cost nothing, and a page title
     // typed as a header would otherwise be missing from its own section.
     toks.push(...tokens(e.text));
@@ -284,7 +288,9 @@ export function validateIndex(staging: string, sectBin?: string): { issues: Issu
 export function bodyBelowHeading(body: string): string {
   return body
     .replace(/^\s*#{1,6}[^\n]*\n?/, "")
-    .replace(/^\s*[-*]\s*\[(?:[^\[\]]|\[[^\]]*\])*\]\([^)]*\)\s*$/gm, "");
+    .replace(/^\s*[-*]\s*\[(?:[^\[\]]|\[[^\]]*\])*\]\([^)]*\)\s*$/gm, "")
+    // A listing entry whose link was dropped at merge or in a subset run is still a listing entry.
+    .replace(/^\s*[-*]\s+[^\n]*\((?:not in this corpus|held for review)\)\s*$/gm, "");
 }
 
 export function roundTrip(doc: Doc, cx: Context): Issue[] {

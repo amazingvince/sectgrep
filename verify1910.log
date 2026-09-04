@@ -1,0 +1,284 @@
+25/201 verified
+verifier: asking (3305 chars)
+verifier: asking (5688 chars)
+verifier: asking (9212 chars)
+verifier: answered in 8342 ms, 1528 completion tokens, 411 chars
+verifier: asking (6872 chars)
+verifier: answered in 22677 ms, 4981 completion tokens, 3721 chars
+verifier: asking (1387 chars)
+verifier: answered in 1781 ms, 211 completion tokens, 196 chars
+50/201 verified
+verifier: asking (1377 chars)
+verifier: answered in 9239 ms, 371 completion tokens, 231 chars
+verifier: asking (1398 chars)
+verifier: answered in 3116 ms, 249 completion tokens, 300 chars
+verifier: asking (1389 chars)
+verifier: answered in 5726 ms, 208 completion tokens, 206 chars
+verifier: asking (7871 chars)
+verifier: answered in 164060 ms, 7775 completion tokens, 3167 chars
+verifier: asking (9479 chars)
+verifier: answered in 13504 ms, 3152 completion tokens, 2644 chars
+verifier: asking (4432 chars)
+verifier: answered in 9923 ms, 1990 completion tokens, 726 chars
+verifier: asking (8989 chars)
+verifier: answered in 268820 ms, 16000 completion tokens, 0 chars
+verifier: asking (6872 chars)
+verifier: answered in 292515 ms, 16000 completion tokens, 0 chars
+verifier: asking (5688 chars)
+verifier: answered in 17538 ms, 495 completion tokens, 2043 chars
+verifier: asking (6907 chars)
+verifier: answered in 36826 ms, 1003 completion tokens, 3780 chars
+verifier: asking (5723 chars)
+verifier: answered in 179707 ms, 5776 completion tokens, 1900 chars
+verifier: asking (5915 chars)
+verifier: answered in 21844 ms, 4435 completion tokens, 1049 chars
+verifier: asking (9771 chars)
+verifier: answered in 24310 ms, 5830 completion tokens, 3829 chars
+verifier: asking (9556 chars)
+verifier: answered in 36863 ms, 8704 completion tokens, 3262 chars
+verifier: asking (9678 chars)
+verifier: answered in 83843 ms, 2180 completion tokens, 4682 chars
+verifier: asking (9713 chars)
+verifier: answered in 298603 ms, 16000 completion tokens, 0 chars
+verifier: asking (6907 chars)
+verifier: answered in 558 ms, 3 completion tokens, 6 chars
+verifier failed on subtitle-Subtitle B/XVII/1910/1910.1003/29-1910.1003.md: verifier answered without JSON: Ser参与者
+verifier: asking (9719 chars)
+verifier: answered in 35428 ms, 8263 completion tokens, 4078 chars
+verifier: asking (10113 chars)
+verifier: answered in 332111 ms, 16000 completion tokens, 0 chars
+verifier: asking (5723 chars)
+verifier: answered in 12451 ms, 284 completion tokens, 1192 chars
+verifier failed on subtitle-Subtitle B/XVII/1910/1910.1000/29-1910.1000.md: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+verifier: asking (5541 chars)
+verifier: answered in 112715 ms, 4295 completion tokens, 16168 chars
+verifier failed on subtitle-Subtitle B/XVII/1910/1910.1027/29-1910.1027.md: Bad control character in string literal in JSON at position 55 (line 2 column 54)
+verifier: asking (6858 chars)
+verifier: answered in 17333 ms, 3600 completion tokens, 1796 chars
+verifier: asking (5119 chars)
+verifier: answered in 8431 ms, 1787 completion tokens, 506 chars
+verifier: asking (10092 chars)
+verifier: answered in 56205 ms, 6091 completion tokens, 1268 chars
+verifier: asking (9442 chars)
+verifier: answered in 46102 ms, 1359 completion tokens, 15 chars
+verifier: asking (9477 chars)
+verifier: answered in 21589 ms, 318 completion tokens, 43 chars
+verifier: asking (9753 chars)
+verifier: answered in 17342 ms, 3740 completion tokens, 3522 chars
+verifier: asking (7635 chars)
+verifier: answered in 27099 ms, 5924 completion tokens, 2142 chars
+verifier: asking (9939 chars)
+verifier: answered in 50610 ms, 10833 completion tokens, 3500 chars
+verifier: asking (9208 chars)
+verifier: answered in 14922 ms, 3153 completion tokens, 3623 chars
+verifier: asking (9886 chars)
+verifier: answered in 336752 ms, 16000 completion tokens, 0 chars
+verifier: asking (10113 chars)
+verifier: answered in 32266 ms, 1246 completion tokens, 4019 chars
+75/201 verified
+verifier: asking (9038 chars)
+verifier: answered in 18575 ms, 4132 completion tokens, 3351 chars
+verifier: asking (3716 chars)
+verifier: answered in 367551 ms, 16000 completion tokens, 0 chars
+verifier: asking (10092 chars)
+verifier: answered in 44225 ms, 797 completion tokens, 3602 chars
+verifier: asking (10127 chars)
+verifier: answered in 256450 ms, 5364 completion tokens, 3698 chars
+verifier: asking (10566 chars)
+verifier: answered in 23715 ms, 5101 completion tokens, 4039 chars
+verifier: asking (10033 chars)
+verifier: answered in 24518 ms, 4996 completion tokens, 3192 chars
+verifier: asking (10332 chars)
+verifier: answered in 211412 ms, 7476 completion tokens, 1136 chars
+verifier: asking (4866 chars)
+verifier: answered in 18829 ms, 3543 completion tokens, 740 chars
+verifier: asking (9987 chars)
+verifier: answered in 20966 ms, 4561 completion tokens, 3686 chars
+verifier: asking (2739 chars)
+verifier: answered in 4025 ms, 637 completion tokens, 205 chars
+verifier: asking (4826 chars)
+verifier: answered in 8429 ms, 1485 completion tokens, 479 chars
+verifier: asking (8249 chars)
+verifier: answered in 3694 ms, 610 completion tokens, 372 chars
+verifier: asking (8449 chars)
+verifier: answered in 337756 ms, 16000 completion tokens, 0 chars
+verifier: asking (10127 chars)
+verifier: answered in 194947 ms, 6371 completion tokens, 1402 chars
+verifier: asking (7778 chars)
+verifier: answered in 15095 ms, 2783 completion tokens, 620 chars
+verifier: asking (8149 chars)
+verifier: answered in 18697 ms, 3687 completion tokens, 933 chars
+verifier: asking (9001 chars)
+verifier: answered in 16647 ms, 3326 completion tokens, 3728 chars
+verifier: asking (6150 chars)
+verifier: answered in 74509 ms, 1151 completion tokens, 5328 chars
+verifier failed on subtitle-Subtitle B/XVII/1910/1910.1043/29-1910.1043.md: Expected property name or '}' in JSON at position 2 (line 2 column 1)
+verifier: asking (6519 chars)
+verifier: answered in 9678 ms, 1896 completion tokens, 1141 chars
+100/201 verified
+verifier: asking (5573 chars)
+verifier: answered in 8242 ms, 1587 completion tokens, 784 chars
+verifier: asking (5087 chars)
+verifier: answered in 2758 ms, 398 completion tokens, 178 chars
+verifier: asking (5955 chars)
+verifier: answered in 17113 ms, 3188 completion tokens, 1459 chars
+verifier: asking (10228 chars)
+verifier: answered in 354074 ms, 16000 completion tokens, 0 chars
+verifier: asking (10332 chars)
+verifier: answered in 16954 ms, 3043 completion tokens, 477 chars
+verifier: asking (10967 chars)
+verifier: answered in 29761 ms, 6829 completion tokens, 3863 chars
+verifier: asking (8570 chars)
+verifier: answered in 20612 ms, 253 completion tokens, 774 chars
+verifier: asking (10367 chars)
+verifier: answered in 13916 ms, 197 completion tokens, 112 chars
+verifier failed on subtitle-Subtitle B/XVII/1910/H/1910.119/29-1910.119.md: Expected property name or '}' in JSON at position 3 (line 2 column 2)
+verifier: asking (3672 chars)
+verifier: answered in 35531 ms, 7410 completion tokens, 4072 chars
+verifier: asking (4730 chars)
+verifier: answered in 4412 ms, 683 completion tokens, 278 chars
+verifier: asking (4923 chars)
+verifier: answered in 6830 ms, 1305 completion tokens, 373 chars
+verifier: asking (7125 chars)
+verifier: answered in 7374 ms, 1341 completion tokens, 679 chars
+verifier: asking (5802 chars)
+verifier: answered in 22254 ms, 4327 completion tokens, 1798 chars
+verifier: asking (6583 chars)
+verifier: answered in 5230 ms, 822 completion tokens, 260 chars
+verifier: asking (8690 chars)
+verifier: answered in 58200 ms, 16000 completion tokens, 0 chars
+verifier: asking (8570 chars)
+verifier: answered in 3750 ms, 770 completion tokens, 2603 chars
+verifier: asking (7849 chars)
+verifier: answered in 2752 ms, 344 completion tokens, 413 chars
+verifier: asking (3404 chars)
+verifier: answered in 2514 ms, 333 completion tokens, 319 chars
+125/201 verified
+verifier: asking (2589 chars)
+verifier: answered in 48480 ms, 9227 completion tokens, 1503 chars
+verifier: asking (5709 chars)
+verifier: answered in 5168 ms, 790 completion tokens, 315 chars
+verifier: asking (8081 chars)
+verifier: answered in 25766 ms, 5059 completion tokens, 1869 chars
+verifier: asking (7622 chars)
+verifier: answered in 10151 ms, 2002 completion tokens, 673 chars
+verifier: asking (3173 chars)
+verifier: answered in 15188 ms, 2466 completion tokens, 873 chars
+verifier: asking (5852 chars)
+verifier: answered in 22659 ms, 4592 completion tokens, 2589 chars
+verifier: asking (5264 chars)
+verifier: answered in 6966 ms, 1288 completion tokens, 1201 chars
+verifier: asking (7199 chars)
+verifier: answered in 32294 ms, 6363 completion tokens, 1662 chars
+verifier: asking (3941 chars)
+verifier: answered in 6707 ms, 763 completion tokens, 379 chars
+verifier: asking (5680 chars)
+verifier: answered in 14971 ms, 2864 completion tokens, 549 chars
+verifier: asking (4879 chars)
+verifier: answered in 6009 ms, 1120 completion tokens, 453 chars
+verifier: asking (5630 chars)
+verifier: answered in 17111 ms, 3074 completion tokens, 1425 chars
+verifier: asking (5659 chars)
+verifier: answered in 11071 ms, 2124 completion tokens, 577 chars
+verifier: asking (7227 chars)
+verifier: answered in 9318 ms, 2082 completion tokens, 1341 chars
+verifier: asking (10404 chars)
+verifier: answered in 20978 ms, 4710 completion tokens, 3656 chars
+verifier: asking (10439 chars)
+verifier: answered in 61200 ms, 16000 completion tokens, 0 chars
+verifier: asking (7199 chars)
+verifier: answered in 2362 ms, 577 completion tokens, 1713 chars
+verifier: asking (5522 chars)
+verifier: answered in 34221 ms, 6092 completion tokens, 965 chars
+verifier: asking (6243 chars)
+verifier: answered in 8377 ms, 1488 completion tokens, 857 chars
+verifier: asking (5175 chars)
+verifier: answered in 23526 ms, 4599 completion tokens, 3209 chars
+150/201 verified
+verifier: asking (4633 chars)
+verifier: answered in 16403 ms, 2468 completion tokens, 984 chars
+verifier: asking (6720 chars)
+verifier: answered in 8129 ms, 1572 completion tokens, 378 chars
+verifier: asking (2466 chars)
+verifier: answered in 4996 ms, 878 completion tokens, 840 chars
+verifier: asking (7637 chars)
+verifier: answered in 7493 ms, 1402 completion tokens, 229 chars
+verifier: asking (8265 chars)
+verifier: answered in 11127 ms, 1870 completion tokens, 263 chars
+verifier: asking (5442 chars)
+verifier: answered in 15433 ms, 3338 completion tokens, 1773 chars
+verifier: asking (4902 chars)
+verifier: answered in 16998 ms, 3567 completion tokens, 2349 chars
+verifier: asking (3231 chars)
+verifier: answered in 3467 ms, 615 completion tokens, 231 chars
+verifier: asking (10234 chars)
+verifier: answered in 19102 ms, 3575 completion tokens, 751 chars
+verifier: asking (5302 chars)
+verifier: answered in 15309 ms, 2376 completion tokens, 486 chars
+verifier: asking (6489 chars)
+verifier: answered in 63769 ms, 16000 completion tokens, 0 chars
+verifier: asking (5302 chars)
+verifier: answered in 936 ms, 163 completion tokens, 554 chars
+verifier: asking (9369 chars)
+verifier: answered in 76083 ms, 16000 completion tokens, 0 chars
+verifier: asking (10234 chars)
+verifier: answered in 3453 ms, 872 completion tokens, 2605 chars
+verifier: asking (12744 chars)
+verifier: answered in 71898 ms, 16000 completion tokens, 0 chars
+verifier: asking (6489 chars)
+verifier: answered in 2982 ms, 483 completion tokens, 1668 chars
+verifier: asking (6155 chars)
+verifier: answered in 9692 ms, 1828 completion tokens, 712 chars
+verifier: asking (8607 chars)
+verifier: answered in 48294 ms, 7444 completion tokens, 2564 chars
+verifier: asking (6473 chars)
+verifier: answered in 13951 ms, 2708 completion tokens, 1182 chars
+verifier: asking (7534 chars)
+verifier: answered in 39254 ms, 5086 completion tokens, 2335 chars
+verifier: asking (3545 chars)
+verifier: answered in 4746 ms, 804 completion tokens, 238 chars
+verifier: asking (4605 chars)
+verifier: answered in 61047 ms, 13012 completion tokens, 2862 chars
+verifier: asking (12779 chars)
+verifier: answered in 4165 ms, 806 completion tokens, 349 chars
+verifier: asking (3233 chars)
+verifier: answered in 12661 ms, 2607 completion tokens, 1279 chars
+verifier: asking (5069 chars)
+verifier: answered in 5667 ms, 1046 completion tokens, 657 chars
+verifier: asking (5821 chars)
+verifier: answered in 5247 ms, 907 completion tokens, 190 chars
+175/201 verified
+verifier: asking (5652 chars)
+verifier: answered in 10675 ms, 1949 completion tokens, 317 chars
+verifier: asking (8459 chars)
+verifier: answered in 16130 ms, 3349 completion tokens, 1311 chars
+verifier: asking (5743 chars)
+verifier: answered in 3664 ms, 607 completion tokens, 235 chars
+verifier: asking (3666 chars)
+verifier: answered in 7207 ms, 1285 completion tokens, 232 chars
+verifier: asking (3300 chars)
+verifier: answered in 14269 ms, 2777 completion tokens, 634 chars
+verifier: asking (2717 chars)
+verifier: answered in 2944 ms, 378 completion tokens, 218 chars
+verifier: asking (5344 chars)
+verifier: answered in 4832 ms, 622 completion tokens, 323 chars
+verifier: asking (6100 chars)
+verifier: answered in 9685 ms, 1728 completion tokens, 660 chars
+verifier: asking (6664 chars)
+verifier: answered in 20469 ms, 4276 completion tokens, 1558 chars
+verifier: asking (8312 chars)
+verifier: answered in 61354 ms, 13108 completion tokens, 3289 chars
+verifier: asking (2816 chars)
+verifier: answered in 3139 ms, 489 completion tokens, 191 chars
+verifier: asking (7768 chars)
+verifier: answered in 10088 ms, 2017 completion tokens, 1455 chars
+verifier: asking (7803 chars)
+verifier: answered in 22239 ms, 4621 completion tokens, 2244 chars
+verifier: asking (7610 chars)
+verifier: answered in 36783 ms, 7165 completion tokens, 1251 chars
+verifier: asking (3803 chars)
+verifier: answered in 11445 ms, 2407 completion tokens, 1739 chars
+verifier: answered in 17898 ms, 3610 completion tokens, 1693 chars
+200/201 verified
+verifier: answered in 15545 ms, 3167 completion tokens, 836 chars
+cfr-title-29-7efa0952d1cc: 143 auto, 58 conflict of 201 sections; agreement 21.6% on 241 judgment fields (722 deterministic); 0 evidence failure(s); verifier deepseek/deepseek-v4-flash-0731, 117 call(s), $0.0844 -> review/cfr-title-29-7efa0952d1cc.md

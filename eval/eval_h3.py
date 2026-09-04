@@ -175,6 +175,30 @@ def main() -> None:
 
     if "report" in phases:
         notice_run = notice_run or latest_run("staging-h3notice2", "fr") or latest_run("staging-h3notice", "fr")
+        # Runs already made are summarized from their files; the merges from review/merges.jsonl.
+        merges = {}
+        mf = ROOT / "review" / "merges.jsonl"
+        if mf.exists():
+            for line in mf.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    m = json.loads(line)
+                    merges[m["run_id"]] = m
+        for key, st, src in (("title4", "staging-t4", "cfr-title-4"), ("prior", "staging-h3prior", "cfr-title-4"), ("notice", "staging-h3notice2", "fr"), ("base1910", "staging-1910", "cfr-title-29"), ("overlay", "staging-h3overlay", "ia-osh-ch10")):
+            if key in lines:
+                continue
+            rd = latest_run(st, src)
+            if not rd or not (rd / "verify.json").exists():
+                continue
+            v = json.load(open(rd / "verify.json", encoding="utf-8"))
+            u = json.load(open(rd / "usage.json", encoding="utf-8")) if (rd / "usage.json").exists() else {}
+            m = merges.get(rd.name, {})
+            lines[key] = f"run {rd.name}: ingest {u.get('calls', 0)} calls, ${u.get('cost', 0):.3f}; verify {v['counts']['auto']} auto, {v['counts']['conflict']} conflict, agreement {100 * v['agreement_rate']:.1f}% on {v['counts']['judgments']} judgment fields ({v['counts']['deterministic']} deterministic), ${v['usage']['cost']:.3f}; merged {m.get('merged', '?')} section(s), {m.get('held', '?')} held (commit {str(m.get('commit', ''))[:10]})"
+        if "overlay" in lines and "overlay_items" not in lines:
+            ov = latest_run("staging-h3overlay", "ia-osh-ch10")
+            recs = [json.load(open(f, encoding="utf-8")) for f in glob.glob(str(ov / ".ingest" / "IA_*.json"))]
+            lines["overlay_items"] = "\n".join(f"- {r['id']}: overrides {', '.join(o['id'] for o in r.get('overrides') or []) or '(none)'}; narrows {', '.join(n['id'] + ('#' + n['anchor'] if n.get('anchor') else '') for n in r.get('narrows') or []) or '(none)'}" for r in sorted(recs, key=lambda r: r["id"]))
+            targets = sorted({o["id"] for r in recs for o in r.get("overrides") or []} | {n["id"] for r in recs for n in r.get("narrows") or []})
+            lines["overlay_read"] = "\n".join(f"$ sect read {t}\n" + "\n".join(l for l in sect(["read", t, "--no-refresh"]).splitlines() if re.search(r"overrid|narrow", l, re.I))[:1200] for t in targets[:3])
         # Mapping reference: the versioner's diff between the two dates.
         run(["node", str(CONVERT), "align", "cfr-title-4", "2024-06-17", "2024-07-18", "--out", "work/h3-changes.json"])
         changes = json.load(open(ROOT / "work" / "h3-changes.json", encoding="utf-8"))

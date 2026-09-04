@@ -1,0 +1,23 @@
+verifier: asking (2073 chars)
+verifier: asking (3009 chars)
+verifier: asking (1601 chars)
+verifier: asking (4744 chars)
+verifier: answered in 16473 ms, 2488 completion tokens, 206 chars
+verifier: asking (3318 chars)
+verifier: answered in 20456 ms, 4132 completion tokens, 721 chars
+verifier: asking (5429 chars)
+verifier: answered in 80562 ms, 11220 completion tokens, 938 chars
+verifier: asking (2128 chars)
+verifier: answered in 107424 ms, 11194 completion tokens, 617 chars
+verifier: asking (1881 chars)
+verifier: answered in 113733 ms, 11833 completion tokens, 321 chars
+verifier: asking (1588 chars)
+verifier: answered in 134913 ms, 17698 completion tokens, 381 chars
+verifier: asking (2568 chars)
+verifier: answered in 5376 ms, 871 completion tokens, 177 chars
+verifier: asking (1619 chars)
+verifier: answered in 6354 ms, 1090 completion tokens, 191 chars
+verifier: answered in 58253 ms, 8819 completion tokens, 247 chars
+verifier: answered in 64392 ms, 10266 completion tokens, 216 chars
+verifier: answered in 58374 ms, 7205 completion tokens, 799 chars
+ia-osh-ch10-dc0e34629d2f: 10 auto, 1 conflict of 11 sections; agreement 66.7% on 3 judgment fields (6 deterministic); 0 evidence failure(s); verifier deepseek/deepseek-v4-flash-0731, 11 call(s), $0.0166 -> review/ia-osh-ch10-dc0e34629d2f.md

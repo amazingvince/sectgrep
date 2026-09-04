@@ -1,0 +1,19 @@
+verifier: asking (3305 chars)
+verifier: asking (7871 chars)
+verifier: asking (9556 chars)
+verifier: asking (3941 chars)
+verifier: answered in 5882 ms, 790 completion tokens, 456 chars
+verifier: asking (3545 chars)
+verifier: answered in 6018 ms, 986 completion tokens, 366 chars
+verifier: asking (2717 chars)
+verifier: answered in 4245 ms, 729 completion tokens, 253 chars
+verifier: asking (5344 chars)
+verifier: answered in 7932 ms, 1401 completion tokens, 327 chars
+verifier: asking (8312 chars)
+verifier: answered in 18774 ms, 3585 completion tokens, 1030 chars
+verifier: asking (2816 chars)
+verifier: answered in 5505 ms, 908 completion tokens, 215 chars
+verifier: answered in 56678 ms, 13384 completion tokens, 2475 chars
+verifier: answered in 71749 ms, 13629 completion tokens, 2176 chars
+verifier: answered in 103087 ms, 22509 completion tokens, 3765 chars
+cfr-title-29-7efa0952d1cc: 14 auto, 1 conflict of 15 sections; agreement 90.9% on 11 judgment fields (50 deterministic); 0 evidence failure(s); verifier deepseek/deepseek-v4-flash-0731, 9 call(s), $0.0116 -> review/cfr-title-29-7efa0952d1cc.md

@@ -246,7 +246,7 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
 }
 
 /** One completion at the provider's chat endpoint with a hard timeout; the usage priced by the model's table. */
-async function askDirect(choice: ModelChoice, user: string, timeoutMs: number): Promise<{ text: string; input: number; output: number; cost: number }> {
+async function askDirect(choice: ModelChoice, user: string, timeoutMs: number, reasoningOff = false): Promise<{ text: string; input: number; output: number; cost: number }> {
   const t0 = Date.now();
   if (process.env.SECT_VERIFIER_TRACE) console.error(`verifier: asking (${user.length} chars)`);
   const model = choice.model as { baseUrl?: string; cost: { input: number; output: number } } | undefined;
@@ -255,8 +255,8 @@ async function askDirect(choice: ModelChoice, user: string, timeoutMs: number): 
     method: "POST",
     signal: AbortSignal.timeout(timeoutMs),
     headers: { authorization: `Bearer ${choice.config.apiKey}`, "content-type": "application/json" },
-    // A reasoning model thinks for thousands of tokens before it answers: the budget is wide (the user's call: more reasoning, not less), the effort low so it stays bounded; reasoning.enabled=false answers in seconds when speed matters more.
-    body: JSON.stringify({ model: choice.config.model, temperature: 0, max_tokens: 16_000, reasoning: { effort: "low" }, ...providerExtras(choice.config), provider: { sort: "throughput", ...((providerExtras(choice.config) as { provider?: object }).provider ?? {}) }, messages: [{ role: "system", content: VERIFIER_SYSTEM }, { role: "user", content: user }] }),
+    // A reasoning model thinks for thousands of tokens before it answers: the budget is generous and uncapped (the user's call: tokens are cheap), the timeout long; reasoning.enabled=false is the last resort when it still answers nothing.
+    body: JSON.stringify({ model: choice.config.model, temperature: 0, max_tokens: 65_536, ...(reasoningOff ? { reasoning: { enabled: false } } : {}), ...providerExtras(choice.config), provider: { sort: "throughput", ...((providerExtras(choice.config) as { provider?: object }).provider ?? {}) }, messages: [{ role: "system", content: VERIFIER_SYSTEM }, { role: "user", content: user }] }),
   });
   if (!res.ok) throw new Error(`verifier HTTP ${res.status}: ${(await res.text().catch(() => "")).slice(0, 200)}`);
   const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }>; usage?: { prompt_tokens?: number; completion_tokens?: number }; error?: { message?: string } };
@@ -293,6 +293,8 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   const sectBin = o.sectBin ?? process.env.SECT_BIN;
   const choice = o.verify ? undefined : (o.model ?? verifierModelFromEnv());
   if (!o.verify && (!choice?.model || !choice.config.apiKey)) throw new Error(`no verifier model: provider ${choice?.config.provider}, model ${choice?.config.model}; set SECT_VERIFIER_MODEL and the key in .env`);
+  // What a link from this run can resolve at merge: the corpus and the run's own records.
+  const available = new Set<string>([...collectKnown([path.resolve(o.corpus)]).ids.keys(), ...records.map((r) => r.id)]);
   const evidence = evidenceChecks({ staging: runDir, corpus: o.corpus, records, work: o.work });
   const evidenceByPath = new Map<string, EvidenceIssue[]>();
   for (const i of evidence.issues) evidenceByPath.set(i.path, [...(evidenceByPath.get(i.path) ?? []), i]);
@@ -375,7 +377,10 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
             const ask = async (nudge: string) => {
               // One completion straight to the provider's OpenAI-compatible endpoint: the Pi client
               // streams and stalled for minutes on long sections where the endpoint answers in seconds.
-              const m = await withBackoff(() => askDirect(choice!, prompt + nudge, 600_000));
+              // Reasoning first, as the user chose; a model that spends the whole budget thinking and
+              // answers nothing gets one more chance with reasoning off.
+              let m = await withBackoff(() => askDirect(choice!, prompt + nudge, 1_800_000));
+              if (!m.text.trim()) m = await withBackoff(() => askDirect(choice!, prompt + nudge, 300_000, true));
               usage.input += m.input;
               usage.output += m.output;
               usage.cost += m.cost;
@@ -398,6 +403,10 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
         judgments = consensus(r, answer, refs, candidates, level, front);
         // Without a second opinion there is no consensus: every judgment stays open.
         if (verifierFailed) judgments = judgments.map((j) => ({ ...j, agree: false, deterministic: false, verifier: "(verifier call failed)" }));
+        // A reference the ingest left bare because its target is outside this run and the corpus it
+        // joins (a subset run) is not a judgment the ingest could have made; the verifier, reading the
+        // whole input, sees a candidate the merge would not resolve.
+        judgments = judgments.map((j) => (j.field === "xref" && j.ingest === "(left bare)" && !available.has(j.verifier.split("#")[0]) ? { ...j, agree: true, verifier_reason: `${j.verifier_reason ?? ""} (target outside this run and its corpus)`.trim() } : j));
       }
       const ev = evidenceByPath.get(r.path.replace(/\\/g, "/")) ?? [];
       const conflict = judgments.some((j) => !j.agree) || ev.some((i) => i.level === "fail");

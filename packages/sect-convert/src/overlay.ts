@@ -127,7 +127,7 @@ export function convertOverlay(o: OverlayOptions): OverlayResult {
       "provenance:",
       `  raw: ${q(o.rawPath)}`,
       `  raw_sha256: ${q(o.rawSha256)}`,
-      `  locator: {pages: ${JSON.stringify(it.pages)}, bbox: null}`,
+      `  locator: {pages: ${JSON.stringify(it.pages)}, bbox: null, elements: ${JSON.stringify(it.elements.map((e) => e.seq))}}`,
       `  legal_status: ${q(src.legal_status ?? "official")}`,
       `  ingest_run: ${q(o.ingestRun ?? "sect-convert overlay")}`,
       "  confidence: 1.0",
