@@ -133,6 +133,10 @@ def ocr_truth(reps: list[dict]) -> list[dict]:
                 if f.exists():
                     w = words(f.read_text(encoding="utf-8"))
                     row[which] = edit_distance(w, g) / max(len(g), 1)
+                    # Order-free: words missing or extra as multisets, so a page read in another
+                    # order (a table of contents in two columns) is not charged for the order.
+                    cg, cw = Counter(g), Counter(w)
+                    row[which + "_bag"] = (sum((cg - cw).values()) + sum((cw - cg).values())) / max(len(g), 1)
             rows.append(row)
     return rows
 
@@ -215,11 +219,11 @@ def main() -> None:
         md.append("Lines that agree are accepted at confidence 1; a divergent line keeps the primary's reading with the secondary's words for the same span in `alt_text`, flagged `ocr_divergent`; a secondary line with no counterpart is kept flagged `secondary_only`. A page whose secondary reading is unusable (looping, or a word count far from the primary's) keeps the primary's lines flagged `ocr_unverified` instead. Both raw readings sit under `ocr/` in the work directory.\n")
         truth = ocr_truth(reps)
         if truth:
-            md.append("Word error rate of each raw reading against the C0 consensus golden for the same page (lower is better):\n")
-            md.append("| Page | Golden | Golden words | Primary WER | Secondary WER |")
-            md.append("|---|---|---|---|---|")
+            md.append("Word error rate of each raw reading against the C0 consensus golden for the same page (lower is better). The ordered rate charges reading order; the order-free rate counts words missing or extra as multisets, so the two differ where a reader walks the page in another order than the golden's reference (the olmOCR pipeline):\n")
+            md.append("| Page | Golden | Golden words | Primary WER | Primary order-free | Secondary WER | Secondary order-free |")
+            md.append("|---|---|---|---|---|---|---|")
             for t in truth:
-                md.append(f"| {t['page']} | {t['golden']} | {t['golden_words']} | {t.get('primary', float('nan')):.3f} | {t.get('secondary', float('nan')):.3f} |")
+                md.append(f"| {t['page']} | {t['golden']} | {t['golden_words']} | {t.get('primary', float('nan')):.3f} | {t.get('primary_bag', float('nan')):.3f} | {t.get('secondary', float('nan')):.3f} | {t.get('secondary_bag', float('nan')):.3f} |")
             md.append("")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")
