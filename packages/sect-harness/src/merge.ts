@@ -66,8 +66,11 @@ function delinkHeld(body: string, held: Map<string, string>): { body: string; de
   return { body: out, delinked };
 }
 
+/** git with an identity of last resort: a container or a CI runner has none configured. */
 function git(cwd: string, args: string[]): { ok: boolean; out: string } {
-  const r = spawnSync("git", args, { cwd, encoding: "utf-8" });
+  const identity = ["-c", "user.name=sect-harness", "-c", "user.email=sect-harness@localhost"];
+  const configured = spawnSync("git", ["config", "user.email"], { cwd, encoding: "utf-8" }).status === 0;
+  const r = spawnSync("git", [...(configured ? [] : identity), ...args], { cwd, encoding: "utf-8" });
   return { ok: r.status === 0, out: (r.stdout + r.stderr).trim() };
 }
 
