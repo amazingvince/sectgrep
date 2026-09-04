@@ -18,6 +18,7 @@ __pycache__/
 work/
 !fixtures/work/
 staging/
+staging*/
 review/
 lint/
 raw/
