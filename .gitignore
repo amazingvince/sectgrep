@@ -22,6 +22,10 @@ review/
 lint/
 raw/
 !fixtures/raw/
+# Secrets: keys live in .env, never in the repo (.env.example is the template)
+.env
+.env.*
+!.env.example
 # OS
 .DS_Store
 Thumbs.db

@@ -59,6 +59,8 @@ export interface OpenAICompatibleOptions {
   prompts: Partial<Record<TranscribeTask, string>>;
   /** Bearer token for hosted APIs; local servers need none. */
   apiKey?: string;
+  /** Extra fields merged into every chat request (an OpenRouter routing preference, say). */
+  extraBody?: Record<string, unknown>;
   kind?: "local" | "api";
   maxTokens?: number;
   temperature?: number;
@@ -94,6 +96,7 @@ export class OpenAICompatibleTranscriber implements Transcriber {
       attempts++;
       const maxTokens = attempt === 0 ? this.o.maxTokens : Math.min(this.o.maxTokens, 4096);
       const body: Record<string, unknown> = {
+        ...(this.o.extraBody ?? {}),
         model: this.o.model,
         temperature: this.o.temperature,
         max_tokens: maxTokens,

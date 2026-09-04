@@ -138,8 +138,8 @@ Total: roughly 16-18 engineer-weeks; about 8-9 calendar weeks with two engineers
 
 ## 8. Next actions
 
-1. H1 (the ingest agent on Pi against the seven verbs and the validators), after two decisions from the human: the model provider the ingest agent may use, and whether the scan secondary on the API path becomes a hosted VLM. Fold the versioner's per-section effective dates into the eCFR converter early in H1 so notices and sections share a timeline. Production OCR will call a hosted API; locally the pair is served by `packages/sect-convert/bakeoff/scripts/serve-pair.sh`.
-2. Pending human decisions before H1: the ingest agent's model provider, and the API-path scan secondary (a paid hosted VLM, or GLM-OCR as now). Stop-and-ask points stay a paid API run (never without asking) and publishing.
+1. H1 (the ingest agent on Pi against the seven verbs and the validators). The model provider is decided (`docs/decisions.md` #41): OpenRouter, `z-ai/glm-5.3-flash` by default, configured through `.env`; the same model is the scanned-page secondary on the API path for now. Fold the versioner's per-section effective dates into the eCFR converter early in H1 so notices and sections share a timeline. Locally the transcriber pair is served by `packages/sect-convert/bakeoff/scripts/serve-pair.sh`.
+2. No human decision is pending before H1. The OpenRouter key must be in `.env` (copy `.env.example`) before a run; the one shown in the session is to be rotated. Stop-and-ask points stay a new paid provider or account (OpenRouter with the chosen model is authorized) and publishing.
 
 Done: bootstrap, milestones 0, 0.5, 1, 2, 3, 3b (kept), 4, 5, 6, 7 (release R1, tag v0.1.0), C0 (OCR bake-off), C1 (native parsers, elements, dual-transcriber OCR) and C2 (validators and align, release R2 as tag v0.2.0) (all 2026-09-03).
 

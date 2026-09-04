@@ -26,6 +26,8 @@ export interface ExtractOptions {
   /** Base URL for the secondary when it is served elsewhere (two local vLLM processes); defaults to ocrServer. */
   ocrSecondaryServer?: string;
   apiKey?: string;
+  /** Extra request fields for hosted transcribers (a retention preference). */
+  extraBody?: Record<string, unknown>;
   /** The source's id_pattern/id_template for the native-id and reference passes. */
   pattern?: SourcePattern | null;
   homeTitle?: string;
@@ -148,7 +150,7 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
 function transcribers(o: ExtractOptions): { primary: Transcriber; secondary: Transcriber } {
   const make = (model: string, baseUrl: string) => {
     const preset = presetFor(model);
-    return new OpenAICompatibleTranscriber({ baseUrl, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey: o.apiKey });
+    return new OpenAICompatibleTranscriber({ baseUrl, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey: o.apiKey, extraBody: o.extraBody, kind: /^https?:\/\/(127\.|localhost|0\.0\.0\.0|\[::1\])/.test(baseUrl) ? "local" : "api" });
   };
   return { primary: make(o.ocrPrimary ?? "allenai/olmOCR-2-7B-1025", o.ocrServer!), secondary: make(o.ocrSecondary ?? "zai-org/GLM-OCR", o.ocrSecondaryServer ?? o.ocrServer!) };
 }

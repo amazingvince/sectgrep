@@ -15,6 +15,11 @@ import { existsSync } from "node:fs";
 import { PRESETS, presetFor } from "./ocr/presets.js";
 import { pageGeometry, pngSize, renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber } from "./ocr/transcriber.js";
+import { loadDotEnv, modelConfig, providerExtras } from "./env.js";
+
+// The nearest .env (gitignored) supplies keys and model choices; the shell wins over it.
+loadDotEnv();
+const hosted = modelConfig();
 
 function arg(name: string, def?: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -163,7 +168,12 @@ if (cmd === "fetch") {
   const sourceYaml = arg("source-yaml");
   extract({
     input, work,
-    ocrServer: arg("ocr-server"), ocrSecondaryServer: arg("ocr-secondary-server"), ocrPrimary: arg("ocr-primary"), ocrSecondary: arg("ocr-secondary"), apiKey: process.env.SECT_OCR_API_KEY,
+    // Flags, then SECT_OCR_* from the environment; the hosted model is the secondary by default.
+    ocrServer: arg("ocr-server") ?? process.env.SECT_OCR_SERVER,
+    ocrSecondaryServer: arg("ocr-secondary-server") ?? process.env.SECT_OCR_SECONDARY_SERVER ?? (hosted.apiKey ? hosted.baseUrl : undefined),
+    ocrPrimary: arg("ocr-primary") ?? process.env.SECT_OCR_PRIMARY,
+    ocrSecondary: arg("ocr-secondary") ?? process.env.SECT_OCR_SECONDARY ?? (hosted.apiKey ? hosted.model : undefined),
+    apiKey: process.env.SECT_OCR_API_KEY ?? hosted.apiKey, extraBody: providerExtras(hosted),
     pattern: sourceYaml ? readSourcePattern(sourceYaml) : null, homeTitle: arg("title"), images: process.argv.includes("--images"), force: process.argv.includes("--force"),
   })
     .then(({ report, dir, fromCache }) => {
