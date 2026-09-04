@@ -1,0 +1,11 @@
+name: fr
+kind: notice
+title: "Federal Register rule documents (converted from federalregister.gov XML)"
+publisher: "Office of the Federal Register, National Archives and Records Administration"
+precedence: 100
+id_prefix: "FR:"
+id_pattern: '(?i)\b(?:FR:|FR\s+Doc\.?\s+)?(?P<doc>(?:C\d-)?20\d{2}-\d{5})\b'
+id_template: "FR:{doc}"
+legal_status: official
+version: "rolling"
+acquire: "https://www.federalregister.gov/api/v1/documents/<docnum>.json -> full_text_xml_url (sect-convert fr-fetch)"
