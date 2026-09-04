@@ -16,7 +16,7 @@ defines: []
 authority: null
 citation: null
 tags: []
-context: Subchapter G [RESERVED] Subchapter G [reserved], within Chapter I (Government Accountability Office) of Title 4 (Accounts). This deterministic context prefix was written by sect-convert from the eCFR XML hierarchy, headings, and explicit references only; it names where the text sits and what it points to, and the WS3 ingest agent replaces it with a written prefix.
+context: "Reserved placeholder heading: no regulations are codified under Subchapter G at this time. The entry marks the subchapter's position in the chapter's hierarchy and stands empty until rules are assigned to it. A reader who lands here from a search should treat the designation as a deliberate gap in the numbering rather than a lost section, and check the chapter's table of contents for where related provisions now reside."
 provenance:
   raw: raw/cfr-title-4/2026-09-01/ECFR-title4.xml
   raw_sha256: ad89429c97812f07711bb766fdb880b423db8db4a93826f2885d3146f1267804
