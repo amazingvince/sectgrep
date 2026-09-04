@@ -78,7 +78,8 @@ export function walkMarkdown(root: string): string[] {
 }
 
 export function splitFrontMatter(text: string): { front: string; body: string } | null {
-  const t = text.replace(/^﻿/, "");
+  // A byte-order mark and Windows line endings are not content.
+  const t = text.replace(/^﻿/, "").replace(/\r\n/g, "\n");
   if (!t.startsWith("---")) return null;
   const end = t.indexOf("\n---", 3);
   if (end < 0) return null;

@@ -3,3 +3,7 @@ export * from "./tools.js";
 export * from "./model.js";
 export * from "./ingest.js";
 export { connectSect, type SectConnection, type SectOptions } from "./sect-tools.js";
+export * from "./evidence.js";
+export * from "./verifier.js";
+export * from "./sampling.js";
+export * from "./merge.js";

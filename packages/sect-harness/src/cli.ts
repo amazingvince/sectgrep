@@ -3,6 +3,15 @@
 //   [--raw-root DIR] [--work DIR] [--concurrency N] [--limit N] [--dry-run] [--skill PATH] [--json]
 // One ingest run over WS2's output for one source, into staging/<run_id>/ (spec D.2).
 import { ingest, resubmit } from "./ingest.js";
+import { mergeRun, rollback } from "./merge.js";
+import { drawSample, grade, readState, sampleMarkdown, writeState } from "./sampling.js";
+import { verifyRun, type VerifyReport } from "./verifier.js";
+import { loadDotEnv } from "@sectgrep/convert";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+
+// The nearest .env supplies the keys and model choices for every command; the shell wins over it.
+loadDotEnv();
 
 function arg(name: string, def?: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -10,7 +19,74 @@ function arg(name: string, def?: string): string | undefined {
 }
 
 const cmd = process.argv[2];
-if (cmd === "resubmit") {
+const review = arg("review", "review")!;
+if (cmd === "verify") {
+  // sect-harness verify --run DIR --input DIR --source NAME --corpus ROOT [--review DIR] [--concurrency N] [--limit N]
+  if (!arg("run") || !arg("input") || !arg("source") || !arg("corpus")) {
+    console.error("usage: sect-harness verify --run staging/<run_id> --input DIR --source NAME --corpus ROOT [--staging staging] [--review review] [--work work] [--concurrency 8] [--limit N] [--json]");
+    process.exit(2);
+  }
+  const level = readState(review, arg("source")!).level;
+  verifyRun({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, review, work: arg("work"), concurrency: arg("concurrency") ? Number(arg("concurrency")) : undefined, limit: arg("limit") ? Number(arg("limit")) : undefined, level, log: process.argv.includes("--json") ? (l) => console.error(l) : undefined })
+    .then((r) => {
+      if (process.argv.includes("--json")) console.log(JSON.stringify({ ...r, sections: undefined }, null, 2));
+      else console.log(`${r.run_id}: ${r.counts.auto} auto, ${r.counts.conflict} conflict of ${r.counts.sections} sections; agreement ${(100 * r.agreement_rate).toFixed(1)}% on ${r.counts.judgments} judgment fields (${r.counts.deterministic} deterministic); ${r.counts.evidence_fails} evidence failure(s); verifier ${r.verifier.model}, ${r.usage.calls} call(s), $${r.usage.cost.toFixed(4)} -> ${review}/${r.run_id}.md`);
+      process.exit(0);
+    })
+    .catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    });
+} else if (cmd === "merge") {
+  // sect-harness merge --run DIR --source NAME --corpus ROOT [--commit] [--sect BIN] [--review DIR]
+  if (!arg("run") || !arg("source") || !arg("corpus")) {
+    console.error("usage: sect-harness merge --run staging/<run_id> --source NAME --corpus corpus [--commit] [--sect BIN] [--review review]");
+    process.exit(2);
+  }
+  try {
+    const r = mergeRun({ runDir: arg("run")!, source: arg("source")!, corpus: arg("corpus")!, review, sectBin: arg("sect"), commit: process.argv.includes("--commit") });
+    console.log(`${r.run_id}: ${r.merged} section(s) merged into ${r.corpus}, ${r.held} held for review (${r.blocked} blocked by links to held sections); index ${r.indexed ? "refreshed" : "not refreshed"}; ${r.commit ? `commit ${r.commit.slice(0, 10)}` : "not committed (pass --commit)"}`);
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
+} else if (cmd === "rollback") {
+  // sect-harness rollback --commit SHA --corpus ROOT [--sect BIN]
+  if (!arg("commit") || !arg("corpus")) {
+    console.error("usage: sect-harness rollback --commit SHA --corpus corpus [--sect BIN]");
+    process.exit(2);
+  }
+  try {
+    const r = rollback(arg("commit")!, arg("corpus")!, arg("sect"));
+    console.log(`reverted: HEAD is ${r.reverted.slice(0, 10)}; index ${r.indexed ? "refreshed" : "not refreshed"}`);
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
+} else if (cmd === "sample") {
+  // sect-harness sample --run DIR --source NAME [--review DIR]
+  if (!arg("run") || !arg("source")) {
+    console.error("usage: sect-harness sample --run staging/<run_id> --source NAME [--review review]");
+    process.exit(2);
+  }
+  const runDir = path.resolve(arg("run")!);
+  const report = JSON.parse(readFileSync(path.join(runDir, "verify.json"), "utf-8")) as VerifyReport;
+  const state = readState(review, arg("source")!);
+  const sample = drawSample(report, arg("source")!, state.level);
+  writeFileSync(path.join(runDir, "sample.json"), JSON.stringify(sample, null, 2) + "\n", "utf-8");
+  mkdirSync(review, { recursive: true });
+  writeFileSync(path.join(review, `${sample.run_id}-sample.md`), sampleMarkdown(sample), "utf-8");
+  writeState(review, state);
+  console.log(`${sample.run_id}: ${sample.items.length} item(s) drawn at ${sample.level} inspection (plan n=${sample.plan.n}, accept ${sample.plan.accept}) -> ${review}/${sample.run_id}-sample.md`);
+} else if (cmd === "grade") {
+  // sect-harness grade --run DIR --id ID --ok|--error [--note TEXT] [--review DIR]
+  if (!arg("run") || !arg("id") || !(process.argv.includes("--ok") || process.argv.includes("--error"))) {
+    console.error("usage: sect-harness grade --run staging/<run_id> --id <section id> --ok|--error [--note TEXT] [--review review]");
+    process.exit(2);
+  }
+  const r = grade(path.resolve(arg("run")!), review, arg("id")!, process.argv.includes("--ok"), arg("note"));
+  console.log(`${arg("id")}: ${process.argv.includes("--ok") ? "ok" : "error"}; lot ${r.lot?.graded}/${r.lot?.n} graded, ${r.lot?.errors} error(s), ${r.lot?.accepted === null ? "open" : r.lot?.accepted ? "accepted" : "rejected"}; inspection level for ${r.sample.source} is now ${r.level}`);
+} else if (cmd === "resubmit") {
   // sect-harness resubmit --run DIR --input DIR --source NAME --corpus ROOT [--staging DIR] [--sect BIN]
   if (!arg("run") || !arg("input") || !arg("source") || !arg("corpus")) {
     console.error("usage: sect-harness resubmit --run staging/<run_id> --input DIR --source NAME --corpus ROOT [--staging staging] [--sect BIN] [--raw-root .] [--work work]");
@@ -19,11 +95,10 @@ if (cmd === "resubmit") {
   const r = resubmit({ runDir: arg("run")!, input: arg("input")!, source: arg("source")!, corpus: arg("corpus")!, staging: arg("staging", "staging")!, sectBin: arg("sect"), rawRoot: arg("raw-root"), work: arg("work") });
   console.log(`${r.runId}: ${r.staged} section(s) re-staged, ${r.strays.length} stray file(s) removed; ${r.summary ? `submitted: ${r.summary.xrefs_resolved} reference(s), ${r.summary.low_confidence.length} low-confidence, ${r.summary.flags.length} flag(s)` : `not submitted: ${r.errors} validator error(s)`}`);
   process.exit(r.summary ? 0 : 1);
-}
-if (cmd !== "ingest" || !arg("input") || !arg("source") || !arg("corpus")) {
+} else if (cmd !== "ingest" || !arg("input") || !arg("source") || !arg("corpus")) {
   console.error("usage: sect-harness ingest --input DIR --source NAME --corpus ROOT [--staging staging] [--sect BIN] [--raw-root .] [--work work] [--concurrency 4] [--limit N] [--dry-run] [--skill docs/SKILL-ingest.md] [--json]");
   process.exit(2);
-}
+} else {
 ingest({
   input: arg("input")!,
   source: arg("source")!,
@@ -50,3 +125,4 @@ ingest({
     console.error(e instanceof Error ? e.message : String(e));
     process.exit(1);
   });
+}

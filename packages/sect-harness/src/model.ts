@@ -4,7 +4,7 @@
 // OpenAI-compatible endpoint, so the model is a free choice in .env.
 
 import { getModel, type Model } from "@mariozechner/pi-ai";
-import { modelConfig, type ModelConfig } from "@sectgrep/convert";
+import { modelConfig, verifierConfig, type ModelConfig } from "@sectgrep/convert";
 
 export interface ModelChoice {
   config: ModelConfig;
@@ -26,6 +26,26 @@ export function modelFromEnv(env: NodeJS.ProcessEnv = process.env): ModelChoice 
     input: ["text", "image"],
     // OpenRouter's listed price for z-ai/glm-5.3-flash; another id is billed as its provider says.
     cost: { input: 0.075, output: 0.25, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 200_000,
+    maxTokens: 16_384,
+  };
+  return { config, model };
+}
+
+/** The verifier's model: text only, priced as OpenRouter lists DeepSeek's flash model; another id is billed as its provider says. */
+export function verifierModelFromEnv(env: NodeJS.ProcessEnv = process.env): ModelChoice {
+  const config = verifierConfig(env);
+  const known = getModel(config.provider as never, config.model as never) as ModelChoice["model"];
+  if (known) return { config, model: known };
+  const model: Model<"openai-completions"> = {
+    id: config.model,
+    name: config.model,
+    api: "openai-completions",
+    provider: config.provider,
+    baseUrl: config.baseUrl,
+    reasoning: false,
+    input: ["text"],
+    cost: { input: 0.089, output: 0.177, cacheRead: 0, cacheWrite: 0 },
     contextWindow: 200_000,
     maxTokens: 16_384,
   };

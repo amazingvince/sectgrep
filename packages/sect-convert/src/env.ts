@@ -71,6 +71,19 @@ export function modelConfig(env: NodeJS.ProcessEnv = process.env): ModelConfig {
   return { provider, baseUrl, model: env.SECT_MODEL ?? MODEL_DEFAULTS.model, apiKey, noRetention: /^(1|true|yes)$/i.test(env.SECT_MODEL_NO_RETENTION ?? "") };
 }
 
+/**
+ * The verifier's model (spec D.3): answer-blind, on a different model family than ingest so its
+ * second opinion is independent. Defaults to DeepSeek's flash model through the same gateway
+ * (human decision, 2026-09-04); `SECT_VERIFIER_PROVIDER`, `SECT_VERIFIER_MODEL`,
+ * `SECT_VERIFIER_BASE_URL` and `SECT_VERIFIER_API_KEY` override it.
+ */
+export function verifierConfig(env: NodeJS.ProcessEnv = process.env): ModelConfig {
+  const provider = env.SECT_VERIFIER_PROVIDER ?? env.SECT_MODEL_PROVIDER ?? MODEL_DEFAULTS.provider;
+  const baseUrl = env.SECT_VERIFIER_BASE_URL ?? (provider === (env.SECT_MODEL_PROVIDER ?? MODEL_DEFAULTS.provider) ? env.SECT_MODEL_BASE_URL : undefined) ?? BASE_URLS[provider] ?? MODEL_DEFAULTS.baseUrl;
+  const apiKey = env.SECT_VERIFIER_API_KEY ?? (KEY_VARS[provider] ? env[KEY_VARS[provider]] : undefined) ?? env.SECT_MODEL_API_KEY;
+  return { provider, baseUrl, model: env.SECT_VERIFIER_MODEL ?? "deepseek/deepseek-v4-flash", apiKey, noRetention: /^(1|true|yes)$/i.test(env.SECT_MODEL_NO_RETENTION ?? "") };
+}
+
 /** Request-body extras the provider needs for the configured retention policy. */
 export function providerExtras(c: ModelConfig): Record<string, unknown> {
   if (c.noRetention && c.provider === "openrouter") return { provider: { data_collection: "deny" } };
