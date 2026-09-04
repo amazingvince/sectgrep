@@ -8,6 +8,8 @@ import { dirname, join } from "node:path";
 import { convertEcfr } from "./ecfr.js";
 import { FR_SOURCE_YAML, convertFr } from "./fr.js";
 import { extract, readSourcePattern } from "./extract.js";
+import { formatReport, validateStaging } from "./validators/index.js";
+import { alignCommand } from "./align.js";
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { PRESETS, presetFor } from "./ocr/presets.js";
@@ -128,6 +130,32 @@ if (cmd === "fetch") {
     console.log(`${n.id} effective ${n.effective}: ${n.actions.length} action candidate(s) [${n.actions.map((a) => `${a.kind} ${a.target_id}${a.target_anchor ? "#" + a.target_anchor : ""}`).join("; ")}] -> ${join(dir, n.docnum + ".md")}`);
   }
   console.log(`${files.length} notice(s), ${total} action candidate(s)`);
+} else if (cmd === "validate") {
+  // The seven C.5 validators over a staging directory (or a corpus root), exit 1 on any error.
+  const staging = process.argv[3];
+  if (!staging || staging.startsWith("--")) {
+    console.error("usage: sect-convert validate <staging> [--corpus ROOT] [--raw-root DIR] [--work DIR] [--sect BIN] [--skip-index] [--json]");
+    process.exit(2);
+  }
+  const report = validateStaging({ staging, corpus: arg("corpus"), rawRoot: arg("raw-root", "."), work: arg("work", "work"), sectBin: arg("sect"), skipIndex: process.argv.includes("--skip-index") });
+  console.log(process.argv.includes("--json") ? JSON.stringify(report, null, 2) : formatReport(report));
+  process.exit(report.errors ? 1 : 0);
+} else if (cmd === "align") {
+  // Two versions of one source (dates fetch from the eCFR versioner; paths are local XML) to changes.json.
+  const [source, oldArg, newArg] = process.argv.slice(3, 6);
+  if (!source || !oldArg || !newArg || source.startsWith("--")) {
+    console.error("usage: sect-convert align <cfr-title-N> <old date|xml> <new date|xml> [--out changes.json] [--raw-root raw]");
+    process.exit(2);
+  }
+  alignCommand(source, oldArg, newArg, { out: arg("out", "changes.json"), rawRoot: arg("raw-root", "raw") })
+    .then((r) => {
+      const s = r.summary;
+      console.log(`${r.source}: ${r.old.label} (${r.old.sections} sections, effective ${r.old.effective}) -> ${r.new.label} (${r.new.sections} sections, effective ${r.new.effective}): ${s.unchanged} unchanged, ${s.changed} changed, ${s.renumbered} renumbered, ${s.moved} moved, ${s.added} added, ${s.removed} removed -> ${arg("out", "changes.json")}`);
+    })
+    .catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e));
+      process.exit(1);
+    });
 } else if (cmd === "extract") {
   // One raw document into work/<sha256>/ (elements, report, images, grids, C.4 pass outputs).
   const input = arg("input")!;
@@ -205,6 +233,6 @@ if (cmd === "fetch") {
     process.exit(1);
   });
 } else {
-  console.error("usage: sect-convert fetch --title N [--out raw] | sect-convert ecfr --xml <file> --title N --out <corpus root> | sect-convert fr-fetch (--docnum A,B | --title N [--part P] [--count K]) [--out raw] | sect-convert fr --xml <file or dir> --out <corpus root> | sect-convert extract --input F [--work DIR] [--source-yaml Y --title N] [--ocr-server URL/v1 --ocr-primary M --ocr-secondary M --ocr-secondary-server URL/v1] [--images] [--force] | sect-convert render --pdf F --page N [--model M] [--out png] | sect-convert ocr (--pdf F --page N | --png IMG) --server URL/v1 --model M [--task page|table|text] [--out json]");
+  console.error("usage: sect-convert fetch --title N [--out raw] | sect-convert ecfr --xml <file> --title N --out <corpus root> | sect-convert fr-fetch (--docnum A,B | --title N [--part P] [--count K]) [--out raw] | sect-convert fr --xml <file or dir> --out <corpus root> | sect-convert validate <staging> [--corpus ROOT] [--raw-root DIR] [--work DIR] [--skip-index] [--json] | sect-convert align <cfr-title-N> <old> <new> [--out changes.json] | sect-convert extract --input F [--work DIR] [--source-yaml Y --title N] [--ocr-server URL/v1 --ocr-primary M --ocr-secondary M --ocr-secondary-server URL/v1] [--images] [--force] | sect-convert render --pdf F --page N [--model M] [--out png] | sect-convert ocr (--pdf F --page N | --png IMG) --server URL/v1 --model M [--task page|table|text] [--out json]");
   process.exit(2);
 }

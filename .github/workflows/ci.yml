@@ -34,6 +34,10 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           SECT_BIN=$PWD/target/debug/sect pnpm -r --filter "./examples/*" test
+      - name: C.5 validators on the fixture (validator 1 through the built binary)
+        run: |
+          pnpm --filter @sectgrep/convert build
+          SECT_BIN=$PWD/target/debug/sect node packages/sect-convert/dist/cli.js validate fixtures/corpus --raw-root fixtures --work fixtures/work
       - name: Freshness stat at 10k files (spec B.6 reference number on Linux)
         run: |
           python3 eval/gen_synthetic.py --sections 10000 --out /tmp/syn
@@ -57,6 +61,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
       - run: pnpm -r test
+      - name: C.5 validators 2-7 on the fixture (no binary here; validator 1 runs in the Rust job)
+        run: node packages/sect-convert/dist/cli.js validate fixtures/corpus --raw-root fixtures --work fixtures/work --skip-index
 
   fixture-and-prototype:
     name: Fixture contract + milestone-0 eval

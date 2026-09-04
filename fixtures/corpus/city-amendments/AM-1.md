@@ -23,7 +23,7 @@ context: >
   and the definitions in § 2.2 as they stand in the base title.
 provenance:
   raw: raw/city-amendments/2025-03-01/ordinance-2025-7.pdf
-  raw_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+  raw_sha256: "9e8dd700c724a74cce6b8d460e5a374e55d7d3c7b16826fac381a2edb24b91d2"
   locator: {pages: [3, 4], bbox: null}
   legal_status: official
   ingest_run: 2026-09-03T00:00Z/fixture

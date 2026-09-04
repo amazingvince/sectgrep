@@ -1,0 +1,51 @@
+{
+  "input": "C:\\Users\\amazi\\code\\sect\\fixtures\\raw\\city-amendments\\2025-03-01\\ordinance-2025-7.pdf",
+  "doc_sha": "9e8dd700c724a74cce6b8d460e5a374e55d7d3c7b16826fac381a2edb24b91d2",
+  "format": "pdf",
+  "pages": [
+    {
+      "page": 1,
+      "width": 612,
+      "height": 792,
+      "chars": 109
+    },
+    {
+      "page": 2,
+      "width": 612,
+      "height": 792,
+      "chars": 157
+    },
+    {
+      "page": 3,
+      "width": 612,
+      "height": 792,
+      "chars": 1435
+    },
+    {
+      "page": 4,
+      "width": 612,
+      "height": 792,
+      "chars": 8,
+      "image": "pages/p4.png"
+    },
+    {
+      "page": 5,
+      "width": 612,
+      "height": 792,
+      "chars": 845
+    }
+  ],
+  "elements": 17,
+  "tables": 0,
+  "scanned_pages": [
+    4
+  ],
+  "elapsed_ms": 259,
+  "notes": [
+    "1 scanned page(s) not transcribed: no --ocr-server",
+    "headers/footers: 2",
+    "hyphenation joins: 0",
+    "native-id headings: 0",
+    "tables stitched: 0"
+  ]
+}

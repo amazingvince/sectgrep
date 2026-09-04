@@ -39,7 +39,8 @@ def convert_titles() -> list[dict]:
     for xml in sorted(glob.glob(str(ROOT / "raw" / "cfr-title-*" / "*" / "ECFR-title*.xml"))):
         title = int(re.search(r"ECFR-title(\d+)\.xml", xml).group(1))
         t0 = time.perf_counter()
-        r = run(["node", str(CLI), "ecfr", "--xml", xml, "--title", str(title), "--out", str(CORPUS)])
+        # Provenance records the raw path relative to the repo root, so the corpus stays portable.
+        r = run(["node", str(CLI), "ecfr", "--xml", os.path.relpath(xml, ROOT).replace(os.sep, "/"), "--title", str(title), "--out", str(CORPUS)])
         secs = time.perf_counter() - t0
         m = re.search(r"converted Title (\d+) \((.*?)\): (\d+) sections, (\d+) nodes, effective (\S+) -> .*?\((\d+) files; (\d+) effdnot, (\d+) crossref", r.stdout)
         rows.append({"title": title, "name": m.group(2), "sections": int(m.group(3)), "nodes": int(m.group(4)), "effective": m.group(5), "files": int(m.group(6)), "effdnot": int(m.group(7)), "crossref": int(m.group(8)), "seconds": secs, "bytes": os.path.getsize(xml)})

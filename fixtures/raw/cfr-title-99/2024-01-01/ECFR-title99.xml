@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ECFR>
+<AMDDATE>2024-01-01</AMDDATE>
+<VOLUME N="1" AMDDATE="2024-01-01"/>
+<DIV1 N="CFR:99" NODE="99" TYPE="TITLE">
+<HEAD>Title 99 - Fixture Occupational Standards</HEAD>
+<P>Chapter I - Fixture Safety Administration (Parts 1-3)</P>
+</DIV1>
+<DIV3 N="I" NODE="99:1" TYPE="CHAPTER">
+<HEAD>Chapter I - Fixture Safety Administration</HEAD>
+<P>Subchapter A - Occupational safety standards (Parts 1-3)</P>
+</DIV3>
+<DIV8 N="1.1" NODE="99:1.1.1.1.1" TYPE="SECTION">
+<HEAD>§ 1.1 Purpose and scope</HEAD>
+<P>(a) This title establishes occupational safety standards for the workplaces of employers covered by § 1.3. The standards in Part 2 of this title address walking-working surfaces and means of egress. Part 3 of this title addresses the recording and reporting of occupational injuries and illnesses.</P>
+<P>(b) Terms used throughout this title are defined in § 1.2. A definition that applies to only one part appears in that part.</P>
+<P>(c) The exemptions in § 1.5 apply to every part of this title unless the part states otherwise.</P>
+<P>(d) A local jurisdiction may adopt an amendment that is more protective of employees than a provision of this title. Where a local amendment overrides a section of this title, or narrows a paragraph of a section, the local amendment governs within that jurisdiction and this title governs elsewhere.</P>
+</DIV8>
+<DIV8 N="1.10" NODE="99:1.1.1.1.10" TYPE="SECTION">
+<HEAD>§ 1.10 Civil penalties</HEAD>
+<P>(a) The civil penalty for a violation classified under § 1.9(d) shall not exceed the maximum, and for a willful or repeated violation shall not be less than the minimum, in the following table.</P>
+<GPOTABLE><ROW><ENT>Violation class</ENT><ENT>Minimum penalty</ENT><ENT>Maximum penalty</ENT></ROW><ROW><ENT>Other-than-serious</ENT><ENT>$0</ENT><ENT>$16,131</ENT></ROW><ROW><ENT>Serious</ENT><ENT>$1,190</ENT><ENT>$16,131</ENT></ROW><ROW><ENT>Willful</ENT><ENT>$11,524</ENT><ENT>$161,323</ENT></ROW><ROW><ENT>Repeated</ENT><ENT>$0</ENT><ENT>$161,323</ENT></ROW><ROW><ENT>Failure to abate</ENT><ENT>$0</ENT><ENT>$16,131 per day</ENT></ROW></GPOTABLE>
+<P>(b) Reductions. The proposed penalty for an other-than-serious or serious violation is reduced by up to 70 percent for an employer with 25 or fewer employees, by up to 25 percent for an employer with a written safety program and a history of good faith, and by 20 percent for an employer with no serious, willful, or repeated citation in the preceding five years. Reductions do not apply to willful or repeated violations.</P>
+<P>(c) Failure to abate. An employer that fails to correct a cited violation within the abatement period fixed under § 1.9(c) may be assessed the daily penalty in paragraph (a) of this section for each day the violation continues.</P>
+<P>(d) Adjustment. The amounts in paragraph (a) of this section are adjusted for inflation each January 15 and published in the Fixture Register.</P>
+</DIV8>
+<DIV8 N="1.2" NODE="99:1.1.1.1.2" TYPE="SECTION">
+<HEAD>§ 1.2 Definitions</HEAD>
+<P>As used in this title:</P>
+<P>Competent person means a person who is capable of identifying existing and predictable hazards in the surroundings or working conditions and who has authorization to take prompt corrective measures to eliminate them.</P>
+<P>Employee means an individual employed by an employer, including a part-time, temporary, or seasonal worker, but not an independent contractor.</P>
+<P>Employer means a person engaged in a business affecting commerce who has employees, but does not include a State or political subdivision of a State except as provided in § 1.3(b).</P>
+<P>Establishment means a single physical location where business is conducted or where services or industrial operations are performed. For the purposes of Part 3 of this title, an employer with more than one physical location keeps separate records for each establishment that is expected to operate for one year or longer.</P>
+<P>Hazardous condition means a condition, practice, or equipment failure that could reasonably be expected to cause death or serious physical harm.</P>
+<P>Qualified person means a person who, by possession of a recognized degree, certificate, or professional standing, or by extensive knowledge, training, and experience, has demonstrated the ability to solve or resolve problems relating to the subject matter, the work, or the project.</P>
+<P>Workday means any day on which an employee performs work at the direction of the employer, whether or not the employee is present at the establishment.</P>
+</DIV8>
+<DIV8 N="1.3" NODE="99:1.1.1.1.3" TYPE="SECTION">
+<HEAD>§ 1.3 Applicability</HEAD>
+<P>(a) This title applies to every employer, as defined in § 1.2, and to every workplace at which that employer's employees perform work, except as provided in § 1.5.</P>
+<P>(b) A State or political subdivision of a State is an employer under this title only with respect to the employees of a public school, public hospital, or public transit operation that it operates.</P>
+<P>(c) Where a workplace is subject to a standard of another Federal agency that addresses the same hazard, this title does not apply to that hazard for as long as the other standard is in effect. An employer relying on this paragraph shall identify the other standard in the records kept under § 3.4.</P>
+<P>(d) A workplace on the premises of a Federal facility is covered by this title when the employer is a private contractor performing work there.</P>
+</DIV8>
+<DIV8 N="1.4" NODE="99:1.1.1.1.4" TYPE="SECTION">
+<HEAD>§ 1.4 Employer duties</HEAD>
+<P>(a) General duty. Each employer shall furnish to each of its employees a place of employment that is free from hazardous conditions, as defined in § 1.2, and shall comply with the standards in this title that apply to its workplaces.</P>
+<P>(b) Training. Each employer shall train each employee in the hazards of the employee's work and in the requirements of this title that apply to that work. Training shall be provided before initial assignment, periodically thereafter, and whenever a change in the workplace or in the assigned work introduces a hazard on which the employee has not been trained. Training on fall hazards is further specified in § 2.11.</P>
+<P>(c) Hazard correction. Each employer shall correct a hazardous condition promptly upon discovering it. Where immediate correction is not feasible, the employer shall protect employees from the hazard by other means until it is corrected, and shall record the condition and the interim measures as provided in § 3.2.</P>
+<P>(d) Posting. Each employer shall post the notices required by § 1.6.</P>
+<P>(e) Records. Each employer shall keep the records required by Part 3 of this title and shall make them available as provided in § 3.6.</P>
+</DIV8>
+<DIV8 N="1.5" NODE="99:1.1.1.1.5" TYPE="SECTION">
+<HEAD>§ 1.5 Exemptions</HEAD>
+<P>(a) This title does not apply to:</P>
+<P>(1) Domestic household employment;</P>
+<P>(2) An agricultural operation that employed no more than ten employees at any time during the preceding twelve months and that has not maintained a temporary labor camp during that period; or</P>
+<P>(3) A mining operation, to the extent the operation is regulated under the Fixture Mine Safety Act.</P>
+<P>(b) An employer exempt under paragraph (a) of this section remains subject to § 3.5 (reporting of fatalities and severe injuries).</P>
+<P>(c) The partial exemption from routine recordkeeping for small employers in § 3.8 is independent of this section. An employer may be covered by this title and still be exempt from routine recordkeeping.</P>
+</DIV8>
+<DIV8 N="1.6" NODE="99:1.1.1.1.6" TYPE="SECTION">
+<HEAD>§ 1.6 Posting of notices</HEAD>
+<P>(a) Each employer shall post, at each establishment, in a conspicuous place where notices to employees are customarily posted, the official notice informing employees of their protections and obligations under this title.</P>
+<P>(b) Each employer required to keep the summary described in § 3.3(b) shall post the summary for the preceding calendar year from February 1 to April 30 of the year following the year covered by the summary.</P>
+<P>(c) An employer shall replace a posted notice that has become damaged, illegible, or obscured.</P>
+<P>(d) A notice posted under this section is not a record for purposes of the retention period in § 3.4, but the summary posted under paragraph (b) of this section is retained as provided there after the posting period ends.</P>
+<P>(e) Where employees at an establishment do not read English, the employer shall also post the notice in the language or languages spoken by those employees, if the Administration has published the notice in that language.</P>
+</DIV8>
+<DIV8 N="1.7" NODE="99:1.1.1.1.7" TYPE="SECTION">
+<HEAD>§ 1.7 Variances</HEAD>
+<P>(a) Temporary variance. An employer may apply for a temporary variance from a standard in Part 2 of this title if the employer:</P>
+<P>(1) Is unable to comply with the standard by its effective date because of the unavailability of professional or technical personnel, materials, or equipment, or because necessary construction or alteration of facilities cannot be completed by that date;</P>
+<P>(2) Is taking all available steps to safeguard its employees against the hazards covered by the standard; and</P>
+<P>(3) Has an effective program for coming into compliance with the standard as quickly as practicable.</P>
+<P>(b) Permanent variance. An employer may apply for a permanent variance from a standard in Part 2 of this title if it demonstrates by a preponderance of the evidence that the conditions, practices, means, methods, operations, or processes it uses or proposes to use will provide employment and places of employment that are as safe and healthful as those that would prevail if it complied with the standard.</P>
+<P>(c) Duration. A temporary variance may be granted for the period needed to achieve compliance or one year, whichever is shorter, and may be renewed no more than twice. A permanent variance remains in effect until it is modified or revoked under § 1.8(e).</P>
+<P>(d) Effect. A variance does not relieve an employer of the recordkeeping and reporting duties of Part 3 of this title.</P>
+<P>(e) An application for a variance is filed and decided in accordance with § 1.8.</P>
+</DIV8>
+<DIV8 N="1.8" NODE="99:1.1.1.1.8" TYPE="SECTION">
+<HEAD>§ 1.8 Petitions for variance; procedure</HEAD>
+<P>(a) Contents. A petition for a variance under § 1.7 shall contain:</P>
+<P>(1) The name and address of the employer and of each establishment covered by the petition;</P>
+<P>(2) A citation to the standard, or the portion of the standard, from which the variance is sought;</P>
+<P>(3) A statement of the conditions, practices, means, methods, operations, or processes the employer uses or proposes to use, and the facts showing that they provide employment that is as safe and healthful as compliance with the standard; and</P>
+<P>(4) A certification that the employer has informed its employees of the petition as required by paragraph (b) of this section.</P>
+<P>(b) Employee notice. The employer shall give a copy of the petition to the employees' authorized representative, post a summary of the petition where the notices required by § 1.6 are posted, and inform employees that they may request a hearing.</P>
+<P>(c) Deadlines. A petition shall be filed, and will be decided, within the periods in the following table.</P>
+<GPOTABLE><ROW><ENT>Variance type</ENT><ENT>File no later than</ENT><ENT>Decision due within</ENT></ROW><ROW><ENT>Temporary</ENT><ENT>30 days before the standard's effective date</ENT><ENT>60 days of filing</ENT></ROW><ROW><ENT>Temporary renewal</ENT><ENT>90 days before the variance expires</ENT><ENT>45 days of filing</ENT></ROW><ROW><ENT>Permanent</ENT><ENT>Any time</ENT><ENT>120 days of filing</ENT></ROW></GPOTABLE>
+<P>(d) Interim order. The Administration may issue an interim order allowing the employer to continue its current practices while the petition is pending, if the petition shows that employees will be protected in the interim.</P>
+<P>(e) Modification or revocation. A variance may be modified or revoked on the petition of the employer or of an affected employee, or on the Administration's own motion, after notice and an opportunity for a hearing.</P>
+</DIV8>
+<DIV8 N="1.9" NODE="99:1.1.1.1.9" TYPE="SECTION">
+<HEAD>§ 1.9 Inspections and citations</HEAD>
+<P>(a) Authority to inspect. An authorized representative of the Administration may, upon presenting credentials, enter without delay and at reasonable times any establishment where work is performed by an employee of an employer covered by this title, and may inspect all pertinent conditions, structures, machines, devices, equipment, materials, and records. Records kept under Part 3 of this title shall be provided as described in § 3.6(c).</P>
+<P>(b) Walkaround. A representative of the employer and a representative authorized by the employees shall be given an opportunity to accompany the inspector during the physical inspection of the workplace.</P>
+<P>(c) Citations. If an inspection reveals a violation of this title, the Administration shall issue a citation to the employer with reasonable promptness, and in any event within six months after the violation occurred. The citation shall describe the violation with particularity, cite the provision violated, and fix a reasonable time for abatement.</P>
+<P>(d) Classification. Each violation is classified as other-than-serious, serious, willful, or repeated. A serious violation is one in which there is a substantial probability that death or serious physical harm could result and the employer knew, or with the exercise of reasonable diligence could have known, of the violation. Penalty amounts by classification are set in § 1.10.</P>
+<P>(e) Contest. An employer may contest a citation or a proposed penalty by filing a notice of contest within 15 working days after receiving the citation.</P>
+</DIV8>
+<DIV5 N="1" NODE="99:1.1.1" TYPE="PART">
+<HEAD>Part 1 - General provisions</HEAD>
+
+</DIV5>
+<DIV8 N="2.1" NODE="99:1.1.1.2.1" TYPE="SECTION">
+<HEAD>§ 2.1 Scope and application</HEAD>
+<P>(a) This part applies to all general industry workplaces covered by § 1.3. It covers all walking-working surfaces, including floors, stairs, ladders, ramps, scaffolds, elevated walkways, dockboards, and roofs, and all exit routes, unless a provision of this part states otherwise.</P>
+<P>(b) This part does not apply to:</P>
+<P>(1) An operation exempted by § 1.5;</P>
+<P>(2) A powered platform or a vehicle-mounted work platform, which is covered by its own standard; or</P>
+<P>(3) A ladder used in emergency operations such as firefighting or rescue, or a ladder that is an integral part of a machine or equipment.</P>
+<P>(c) Terms used in this part are defined in § 2.2. A term not defined there has the meaning given in § 1.2.</P>
+</DIV8>
+<DIV8 N="2.10" NODE="99:1.1.1.2.10" TYPE="SECTION">
+<HEAD>§ 2.10 Exit routes; design and construction</HEAD>
+<P>(a) Number of exit routes. At least two exit routes, as defined in § 2.2, shall be available in a workplace to permit prompt evacuation of employees and other occupants during an emergency. The exit routes shall be located as far away as practicable from each other so that if one exit route is blocked by fire or smoke, employees can evacuate using the second. More than two exit routes shall be provided where the number of employees, the size of the building, its occupancy, or the arrangement of the workplace is such that all employees would not be able to evacuate safely through two. A single exit route is permitted where the number of employees, the size of the building, its occupancy, or the arrangement of the workplace is such that all employees would be able to evacuate safely through one.</P>
+<P>(b) Width and height. The ceiling of an exit route shall be at least 7 feet 6 inches (2.3 m) high, with any projection from the ceiling at least 6 feet 8 inches (2.0 m) above the floor. An exit access shall be at least 28 inches (71 cm) wide at all points. Where there is only one exit access leading to an exit or exit discharge, the width of the exit and exit discharge shall be at least equal to the width of the exit access. Objects that project into the exit route shall not reduce the width of the exit route to less than the minimum width required.</P>
+<P>(c) Construction. An exit shall be separated from other parts of the workplace by fire-resistant materials rated at one hour where the exit connects three or fewer stories, and at two hours where the exit connects four or more stories. An exit shall open only to the exit discharge or to another exit. Openings into an exit shall be protected by a self-closing fire door that remains closed or automatically closes in an emergency.</P>
+<P>(d) Exit discharge. Each exit discharge, as defined in § 2.2, shall lead directly outside or to a street, walkway, refuge area, public way, or open space with access to the outside, and shall be large enough to accommodate the building occupants likely to use the exit route.</P>
+<P>(e) Doors and locks. An exit door shall be unlocked from the inside, shall be free of any device or alarm that could restrict emergency use if the device or alarm fails, and shall be a side-hinged door that swings out in the direction of exit travel if the room is designed to be occupied by more than 50 people or contains high-hazard contents.</P>
+<P>(f) Capacity. Exit routes shall support the maximum permitted occupant load for each floor served, and the capacity of an exit route shall not decrease in the direction of exit route travel to the exit discharge.</P>
+</DIV8>
+<DIV8 N="2.11" NODE="99:1.1.1.2.11" TYPE="SECTION">
+<HEAD>§ 2.11 Training requirements</HEAD>
+<P>(a) Fall hazards. Before any employee is exposed to a fall hazard covered by § 2.4, the employer shall train the employee to recognize the fall hazards of the work, the procedures to be followed to minimize those hazards, and the correct procedures for installing, inspecting, operating, maintaining, and disassembling the personal fall protection systems the employee uses.</P>
+<P>(b) Trainer. Training under this section shall be given by a qualified person, as defined in § 1.2, and shall be understandable to each employee, in a language and vocabulary the employee understands.</P>
+<P>(c) Equipment. Each employee who uses a dockboard, portable ladder, fixed ladder, or ladder safety system shall be trained in the proper care, inspection, storage, and use of that equipment before using it.</P>
+<P>(d) Retraining. The employer shall retrain an employee when the employer has reason to believe the employee does not have the understanding and skill required by this section, including when changes in the workplace or in the types of fall protection systems or equipment render previous training obsolete, and when inadequacies in the employee's knowledge or use of equipment are observed. This section supplements, and does not replace, the periodic training required by § 1.4(b).</P>
+<P>(e) Records. The employer shall keep a record of the training given under this section, including the employee's name, the date, and the trainer, for the period stated in § 3.4.</P>
+</DIV8>
+<DIV8 N="2.12" NODE="99:1.1.1.2.12" TYPE="SECTION">
+<HEAD>§ 2.12 Maintenance, safeguards, and operational features for exit routes</HEAD>
+<P>(a) Unobstructed. Each exit route shall be kept free of explosive or highly flammable furnishings and decorations, and free of obstructions such as materials, equipment, and locked doors that could impede or block exit travel. An exit route shall not pass through a room that can be locked, such as a bathroom, and shall not lead into a dead end.</P>
+<P>(b) Lighting and marking. Each exit route shall be adequately lighted so that an employee with normal vision can see along the exit route. Each exit shall be clearly visible and marked by a sign reading "Exit" in plainly legible letters at least 6 inches (15 cm) high. Each doorway or passage along an exit access that could be mistaken for an exit shall be marked "Not an Exit" or with a sign identifying its actual use. Where the direction of travel to the exit is not immediately apparent, signs shall be posted along the exit access indicating the direction of travel.</P>
+<P>(c) Safeguards. Any fire retardant paints or solutions used in an exit route shall be renewed as often as necessary to maintain their properties. Safeguards designed to protect employees during an emergency, such as sprinkler systems, alarm systems, fire doors, and exit lighting, shall be in proper working order at all times.</P>
+<P>(d) During construction, repair, or alteration. Employees shall not occupy a workplace until an exit route required by § 2.10 is completed and ready for use, and shall not be exposed to hazards of flammable or explosive substances or equipment used during construction, repair, or alteration that are beyond the normal permissible conditions in the workplace.</P>
+<P>(e) Alarm. An employee alarm system meeting the requirements of the emergency action plan in § 2.13 shall be installed and maintained in every workplace required to have an emergency action plan.</P>
+</DIV8>
+<DIV8 N="2.13" NODE="99:1.1.1.2.13" TYPE="SECTION">
+<HEAD>§ 2.13 Emergency action plans</HEAD>
+<P>(a) Application. An employer shall have an emergency action plan whenever a standard in this title requires one. The requirements in this section apply to each such emergency action plan.</P>
+<P>(b) Written and oral plans. An emergency action plan shall be in writing, kept in the workplace, and available to employees for review. An employer with 10 or fewer employees may communicate the plan orally to employees.</P>
+<P>(c) Minimum elements. An emergency action plan shall include at a minimum:</P>
+<P>(1) Procedures for reporting a fire or other emergency;</P>
+<P>(2) Procedures for emergency evacuation, including the type of evacuation and the exit route assignments under § 2.10;</P>
+<P>(3) Procedures to be followed by employees who remain to operate critical plant operations before they evacuate;</P>
+<P>(4) Procedures to account for all employees after evacuation;</P>
+<P>(5) Procedures to be followed by employees performing rescue or medical duties; and</P>
+<P>(6) The name or job title of every employee who may be contacted by employees who need more information about the plan or an explanation of their duties under the plan.</P>
+<P>(d) Employee alarm system. An employer shall have and maintain an employee alarm system. The alarm system shall use a distinctive signal for each purpose and shall comply with § 2.12(e).</P>
+<P>(e) Training. An employer shall designate and train employees to assist in a safe and orderly evacuation of other employees.</P>
+<P>(f) Review. An employer shall review the emergency action plan with each employee covered by the plan when the plan is developed or the employee is assigned initially to a job, when the employee's responsibilities under the plan change, and when the plan is changed. The fire prevention plan required by § 2.14 may be combined with the emergency action plan.</P>
+</DIV8>
+<DIV8 N="2.14" NODE="99:1.1.1.2.14" TYPE="SECTION">
+<HEAD>§ 2.14 Fire prevention plans</HEAD>
+<P>(a) Application. An employer shall have a fire prevention plan whenever a standard in this title requires one. The requirements in this section apply to each such fire prevention plan.</P>
+<P>(b) Written and oral plans. A fire prevention plan shall be in writing, kept in the workplace, and made available to employees for review. An employer with 10 or fewer employees may communicate the plan orally to employees.</P>
+<P>(c) Minimum elements. A fire prevention plan shall include:</P>
+<P>(1) A list of all major fire hazards, proper handling and storage procedures for hazardous materials, potential ignition sources and their control, and the type of fire protection equipment necessary to control each major hazard;</P>
+<P>(2) Procedures to control accumulations of flammable and combustible waste materials, consistent with the housekeeping requirements of § 2.3(a);</P>
+<P>(3) Procedures for regular maintenance of safeguards installed on heat-producing equipment to prevent the accidental ignition of combustible materials;</P>
+<P>(4) The name or job title of employees responsible for maintaining equipment to prevent or control sources of ignition or fires; and</P>
+<P>(5) The name or job title of employees responsible for the control of fuel source hazards.</P>
+<P>(d) Employee information. An employer shall inform employees upon initial assignment to a job of the fire hazards to which they are exposed, and shall review with each employee those parts of the fire prevention plan necessary for self-protection.</P>
+<P>(e) Combined plans. The fire prevention plan may be combined with the emergency action plan required by § 2.13, provided the combined plan contains the elements of each.</P>
+</DIV8>
+<DIV8 N="2.2" NODE="99:1.1.1.2.2" TYPE="SECTION">
+<HEAD>§ 2.2 Definitions</HEAD>
+<P>The following definitions apply to this part:</P>
+<P>Dockboard means a portable or fixed device that spans a gap, or compensates for a difference in elevation, between a loading platform and a transport vehicle.</P>
+<P>Exit discharge means the part of an exit route that leads directly outside, or to a street, walkway, refuge area, public way, or open space with access to the outside.</P>
+<P>Exit route means a continuous and unobstructed path of exit travel from any point within a workplace to a place of safety. An exit route consists of three parts: the exit access, the exit, and the exit discharge.</P>
+<P>Fixed ladder means a ladder with rails or individual rungs that is permanently attached to a structure, building, or equipment. It does not include ship stairs, step bolts, or manhole steps.</P>
+<P>Guardrail system means a barrier erected along an unprotected or exposed side, edge, or other area of a walking-working surface to prevent employees from falling to a lower level.</P>
+<P>Hole means a gap or open space in a floor, roof, horizontal walking-working surface, or similar surface that is at least 2 inches (5 cm) in its least dimension.</P>
+<P>Ladder means a device with rungs, steps, or cleats used to gain access to a different elevation.</P>
+<P>Portable ladder means a ladder that can readily be moved or carried, and usually consists of side rails joined at intervals by steps, rungs, or cleats.</P>
+<P>Toeboard means a low protective barrier that is designed to prevent materials, tools, and equipment from falling to a lower level, and to protect employees from falling.</P>
+<P>Unprotected sides and edges means any side or edge of a walking-working surface, except at entrances and other points of access, where there is no wall, guardrail system, or stair rail system to protect an employee from falling to a lower level.</P>
+<P>Walking-working surface means any horizontal or vertical surface on or through which an employee walks, works, or gains access to a work area or workplace location.</P>
+</DIV8>
+<DIV8 N="2.3" NODE="99:1.1.1.2.3" TYPE="SECTION">
+<HEAD>§ 2.3 General requirements for walking-working surfaces</HEAD>
+<P>(a) Surface conditions. The employer shall ensure that all places of employment, passageways, storerooms, service rooms, and walking-working surfaces are kept in a clean, orderly, and sanitary condition; that the floor of each workroom is maintained in a clean and, to the extent feasible, dry condition; and that walking-working surfaces are free of hazards such as sharp or protruding objects, loose boards, corrosion, leaks, spills, snow, and ice.</P>
+<P>(b) Loads. The employer shall ensure that each walking-working surface can support the maximum intended load for that surface. The design loads for common occupancies are set in § 2.9, and a surface shall not be loaded beyond the rating posted under § 2.9(c).</P>
+<P>(c) Access and egress. The employer shall provide, and ensure each employee uses, a safe means of access and egress to and from walking-working surfaces. Exit routes are further specified in § 2.10.</P>
+<P>(d) Inspection, maintenance, and repair. The employer shall ensure that walking-working surfaces are inspected regularly and as necessary, and are maintained in a safe condition. A hazardous condition on a walking-working surface shall be corrected or repaired before an employee uses the surface again; where the correction or repair cannot be made immediately, the hazard shall be guarded to prevent employees from using the surface until it is corrected. Repairs shall be performed or supervised by a qualified person, as defined in § 1.2.</P>
+</DIV8>
+<DIV8 N="2.4" NODE="99:1.1.1.2.4" TYPE="SECTION">
+<HEAD>§ 2.4 Duty to have fall protection</HEAD>
+<P>(a) Unprotected sides and edges. The employer shall ensure that each employee on a walking-working surface with an unprotected side or edge, as defined in § 2.2, that is 4 feet (1.2 m) or more above a lower level is protected from falling by one or more of the following: a guardrail system meeting § 2.8; a safety net system; or a personal fall protection system.</P>
+<P>(b) Hoist areas. The employer shall ensure that each employee in a hoist area is protected from falling 4 feet (1.2 m) or more to a lower level by a guardrail system or a personal fall arrest system. When any portion of a guardrail system is removed to facilitate hoisting and an employee must lean through or over the edge of the access opening, the employee shall be protected by a personal fall arrest system.</P>
+<P>(c) Holes. The employer shall ensure that each employee is protected from falling through any hole, as defined in § 2.2, that is 4 feet (1.2 m) or more above a lower level by a cover, a guardrail system, or a personal fall protection system, and is protected from tripping into or stepping into a hole by a cover or a guardrail system.</P>
+<P>(d) Dockboards. The employer shall ensure that each employee on a dockboard is protected from falling 4 feet (1.2 m) or more to a lower level by a guardrail system or a personal fall protection system, except that fall protection is not required when the dockboard is being used solely for materials handling by motorized equipment and employees are protected from falling by other means.</P>
+<P>(e) Runways and similar walkways. The employer shall ensure that each employee on a runway or similar walkway is protected from falling 4 feet (1.2 m) or more to a lower level by a guardrail system.</P>
+<P>(f) Training. Each employee who may be exposed to a fall hazard covered by this section shall be trained as required by § 2.11 before being exposed to the hazard.</P>
+</DIV8>
+<DIV8 N="2.5" NODE="99:1.1.1.2.5" TYPE="SECTION">
+<HEAD>§ 2.5 Ladders; general</HEAD>
+<P>(a) Application. This section applies to every ladder, as defined in § 2.2, except a ladder that is an integral part of a machine. Additional requirements for portable ladders are in § 2.6 and for fixed ladders in § 2.7.</P>
+<P>(b) Design and capacity. The employer shall ensure that each ladder is capable of supporting its maximum intended load without failure, and that rungs, steps, and cleats are parallel, level, and uniformly spaced when the ladder is in position for use, with a spacing of not less than 10 inches (25 cm) and not more than 14 inches (36 cm) measured between the centerlines.</P>
+<P>(c) Surfaces. Ladder rungs, steps, and cleats shall have a surface that minimizes slipping, such as corrugation, knurling, dimpling, or a skid-resistant coating. A wooden ladder shall not be coated with any material that may obscure structural defects.</P>
+<P>(d) Inspection. Ladders shall be inspected before initial use in each work shift, and more frequently as necessary, to identify any visible defect that could cause employee injury. A ladder with a structural or other defect shall be immediately tagged "Dangerous: Do Not Use" and removed from service until it is repaired or replaced.</P>
+<P>(e) Use. Each employee shall face the ladder when climbing up or down, shall use at least one hand to grasp the ladder when climbing, and shall not carry any object or load that could cause the employee to lose balance and fall.</P>
+</DIV8>
+<DIV8 N="2.6" NODE="99:1.1.1.2.6" TYPE="SECTION">
+<HEAD>§ 2.6 Portable ladders</HEAD>
+<P>(a) Application. This section applies to each portable ladder, as defined in § 2.2, in addition to the requirements of § 2.5.</P>
+<P>(b) Duty rating. Each portable ladder shall be marked with its duty rating and shall not be loaded beyond the maximum load for that rating in the following table.</P>
+<GPOTABLE><ROW><ENT>Duty rating</ENT><ENT>Type</ENT><ENT>Maximum load (person plus materials)</ENT></ROW><ROW><ENT>Special duty</ENT><ENT>IAA</ENT><ENT>375 pounds (170 kg)</ENT></ROW><ROW><ENT>Extra heavy duty</ENT><ENT>IA</ENT><ENT>300 pounds (136 kg)</ENT></ROW><ROW><ENT>Heavy duty</ENT><ENT>I</ENT><ENT>250 pounds (113 kg)</ENT></ROW><ROW><ENT>Medium duty</ENT><ENT>II</ENT><ENT>225 pounds (102 kg)</ENT></ROW><ROW><ENT>Light duty</ENT><ENT>III</ENT><ENT>200 pounds (91 kg)</ENT></ROW></GPOTABLE>
+<P>(c) Setup. A non-self-supporting portable ladder shall be used at an angle such that the horizontal distance from the top support to the foot of the ladder is approximately one-quarter of the working length of the ladder. A self-supporting ladder shall be used only with its spreaders locked in the fully open position.</P>
+<P>(d) Extension above landing. When a portable ladder is used to gain access to an upper landing surface, the side rails shall extend at least 3 feet (0.9 m) above the landing surface, or the ladder shall be secured at its top to a rigid support and a grab device shall be provided.</P>
+<P>(e) Securing and placement. A portable ladder shall be secured, or held by another employee, when it is used on a slippery surface or where it may be displaced by workplace activity or traffic. A portable ladder shall not be placed on boxes, barrels, or other unstable bases to obtain additional height, and shall not be moved, shifted, or extended while an employee is on it.</P>
+<P>(f) Top step and cap. An employee shall not stand on the top step or cap of a stepladder, or on the top three rungs of a straight or extension ladder, unless the ladder is designed for that use.</P>
+</DIV8>
+<DIV8 N="2.7" NODE="99:1.1.1.2.7" TYPE="SECTION">
+<HEAD>§ 2.7 Fixed ladders</HEAD>
+<P>(a) Application. This section applies to each fixed ladder, as defined in § 2.2, in addition to the requirements of § 2.5.</P>
+<P>(b) Fall protection. The employer shall ensure that each fixed ladder that extends more than 24 feet (7.3 m) above a lower level is equipped with a personal fall arrest system, a ladder safety system, a cage, or a well. A cage or well installed on or before the effective date of this section is an acceptable means of fall protection for the life of the ladder, provided it is maintained in accordance with paragraph (e) of this section.</P>
+<P>(c) Landing platforms. Where a ladder safety system or personal fall arrest system is used, the ladder shall have a rest platform at intervals of not more than 150 feet (45.7 m). Where a cage or well is used, the ladder shall have landing platforms at intervals of not more than 50 feet (15.2 m), with the ladder sections offset so that a fall is arrested at each platform.</P>
+<P>(d) Top of ladder. The side rails of a through or side-step fixed ladder shall extend at least 42 inches (1.1 m) above the top of the access level or landing platform, and the landing shall be protected by a guardrail system meeting § 2.8 except at the ladder opening.</P>
+<P>(e) Maintenance. Fixed ladders and their fall protection systems shall be inspected annually and maintained free of corrosion, deformation, and loose or missing rungs and fasteners.</P>
+</DIV8>
+<DIV8 N="2.8" NODE="99:1.1.1.2.8" TYPE="SECTION">
+<HEAD>§ 2.8 Guardrail systems</HEAD>
+<P>(a) Top rail height. The top edge height of a top rail, or equivalent guardrail system member, shall be 42 inches (107 cm), plus or minus 3 inches (8 cm), above the walking-working surface. The top edge height may exceed 45 inches (114 cm), provided the guardrail system meets all other criteria of this section.</P>
+<P>(b) Midrails and infill. Midrails, screens, mesh, intermediate vertical members, solid panels, or equivalent intermediate members shall be installed between the walking-working surface and the top edge of the guardrail system when there is no wall or parapet that is at least 21 inches (53 cm) high. A midrail shall be installed at a height midway between the top edge of the guardrail system and the walking-working surface. Intermediate vertical members shall be no more than 19 inches (48 cm) apart.</P>
+<P>(c) Strength. A guardrail system shall be capable of withstanding, without failure, a force of at least 200 pounds (890 N) applied in a downward or outward direction within 2 inches (5 cm) of the top edge, at any point along the top rail. Midrails, screens, mesh, and intermediate members shall be capable of withstanding a force of at least 150 pounds (667 N).</P>
+<P>(d) Toeboards. Where a guardrail system is used at a location where objects could fall to a lower level, a toeboard, as defined in § 2.2, at least 3.5 inches (9 cm) high shall be installed at the walking-working surface, with not more than 0.25 inch (0.6 cm) of clearance above the surface.</P>
+<P>(e) Construction. A guardrail system shall be smooth-surfaced to protect employees from injury and to prevent snagging of clothing. The ends of top rails and midrails shall not overhang the terminal posts, except where the overhang does not constitute a projection hazard. Steel or plastic banding shall not be used as a top rail or midrail.</P>
+<P>(f) Openings. When a guardrail system is used around a hole, as defined in § 2.2, it shall be installed on all unprotected sides or edges of the hole, and any gate or removable section used at a point of access shall be self-closing or offset so that an employee cannot walk directly into the hole.</P>
+</DIV8>
+<DIV8 N="2.9" NODE="99:1.1.1.2.9" TYPE="SECTION">
+<HEAD>§ 2.9 Floor load ratings</HEAD>
+<P>(a) Design loads. A floor or other walking-working surface used for an occupancy in the following table shall be designed, and shall be maintained, to support at least the uniformly distributed live load shown, in addition to its dead load.</P>
+<GPOTABLE><ROW><ENT>Occupancy</ENT><ENT>Minimum design live load</ENT></ROW><ROW><ENT>Office space</ENT><ENT>50 pounds per square foot (2.4 kPa)</ENT></ROW><ROW><ENT>Corridors and exit access above the first floor</ENT><ENT>80 pounds per square foot (3.8 kPa)</ENT></ROW><ROW><ENT>Light manufacturing</ENT><ENT>125 pounds per square foot (6.0 kPa)</ENT></ROW><ROW><ENT>Heavy manufacturing</ENT><ENT>250 pounds per square foot (12.0 kPa)</ENT></ROW><ROW><ENT>Light storage (warehouse)</ENT><ENT>125 pounds per square foot (6.0 kPa)</ENT></ROW><ROW><ENT>Heavy storage (warehouse)</ENT><ENT>250 pounds per square foot (12.0 kPa)</ENT></ROW><ROW><ENT>Elevated platforms and mezzanines</ENT><ENT>125 pounds per square foot (6.0 kPa)</ENT></ROW></GPOTABLE>
+<P>(b) Concentrated loads. In addition to the loads in paragraph (a) of this section, a floor in a manufacturing or storage occupancy shall support a concentrated load of 2,000 pounds (8.9 kN) on any area 2.5 feet (0.76 m) square, placed where it produces the greatest effect.</P>
+<P>(c) Posting. The employer shall post, in a conspicuous place in each space to which it applies, a plate stating the approved load rating in pounds per square foot. A surface shall not be loaded beyond its posted rating, as required by § 2.3(b).</P>
+<P>(d) Change of occupancy. A space shall not be used for an occupancy with a higher design load than its rating unless a qualified person, as defined in § 1.2, has determined that the surface will support the new load and the posting under paragraph (c) of this section has been revised.</P>
+</DIV8>
+<DIV5 N="2" NODE="99:1.1.1.2" TYPE="PART">
+<HEAD>Part 2 - Walking-working surfaces and means of egress</HEAD>
+
+</DIV5>
+<DIV8 N="3.1" NODE="99:1.1.1.3.1" TYPE="SECTION">
+<HEAD>§ 3.1 Purpose</HEAD>
+<P>(a) This part requires employers to record and report work-related fatalities, injuries, and illnesses. Keeping the records required by this part is one of the employer duties listed in § 1.4(e), and the records inform the hazard correction required by § 1.4(c).</P>
+<P>(b) Recording or reporting a work-related injury, illness, or fatality does not mean that the employer or the employee was at fault, that a rule of this title has been violated, or that the employee is eligible for workers' compensation or other benefits.</P>
+<P>(c) The criteria for deciding whether a case is recordable are in § 3.2. An employer with ten or fewer employees may be partially exempt from this part under § 3.8, but no employer is exempt from the reporting duty in § 3.5.</P>
+</DIV8>
+<DIV8 N="3.2" NODE="99:1.1.1.3.2" TYPE="SECTION">
+<HEAD>§ 3.2 Recording criteria</HEAD>
+<P>(a) Basic requirement. Each employer required by this part to keep records shall record each fatality, injury, and illness that is work-related, is a new case, and meets one or more of the general recording criteria in paragraph (d) of this section.</P>
+<P>(b) Work-relatedness. An injury or illness is work-related if an event or exposure in the work environment either caused or contributed to the resulting condition, or significantly aggravated a pre-existing injury or illness. Work-relatedness is presumed for injuries and illnesses resulting from events or exposures in the work environment, unless an exception in paragraph (c) of this section applies.</P>
+<P>(c) Exceptions. An injury or illness is not work-related if:</P>
+<P>(1) At the time of the injury or illness, the employee was present in the work environment as a member of the general public rather than as an employee;</P>
+<P>(2) The injury or illness involves signs or symptoms that surface at work but result solely from a non-work-related event or exposure that occurs outside the work environment;</P>
+<P>(3) The injury or illness results solely from voluntary participation in a wellness program or in a medical, fitness, or recreational activity;</P>
+<P>(4) The injury or illness is solely the result of an employee eating, drinking, or preparing food or drink for personal consumption; or</P>
+<P>(5) The illness is the common cold or flu.</P>
+<P>(d) General recording criteria. An injury or illness is recordable if it results in any of the following: death; days away from work; restricted work or transfer to another job; medical treatment beyond first aid, as those terms are defined in § 3.9; loss of consciousness; or a significant injury or illness diagnosed by a physician or other licensed health care professional.</P>
+<P>(e) New case. An injury or illness is a new case if the employee has not previously experienced a recorded injury or illness of the same type that affects the same part of the body, or if the employee previously experienced such a case but had recovered completely and an event or exposure in the work environment caused the signs or symptoms to reappear.</P>
+<P>(f) Hazardous conditions. A hazardous condition, as defined in § 1.2, that is discovered but has not caused an injury or illness is not entered on the log; it is recorded with its interim measures as required by § 1.4(c).</P>
+</DIV8>
+<DIV8 N="3.3" NODE="99:1.1.1.3.3" TYPE="SECTION">
+<HEAD>§ 3.3 Recording forms</HEAD>
+<P>(a) Log. The employer shall keep, for each establishment as defined in § 1.2, a log (Form 300) of every recordable injury and illness, entering each case within seven calendar days of receiving information that a recordable injury or illness has occurred. Each entry shall identify the employee, the date, the location, and a description of the injury or illness, and shall classify the case by outcome.</P>
+<P>(b) Annual summary. At the end of each calendar year the employer shall review the log for completeness and accuracy, create an annual summary (Form 300A) of the injuries and illnesses recorded on the log, certify the summary, and post it as required by § 1.6(b). The summary shall be certified by a company executive.</P>
+<P>(c) Incident report. The employer shall complete an injury and illness incident report (Form 301), or an equivalent form, for each recordable injury or illness entered on the log, within seven calendar days of receiving information that the case has occurred.</P>
+<P>(d) Equivalent forms. The employer may use an equivalent form in place of any form named in this section if it contains the same information, is as readable and understandable, and is completed using the same instructions.</P>
+<P>(e) Multiple establishments. An employer with more than one establishment shall keep separate forms for each establishment expected to be in operation for one year or longer, and may keep one set of forms for all of its short-term establishments.</P>
+</DIV8>
+<DIV8 N="3.4" NODE="99:1.1.1.3.4" TYPE="SECTION">
+<HEAD>§ 3.4 Retention and updating</HEAD>
+<P>(a) Retention. The employer shall save the log, the annual summary, and the incident reports required by § 3.3 for five years following the end of the calendar year that the records cover. The training records required by § 2.11(e) and the documentation required by § 1.3(c) shall be retained for the same period.</P>
+<P>(b) Updating the log. During the retention period, the employer shall update the log to include newly discovered recordable injuries or illnesses and to show any changes that have occurred in the classification of previously recorded cases. If the description or outcome of a case changes, the employer shall remove or line out the original entry and enter the new information.</P>
+<P>(c) Summary and incident reports. The employer is not required to update the annual summary or the incident reports, but may do so.</P>
+<P>(d) Change in business ownership. If the business changes ownership, the employer is responsible for recording and reporting work-related injuries and illnesses only for that period of the year during which it owned the establishment, and shall transfer the records required by this part to the new owner, who shall save them as provided in paragraph (a) of this section.</P>
+</DIV8>
+<DIV8 N="3.5" NODE="99:1.1.1.3.5" TYPE="SECTION">
+<HEAD>§ 3.5 Reporting fatalities and severe injuries</HEAD>
+<P>(a) Basic requirement. Every employer covered by this title shall report to the Administration each work-related event in the following table within the period shown, measured from the time the employer learns of the event. This section applies to every employer, including an employer exempt from routine recordkeeping under § 1.5 or § 3.8.</P>
+<GPOTABLE><ROW><ENT>Event</ENT><ENT>Report within</ENT><ENT>Reportable if the event occurs</ENT></ROW><ROW><ENT>Fatality</ENT><ENT>8 hours</ENT><ENT>Within 30 days of the work-related incident</ENT></ROW><ROW><ENT>In-patient hospitalization of one or more employees</ENT><ENT>24 hours</ENT><ENT>Within 24 hours of the work-related incident</ENT></ROW><ROW><ENT>Amputation</ENT><ENT>24 hours</ENT><ENT>Within 24 hours of the work-related incident</ENT></ROW><ROW><ENT>Loss of an eye</ENT><ENT>24 hours</ENT><ENT>Within 24 hours of the work-related incident</ENT></ROW></GPOTABLE>
+<P>(b) How to report. A report shall be made by telephone to the nearest area office, by the toll-free telephone number, or through the electronic reporting application, and shall give the establishment name, the location and time of the incident, the type of reportable event, the number of employees affected, the names of the employees, a contact person and telephone number, and a brief description of the incident.</P>
+<P>(c) Motor vehicle accidents. An employer is not required to report a fatality or in-patient hospitalization that results from a motor vehicle accident on a public street or highway, except in a construction work zone, but shall record the case on the log if it is recordable under § 3.2.</P>
+<P>(d) Heart attacks. An employer is not required to report a fatality or in-patient hospitalization that results from a heart attack, unless the heart attack was caused by an event in the work environment. The employer shall record the case if it is recordable under § 3.2.</P>
+<P>(e) Diagnostic hospitalization. An in-patient hospitalization for observation or diagnostic testing only is not a reportable event under this section.</P>
+</DIV8>
+<DIV8 N="3.6" NODE="99:1.1.1.3.6" TYPE="SECTION">
+<HEAD>§ 3.6 Employee access to records</HEAD>
+<P>(a) Employee involvement. The employer shall inform each employee how to report a work-related injury or illness and shall set up a way for employees to report promptly. The employer shall not discharge or in any manner discriminate against an employee for reporting a work-related injury or illness.</P>
+<P>(b) Access to the log and summary. When an employee, former employee, personal representative, or authorized employee representative asks for copies of the log or the annual summary for an establishment where the employee works or worked, the employer shall provide the copies by the end of the next business day, free of charge for the first request in a calendar year.</P>
+<P>(c) Access by the Administration. When an authorized representative of the Administration asks for records during an inspection under § 1.9, the employer shall provide copies of the log, the annual summary, and the incident reports within four business hours.</P>
+<P>(d) Access to incident reports. When an employee, former employee, or personal representative asks for a copy of the incident report describing an injury or illness to that employee, the employer shall provide it by the end of the next business day. When an authorized employee representative asks for copies of the incident reports for an establishment, the employer shall provide them within seven calendar days, with the personal information removed except for the description of the injury or illness.</P>
+<P>(e) Privacy cases. Names shall be withheld from the copies of the log provided under this section for cases identified as privacy concern cases under § 3.7.</P>
+</DIV8>
+<DIV8 N="3.7" NODE="99:1.1.1.3.7" TYPE="SECTION">
+<HEAD>§ 3.7 Privacy concern cases</HEAD>
+<P>(a) Privacy concern cases. The employer shall not enter the employee's name on the log for a privacy concern case. Instead, the employer shall enter "privacy case" in the space normally used for the employee's name. A privacy concern case is one that involves:</P>
+<P>(1) An injury or illness to an intimate body part or the reproductive system;</P>
+<P>(2) An injury or illness resulting from a sexual assault;</P>
+<P>(3) A mental illness;</P>
+<P>(4) HIV infection, hepatitis, or tuberculosis;</P>
+<P>(5) A needlestick injury or a cut from a sharp object that is contaminated with another person's blood or other potentially infectious material; or</P>
+<P>(6) Any other illness, if the employee voluntarily requests that the name not be entered on the log.</P>
+<P>(b) Confidential list. The employer shall keep a separate, confidential list of the case numbers and employee names for the privacy concern cases, so that the cases can be updated and the information can be provided to the Administration on request.</P>
+<P>(c) Descriptive information. If the employer has a reasonable basis to believe that information describing a privacy concern case may be personally identifiable even without the employee's name, the employer may use discretion in describing the injury or illness on the log and on the incident report kept under § 3.3, while entering enough information to identify the cause of the incident and the general severity of the injury or illness.</P>
+<P>(d) Disclosure. Except as required by this section or by § 3.6, the employer shall not disclose the confidential list or the names on it to anyone other than the Administration or a State agency operating an approved plan.</P>
+</DIV8>
+<DIV8 N="3.8" NODE="99:1.1.1.3.8" TYPE="SECTION">
+<HEAD>§ 3.8 Partial exemption for small employers</HEAD>
+<P>(a) Basic requirement. If the employer had ten or fewer employees at all times during the last calendar year, the employer does not need to keep the injury and illness records required by § 3.3, unless the Administration informs the employer in writing that it must keep records under paragraph (c) of this section.</P>
+<P>(b) Counting employees. The employer counts all employees of the company as a whole, not per establishment, including part-time, seasonal, and temporary employees, at the peak employment of the year. A company that at any time in the last calendar year had more than ten employees is not exempt under this section.</P>
+<P>(c) Survey. An employer that is exempt under paragraph (a) of this section shall keep records if it is notified in writing that it has been selected to participate in an annual survey of occupational injuries and illnesses, and shall report the survey data as directed in the notice.</P>
+<P>(d) Reporting continues. This section does not relieve any employer of the duty to report fatalities and severe injuries under § 3.5, and it is independent of the coverage exemptions in § 1.5.</P>
+</DIV8>
+<DIV8 N="3.9" NODE="99:1.1.1.3.9" TYPE="SECTION">
+<HEAD>§ 3.9 Definitions</HEAD>
+<P>The following definitions apply to this part:</P>
+<P>Days away from work means calendar days, including weekends, holidays, and vacation days, on which the employee would not have been able to work because of the injury or illness, counted from the day after the injury or illness, up to a cap of 180 days.</P>
+<P>First aid means only the following treatments, regardless of who provides them: using a non-prescription medication at non-prescription strength; administering a tetanus immunization; cleaning, flushing, or soaking a wound on the surface of the skin; using a wound covering such as a bandage, gauze pad, or butterfly bandage; using hot or cold therapy; using a non-rigid means of support such as an elastic bandage or wrap; using a temporary immobilization device while transporting an accident victim; drilling a fingernail or toenail to relieve pressure, or draining fluid from a blister; using an eye patch; removing a foreign body from the eye using only irrigation or a cotton swab; removing a splinter or foreign material from an area other than the eye by irrigation, tweezers, cotton swab, or other simple means; using a finger guard; using massage; and drinking fluids for relief of heat stress.</P>
+<P>Medical treatment means the management and care of a patient to combat disease or disorder. Medical treatment does not include a visit to a physician or other licensed health care professional solely for observation or counseling, a diagnostic procedure such as an x-ray or blood test, or first aid as defined in this section.</P>
+<P>Physician or other licensed health care professional means an individual whose legally permitted scope of practice allows the individual to independently perform, or be delegated the responsibility to perform, the activities described by this part.</P>
+<P>Restricted work means that, as the result of a work-related injury or illness, the employer keeps the employee from performing one or more of the routine functions of the job or from working the full workday the employee would otherwise have been scheduled to work, or a physician or other licensed health care professional recommends either of those restrictions.</P>
+<P>Work environment means the establishment and other locations where one or more employees are working or are present as a condition of their employment. The work environment includes not only physical locations but also the equipment and materials used by the employee during the course of work.</P>
+</DIV8>
+<DIV5 N="3" NODE="99:1.1.1.3" TYPE="PART">
+<HEAD>Part 3 - Recordkeeping and reporting of occupational injuries and illnesses</HEAD>
+
+</DIV5>
+<DIV4 N="I-A" NODE="99:1.1" TYPE="SUBCHAPTER">
+<HEAD>Subchapter A - Occupational safety standards</HEAD>
+
+</DIV4>
+</ECFR>

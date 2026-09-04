@@ -1,0 +1,362 @@
+{
+  "source": "cfr-title-4",
+  "old": {
+    "label": "2024-06-17",
+    "effective": "2018-05-01",
+    "nodes": 270,
+    "sections": 222
+  },
+  "new": {
+    "label": "2024-07-18",
+    "effective": "2024-07-18",
+    "nodes": 270,
+    "sections": 222
+  },
+  "summary": {
+    "unchanged": 250,
+    "changed": 20,
+    "renumbered": 0,
+    "moved": 0,
+    "added": 0,
+    "removed": 0
+  },
+  "changes": [
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.4",
+      "level": "section",
+      "title": "Computation of time",
+      "similarity": 0.985,
+      "diff": {
+        "added": [
+          "(b) Whenever a party has the right or is required to do some act within a prescribed period after the service of a notice or other paper upon them and the notice or paper is served by mail, five (5) days shall be added to the prescribed period. Only two (2) days shall be added when a document is served by express mail or other form of expedited delivery."
+        ],
+        "removed": [
+          "(b) Whenever a party has the right or is required to do some act within a prescribed period after the service of a notice or other paper upon him or her and the notice or paper is served by mail, five (5) days shall be added to the prescribed period. Only two (2) days shall be added when a document is served by express mail or other form of expedited delivery."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.12",
+      "level": "section",
+      "title": "General Counsel Procedures",
+      "similarity": 0.982,
+      "diff": {
+        "added": [
+          "(3) Any charging party may represent themselves or obtain other representation.",
+          "(g) If 180 days have elapsed since the filing of the charge, and the Office of General Counsel has not completed the investigation and issued a Right to Petition Letter, the charging party may bring their case directly to the Board by filing a petition in accordance with § 28.18. If a charging party exercises this option to file a petition with the Board without waiting for the completion of the investigation, the Office of General Counsel shall not represent the charging party in proceedings before the Board. The charging party may represent themselves or obtain other representation. The Office of General Counsel shall close the investigation of the charge upon being notified by the Clerk of the Board that the charging party has filed a petition with the Board under this paragraph (g).",
+          "(2) Unless so ordered by a court of competent jurisdiction, no employee of the Personnel Appeals Board Office of General Counsel shall produce or disclose any information or records acquired as part of the performance of their official duties or because of their official status. Before producing or disclosing such information or records pursuant to court order, an employee shall notify the General Counsel."
+        ],
+        "removed": [
+          "(3) Any charging party may represent him- or herself or obtain other representation.",
+          "(g) If 180 days have elapsed since the filing of the charge, and the Office of General Counsel has not completed the investigation and issued a Right to Petition Letter, the charging party may bring his or her case directly to the Board by filing a petition in accordance with § 28.18. If a charging party exercises this option to file a petition with the Board without waiting for the completion of the investigation, the Office of General Counsel shall not represent the charging party in proceedings before the Board. The charging party may represent him- or herself or obtain other representation. The Office of General Counsel shall close the investigation of the charge upon being notified by the Clerk of the Board that the charging party has filed a petition with the Board under this paragraph (g).",
+          "(2) Unless so ordered by a court of competent jurisdiction, no employee of the Personnel Appeals Board Office of General Counsel shall produce or disclose any information or records acquired as part of the performance of his/her official duties or because of his/her official status. Before producing or disclosing such information or records pursuant to court order, an employee shall notify the General Counsel."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.17",
+      "level": "section",
+      "title": "Internal petitions of Board employees",
+      "similarity": 0.986,
+      "diff": {
+        "added": [
+          "(2) When an employee of the Board believes that he or she has been denied their right to equal employment opportunity, the employee shall bring this matter to the attention of the Board's Executive Director or General Counsel. If the matter cannot be resolved within 10 days, the Executive Director shall notify the employee of their right to file an EEO complaint. The employee may consult with either the Board's Solicitor or General Counsel and seek advice with regard to procedural matters concerning the filing of an EEO charge. The employee shall have 20 days from service of this notice to file an EEO charge with the PAB Office of General Counsel. Upon receipt of an EEO charge, the General Counsel shall arrange with the Executive Director for processing in accordance with paragraph (b) of this section. If the EEO allegations involve challenge to a RIF-based separation, the employee may choose to expedite the procedures by filing a petition directly with the Board.",
+          "(d) Any employee of the Board (other than the General Counsel) who believes that they are aggrieved by any personnel matter that is not reviewable by the Board under 31 U.S.C. 753(a) may file a grievance as follows:",
+          "(1)  Informal Step.  The employee must discuss the complained of incident with their supervisor as soon as possible after the complained of incident."
+        ],
+        "removed": [
+          "(2) When an employee of the Board believes that he or she has been denied his or her right to equal employment opportunity, the employee shall bring this matter to the attention of the Board's Executive Director or General Counsel. If the matter cannot be resolved within 10 days, the Executive Director shall notify the employee of his or her right to file an EEO complaint. The employee may consult with either the Board's Solicitor or General Counsel and seek advice with regard to procedural matters concerning the filing of an EEO charge. The employee shall have 20 days from service of this notice to file an EEO charge with the PAB Office of General Counsel. Upon receipt of an EEO charge, the General Counsel shall arrange with the Executive Director for processing in accordance with paragraph (b) of this section. If the EEO allegations involve challenge to a RIF-based separation, the employee may choose to expedite the procedures by filing a petition directly with the Board.",
+          "(d) Any employee of the Board (other than the General Counsel) who believes that he or she is aggrieved by any personnel matter that is not reviewable by the Board under 31 U.S.C. 753(a) may file a grievance as follows:",
+          "(1)  Informal Step.  The employee must discuss the complained of incident with his or her supervisor as soon as possible after the complained of incident."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.21",
+      "level": "section",
+      "title": "Amendments to petitions and motions practice",
+      "similarity": 0.995,
+      "diff": {
+        "added": [
+          "(7)  Oral argument.  The administrative judge may allow oral argument on the motion at their discretion."
+        ],
+        "removed": [
+          "(7)  Oral argument.  The administrative judge may allow oral argument on the motion at his or her discretion."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.23",
+      "level": "section",
+      "title": "Disqualification of administrative judges",
+      "similarity": 0.983,
+      "diff": {
+        "added": [
+          "(a) In the event that an administrative judge considers themselves disqualified, he or she shall withdraw from the case, stating on the record the reasons therefor, and shall immediately notify the Board of the withdrawal."
+        ],
+        "removed": [
+          "(a) In the event that an administrative judge considers himself or herself disqualified, he or she shall withdraw from the case, stating on the record the reasons therefor, and shall immediately notify the Board of the withdrawal."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.25",
+      "level": "section",
+      "title": "Representation",
+      "similarity": 0.986,
+      "diff": {
+        "added": [
+          "(c) The administrative judge, on their own motion, may disqualify a party's representative on the grounds described in paragraph (b) of this section."
+        ],
+        "removed": [
+          "(c) The administrative judge, on his or her own motion, may disqualify a party's representative on the grounds described in paragraph (b) of this section."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.29",
+      "level": "section",
+      "title": "Consolidation or joinder",
+      "similarity": 0.976,
+      "diff": {
+        "added": [
+          "(b)  Action by administrative judge.  An administrative judge may consolidate or join cases on their own initiative or on the motion of a party if to do so would expedite processing of the cases and not adversely affect the interests of the parties."
+        ],
+        "removed": [
+          "(b)  Action by administrative judge.  An administrative judge may consolidate or join cases on his or her own initiative or on the motion of a party if to do so would expedite processing of the cases and not adversely affect the interests of the parties."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.57",
+      "level": "section",
+      "title": "Public hearings",
+      "similarity": 0.974,
+      "diff": {
+        "added": [
+          "(a) Hearings shall be open to the public. However, the administrative judge at their discretion, may order a hearing or any part thereof closed, where to do so would be in the best interests of the petitioner, a witness, the public, or other affected persons. Any order closing the hearing shall set forth the reasons for the administrative judge's decision. Any objections thereto shall be made a part of the record."
+        ],
+        "removed": [
+          "(a) Hearings shall be open to the public. However, the administrative judge at his or her discretion, may order a hearing or any part thereof closed, where to do so would be in the best interests of the petitioner, a witness, the public, or other affected persons. Any order closing the hearing shall set forth the reasons for the administrative judge's decision. Any objections thereto shall be made a part of the record."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.69",
+      "level": "section",
+      "title": "Judicial notice",
+      "similarity": 0.959,
+      "diff": {
+        "added": [
+          "The administrative judge on their own motion or on motion of a party, may take judicial notice of a fact which is not subject to reasonable dispute because it is either: a matter of common knowledge; or a matter capable of accurate and ready determination by resort to sources whose accuracy cannot reasonably be questioned. Judicial notice taken of any fact satisfies a party's burden of proving the fact noticed."
+        ],
+        "removed": [
+          "The administrative judge on his or her own motion or on motion of a party, may take judicial notice of a fact which is not subject to reasonable dispute because it is either: a matter of common knowledge; or a matter capable of accurate and ready determination by resort to sources whose accuracy cannot reasonably be questioned. Judicial notice taken of any fact satisfies a party's burden of proving the fact noticed."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.80",
+      "level": "section",
+      "title": "Explanation",
+      "similarity": 0.946,
+      "diff": {
+        "added": [
+          "An interlocutory appeal is an appeal to the Board of a ruling made by an administrative judge during the course of a proceeding. This appeal may be permitted by the administrative judge if they determine that the issue presented is of such importance to the proceeding that it requires the Board's immediate attention. The Board makes a decision on the issue and the administrative judge acts in accordance with that decision."
+        ],
+        "removed": [
+          "An interlocutory appeal is an appeal to the Board of a ruling made by an administrative judge during the course of a proceeding. This appeal may be permitted by the administrative judge if he or she determines that the issue presented is of such importance to the proceeding that it requires the Board's immediate attention. The Board makes a decision on the issue and the administrative judge acts in accordance with that decision."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.81",
+      "level": "section",
+      "title": "Procedures and criteria for certification",
+      "similarity": 0.992,
+      "diff": {
+        "added": [
+          "(b) The administrative judge may, on motion of a party or on their own motion, certify an interlocutory ruling to the Board for its immediate consideration. Any such certification shall explain the basis on which the administrative judge concluded that the standards for interlocutory review have been met. If the Board nevertheless determines that the certification does not meet those standards it may decline to accept the certification."
+        ],
+        "removed": [
+          "(b) The administrative judge may, on motion of a party or on his or her own motion, certify an interlocutory ruling to the Board for its immediate consideration. Any such certification shall explain the basis on which the administrative judge concluded that the standards for interlocutory review have been met. If the Board nevertheless determines that the certification does not meet those standards it may decline to accept the certification."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.89",
+      "level": "section",
+      "title": "Attorney's fees and costs",
+      "similarity": 0.969,
+      "diff": {
+        "added": [
+          "Within 20 days after service of a final decision by the Board, or within 20 days after the date on which an initial decision becomes final pursuant to § 28.87(d), the petitioner, if they are the prevailing party, may submit a request for the award of reasonable attorney's fees and costs. GAO may file a response within 20 days after service of the request. Motions for attorney's fees shall be filed in accordance with § 28.21 of these regulations. Rulings on attorney's fees and costs shall be consistent with the standards set forth at 5 U.S.C. 7701(g). The decision of the administrative judge concerning attorney's fees and costs shall be subject to review and shall become final according to the provisions of § 28.87."
+        ],
+        "removed": [
+          "Within 20 days after service of a final decision by the Board, or within 20 days after the date on which an initial decision becomes final pursuant to § 28.87(d), the petitioner, if he or she is the prevailing party, may submit a request for the award of reasonable attorney's fees and costs. GAO may file a response within 20 days after service of the request. Motions for attorney's fees shall be filed in accordance with § 28.21 of these regulations. Rulings on attorney's fees and costs shall be consistent with the standards set forth at 5 U.S.C. 7701(g). The decision of the administrative judge concerning attorney's fees and costs shall be subject to review and shall become final according to the provisions of § 28.87."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.92",
+      "level": "section",
+      "title": "Oversight of GAO EEO program",
+      "similarity": 0.988,
+      "diff": {
+        "added": [
+          "(5) Any other information regarding equal employment opportunity within the GAO that may be required by the Board, in the time frame and format established by the Board after consultation with the Comptroller General or their designee."
+        ],
+        "removed": [
+          "(5) Any other information regarding equal employment opportunity within the GAO that may be required by the Board, in the time frame and format established by the Board after consultation with the Comptroller General or his or her designee."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.95",
+      "level": "section",
+      "title": "Purpose and scope",
+      "similarity": 0.595,
+      "diff": {
+        "added": [
+          "(c) Section 6(d) of the Fair Labor Standard Act of 1938 as amended by the Equal Pay Act of 1963 (29 U.S.C. 206(d)), prohibiting discrimination in wages on the basis of sex;",
+          "(d) Title I of the Americans with Disabilities Act of 1990 (42 U.S.C. 12101  et seq. ) and sections 501 and 505 of the Rehabilitation Act of 1973 (29 U.S.C. 791, 794a) prohibiting discrimination on the basis of disability;",
+          "(e) Section 202 of the Genetic Information Nondiscrimination Act of 2008 (42 U.S.C. 2000ff-1), prohibiting discrimination on the basis of genetic information;",
+          "(f) Section 103 of the Pregnant Workers Fairness Act (42 U.S.C. 2000gg-1), prohibiting discrimination on the basis of pregnancy, childbirth or related medical conditions; or",
+          "(g) Any other law prohibiting discrimination in Federal employment on the basis of race, color, religion, age, sex, national origin or disability. 31 U.S.C. 732(f)(2).",
+          "(h) Prohibited discrimination also includes any materially adverse action taken against an employee or applicant for employment for opposing any unlawful employment practice, or for participating in any manner in an investigation, hearing, or in any stage of an administrative or judicial proceeding, under any of the statutes or laws identified in paragraphs (a) through (g) of this section."
+        ],
+        "removed": [
+          "(c) Section 6(d) of the Fair Labor Standards Act of 1938 (29 U.S.C. 206(d), prohibiting discrimination in wages on the basis of sex;",
+          "(d) Title I of the Americans with Disabilities Act of 1990 (42 U.S.C. 12101  et seq. ) and sections 501 and 505 of the Rehabilitation Act of 1973 (29 U.S.C. 791, 794a) prohibiting discrimination on the basis of disability; or",
+          "(e) Any other law prohibiting discrimination in Federal employment on the basis of race, color, religion, age, sex, national origin or disability. 31 U.S.C. 732(f)(2)."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.98",
+      "level": "section",
+      "title": "Individual charges in EEO cases",
+      "similarity": 0.437,
+      "diff": {
+        "added": [
+          "(a)  General rule for filing EEO claims.  Except as provided in paragraphs (c) and (e) of this section, an employee or applicant alleging prohibited discrimination (as defined in § 28.95) must first file a complaint with GAO in accordance with GAO Order 2713.2 and may not file directly with the Board's General Counsel.",
+          "(b)  Time limits to file EEO claims with PAB/OGC.  After GAO processes a complaint in accordance with GAO Order 2713.2, an employee or applicant for employment may file an individual EEO charge with the Board's Office of General Counsel as follows:",
+          "(1) Within 30 days from the receipt by the charging party of a GAO decision rejecting the complaint in whole or part; or",
+          "(2) Whenever a period of more than 120 days has elapsed since the complaint was filed, and a final GAO decision has not been issued; or",
+          "(c)  Special rules for certain adverse and performance-based actions.  Where an employee is affected by a removal, suspension for more than 14 days, reduction in grade or pay, or furlough of not more than 30 days (whether due to disciplinary, performance-based or other reasons), and the employee wishes to allege that such action was due in whole or part to prohibited discrimination (as defined in § 28.95), the employee may elect to do either (but not both) of the following:",
+          "(1) File a charge directly with the Board's Office of General Counsel within 30 days of the effective date of the personnel action and raise the issue of discrimination in the course of the proceedings before the Board; or",
+          "(2) File a complaint of discrimination with the GAO pursuant to GAO Order 2713.2. If the employee elects to file a complaint of discrimination with GAO, they may still seek Board review of the matter by filing a charge with the Board's Office of General Counsel at the times authorized in paragraph (b) of this section. Where a discrimination complaint filed with GAO relates to one or more non-EEO issues that are within the Board's jurisdiction in addition to an EEO-related allegation, the subsequent charge filed with the Board's Office of General Counsel under paragraph (b) of this section shall be considered a timely appeal of the non-EEO issue(s). An employee will be deemed to have elected the EEO complaint process if they file a timely written complaint of discrimination with GAO before filing a charge with the Board's Office of General Counsel. Consultation with an EEO counselor, without filing a written complaint of discrimination, does not constitute an election of the EEO complaint process.",
+          "(d)  Special rules for RIF-based actions.  An individual alleging discrimination issues in connection with a RIF-based separation may follow the procedures outlined above in paragraph (c) of this section for adverse and performance-based actions, or may choose instead a third option. In accordance with the provisions of § 28.13, such an individual may challenge that action by filing directly with the PAB, thus bypassing both the Office of Opportunity and Inclusiveness and the Board's Office of General Counsel.",
+          "(e)  Special rules in certain retaliation actions.  (1) Except as outlined in paragraph (c) of this section, whenever a charging party raises a claim of retaliation that could be raised under § 28.95(h), including the prohibited personnel practices listed in 5 U.S.C. 2302(b)(9), and that claim has not already been filed pursuant to GAO Order 2713.2, the Board's General Counsel has authority to, and shall determine whether the claim reasonably relates to retaliation for filing or assisting with a discrimination complaint filed pursuant to GAO Order 2713.2. The General Counsel's determination shall not be reviewable.",
+          "(i) If the Board's General Counsel determines the claim as described in this paragraph (e)(1) reasonably relates to retaliation for filing or assisting with a discrimination complaint filed pursuant to GAO Order 2713.2, the Board's Office of General Counsel shall advise the charging party to file the claim as a complaint of discrimination pursuant to GAO Order 2713.2.",
+          "(ii) If the Board's General Counsel determines the claim as described in this paragraph (e)(1) does not reasonably relate to retaliation for filing or assisting with a discrimination complaint pursuant to GAO Order 2713.2, the Board's Office of General Counsel shall investigate the claim in accordance with § 28.12.",
+          "(2) A charging party who files a claim that could be raised under § 28.95(h) may bring the retaliation claim both as a complaint of discrimination under § 28.95 and as a prohibited personnel practice under 5 U.S.C. 2302(b)(9).",
+          "(f)  Claims related to EEO matters pending with GAO's EEO Office.  (1) Except as outlined in paragraph (c) of this section, whenever a charging party raises a claim of retaliation that could be raised under § 28.95(h), including the prohibited personnel practices listed in 5 U.S.C. 2302(b)(9), and that claim has not already been filed pursuant to GAO Order 2713.2, the Board's General Counsel has authority to, and shall determine whether the claim reasonably relates to retaliation for filing or assisting with a discrimination complaint filed pursuant to GAO Order 2713.2. The General Counsel's determination shall not be reviewable.",
+          "(3) Where the Board's General Counsel concludes that one or more claims are sufficiently related to a discrimination complaint filed by the same claimant pursuant to GAO Order 2713.2 and that it would be appropriate to investigate all claims together, the Board's Office of General Counsel may hold the related claim(s) in abeyance until the Board's General Counsel receives a charge pursuant to paragraph (b) of this section with respect to the formal discrimination complaint or decides that the investigation should resume."
+        ],
+        "removed": [
+          "(a) Except as provided in paragraph (c) of this section, a charge alleging prohibited discrimination (as defined in § 28.95) shall not be filed with the Board's General Counsel unless the charging party has first filed a complaint of discrimination with GAO in accordance with GAO Order 2713.2.",
+          "(b) A charge relating to GAO's disposition of any individual EEO complaint may be filed with the Board's General Counsel at the following times:",
+          "(1) Within 30 days from the receipt by the charging party of a GAO decision rejecting the complaint in whole or part;",
+          "(2) Whenever a period of more than 120 days has elapsed since the complaint was filed, and the GAO has not issued a final decision; or",
+          "(c)  Special rules for adverse and performance based actions.  Where an employee is affected by a removal, suspension for more than 14 days, reduction in grade or pay, or furlough of not more than 30 days (whether due to disciplinary, performance-based or other reasons), and the employee wishes to allege that such action was due in whole or part to prohibited discrimination (as defined in § 28.95), the employee may elect to do either (but not both) of the following:",
+          "(1) File a charge directly with the Board's General Counsel within 30 days of the effective date of the personnel action and raise the issue of discrimination in the course of the proceedings before the Board; or",
+          "(2) File a complaint of discrimination with the GAO pursuant to GAO Order 2713.2. If the employee elects to file a complaint of discrimination with GAO, he or she may still seek Board review of the matter by filing a charge with the Board's General Counsel at the times authorized in paragraph (b) of this section. Where a complaint of discrimination filed with GAO relates to non-EEO issues that are within the Board's jurisdiction in addition to EEO-related allegations, the subsequent charge filed with the Board's General Counsel under paragraph (b) of this section shall be considered a timely appeal of the non-EEO issues. An employee will be deemed to have elected the EEO complaint process if the employee files a timely written complaint of discrimination with GAO before filing a charge with the Board's General Counsel. Consultation with an EEO counselor, without filing a written complaint of discrimination, does not constitute an election of the EEO complaint process.",
+          "(d)  Special rules for RIF based actions.  An individual alleging discrimination issues in connection with a RIF-based separation may follow the procedures outlined above in paragraph (c) of this section for adverse and performance based actions, or may choose instead a third option. In accordance with the provisions of § 28.13, such an individual may challenge that action by filing directly with the PAB, thus bypassing both the Office of Opportunity and Inclusiveness and the Board's Office of General Counsel.",
+          "(e)(1) The charging party shall file the charge with the Board's Office of General Counsel in accordance with § 28.11. That Office shall investigate the charge in accordance with § 28.12.",
+          "(2) A charging party challenging a RIF action by filing directly with the PAB shall follow the procedures prescribed in § 28.13 and § 28.18."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.112",
+      "level": "section",
+      "title": "Who may file petitions",
+      "similarity": 0.991,
+      "diff": {
+        "added": [
+          "(2) An employee or a group of employees (or an individual on their behalf) desiring a new election to determine whether a labor organization has ceased to represent a majority of employees in a unit;"
+        ],
+        "removed": [
+          "(2) An employee or a group of employees (or an individual on his, her or their behalf) desiring a new election to determine whether a labor organization has ceased to represent a majority of employees in a unit;"
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.113",
+      "level": "section",
+      "title": "Contents of representation petitions",
+      "similarity": 0.995,
+      "diff": {
+        "added": [
+          "(5) A declaration by the signer of the petition, under penalties of the Criminal Code (18 U.S.C. 1001), that the petition's contents are true and correct, to the best of their knowledge and belief;"
+        ],
+        "removed": [
+          "(5) A declaration by the signer of the petition, under penalties of the Criminal Code (18 U.S.C. 1001), that the petition's contents are true and correct, to the best of his or her knowledge and belief;"
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.132",
+      "level": "section",
+      "title": "Disciplinary proceedings",
+      "similarity": 0.991,
+      "diff": {
+        "added": [
+          "(a) If the General Counsel determines after any investigation under 31 U.S.C. 752(b) that disciplinary action should be initiated against an employee, the General Counsel shall prepare a written complaint against the employee containing their determination, together with a statement of the supporting facts, and present the complaint and the statement to the employee and the Board in accordance with paragraphs (b) and (c) of this section."
+        ],
+        "removed": [
+          "(a) If the General Counsel determines after any investigation under 31 U.S.C. 752(b) that disciplinary action should be initiated against an employee, the General Counsel shall prepare a written complaint against the employee containing his or her determination, together with a statement of the supporting facts, and present the complaint and the statement to the employee and the Board in accordance with paragraphs (b) and (c) of this section."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-28.149",
+      "level": "section",
+      "title": "Sanctions",
+      "similarity": 0.967,
+      "diff": {
+        "added": [
+          "(a) The Board, a panel of Board members, a Board member or an administrative judge, as necessary, may, in the interest of justice, require the offending party to show cause why their claim, interest, motion or petition should not be dismissed, denied or otherwise adversely affected."
+        ],
+        "removed": [
+          "(a) The Board, a panel of Board members, a Board member or an administrative judge, as necessary, may, in the interest of justice, require the offending party to show cause why his or her claim, interest, motion or petition should not be dismissed, denied or otherwise adversely affected."
+        ]
+      }
+    },
+    {
+      "kind": "changed",
+      "id": "CFR:4-83.12",
+      "level": "section",
+      "title": "Procedures for individual access to records",
+      "similarity": 0.993,
+      "diff": {
+        "added": [
+          "(a) Upon written request by any individual outside of GAO or upon written or oral request by any officer or employee of GAO to gain access to his or her record or to any information pertaining to the individual which is contained in a system of personnel records, and not otherwise exempted, GAO shall permit the individual and upon the individual's request a person of his or her own choosing to accompany them, to review the record and have a copy made of all or any portion thereof in a form comprehensible to them, except that GAO may require the individual to furnish a written statement authorizing discussion of that individual's record in the accompanying person's presence. When access to the records has been granted by a system manager or designee:"
+        ],
+        "removed": [
+          "(a) Upon written request by any individual outside of GAO or upon written or oral request by any officer or employee of GAO to gain access to his or her record or to any information pertaining to the individual which is contained in a system of personnel records, and not otherwise exempted, GAO shall permit the individual and upon the individual's request a person of his or her own choosing to accompany him or her, to review the record and have a copy made of all or any portion thereof in a form comprehensible to him or her, except that GAO may require the individual to furnish a written statement authorizing discussion of that individual's record in the accompanying person's presence. When access to the records has been granted by a system manager or designee:"
+        ]
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ __pycache__/
 # sect indexes and working directories (regenerable)
 **/.sect/
 work/
+!fixtures/work/
 staging/
 review/
 lint/

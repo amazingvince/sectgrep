@@ -24,7 +24,7 @@ export interface OutFile {
   text: string;
 }
 
-interface NodeRec {
+export interface NodeRec {
   id: string;
   node: string;
   level: string;
@@ -72,6 +72,8 @@ function headTitle(head: string, level: string): string {
 }
 
 export function parseAmdDate(s: string): string | undefined {
+  // Versioner XML writes "May 1, 2018(fm)"; the suffix is not part of the date.
+  s = s.replace(/\(.*$/, "").trim();
   const m = s.match(/([A-Z][a-z]+)\.?\s+(\d{1,2}),\s+(\d{4})/);
   if (!m) return undefined;
   const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -79,6 +81,19 @@ export function parseAmdDate(s: string): string | undefined {
   if (mi < 0) return undefined;
   return `${m[3]}-${String(mi + 1).padStart(2, "0")}-${m[2].padStart(2, "0")}`;
 }
+
+/** A shallow copy of a structural node without its nested DIV children: the node's own blocks only. */
+function ownOnly(el: Elem): Elem {
+  const copy = (el as unknown as Node).cloneNode(false) as unknown as Elem;
+  for (const c of Array.from((el as unknown as Node).childNodes)) {
+    if (c.nodeType === 1 && (/^DIV[1-9]$/.test((c as Element).tagName) || XML_TOC_TAGS.has((c as Element).tagName))) continue;
+    (copy as unknown as Node).appendChild(c.cloneNode(true));
+  }
+  return copy;
+}
+
+/** The bulk XML's own tables of contents inside a title, chapter, or part; the converter writes its own listing. */
+const XML_TOC_TAGS = new Set(["CFRTOC", "CHAPTI", "PTHD", "PG", "TOC", "CONTENTS", "SECTNO", "SUBJECT", "SECHD"]);
 
 /** Render the block children of a section (everything but HEAD/CITA/AUTH/SOURCE) to markdown. */
 function renderBlocks(sec: Elem): string {
@@ -121,6 +136,15 @@ function renderBlocks(sec: Elem): string {
       case "TR": {
         const cells = children(c).map((td) => squash(inlineMd(td)).replace(/\|/g, "\\|"));
         tableRows.push(`| ${cells.join(" | ")} |`);
+        break;
+      }
+      case "DIV":
+      case "TABLE":
+      case "THEAD":
+      case "TBODY": {
+        // HTML-style tables sit in plain DIV wrappers; their rows render like any other.
+        const t = renderBlocks(c);
+        if (t) out.push(t);
         break;
       }
       case "FTNT": {
@@ -242,10 +266,11 @@ export interface Candidate {
   dates: string[];
 }
 
-export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string; candidates: Candidate[] } {
+export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile[]; sections: number; nodes: number; effective: string; titleName: string; candidates: Candidate[]; records: NodeRec[] } {
   const doc = parseXml(xml);
   const root = doc.documentElement;
-  const amd = textOf(child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") && (child(child(child(root, "TEXT") ?? root, "BODY") ?? root, "ECFRBRWS") as Elem).getElementsByTagName("AMDDATE")[0]);
+  // The first AMDDATE: under ECFRBRWS in bulk XML, directly under ECFR in versioner XML.
+  const amd = textOf((root as unknown as Elem).getElementsByTagName("AMDDATE")[0]);
   const effective = opts.effective ?? parseAmdDate(amd) ?? "1970-01-01";
   const rawSha = createHash("sha256").update(xml).digest("hex");
   const ingestRun = opts.ingestRun ?? `${new Date().toISOString().slice(0, 16)}Z/sect-convert`;
@@ -327,7 +352,7 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
       order,
       dir: nodeDir,
       file: `${t}-${id.slice(`CFR:${t}-`.length) || t}.md`,
-      body: level === "section" ? renderBlocks(el) : "",
+      body: level === "section" ? renderBlocks(el) : renderBlocks(ownOnly(el)),
       defines: [],
       authority: authority || null,
       citation: cita || source || null,
@@ -381,7 +406,8 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     const kids = childrenOf.get(n.id) ?? [];
     const heading = n.level === "section" ? `# ${n.label} ${n.title}` : `# ${n.label} - ${n.title}`;
     const toc = kids.map((k) => `- [${k.label} ${k.title}](${k.id})`).join("\n");
-    const body = n.level === "section" ? n.body || "[Reserved]" : toc;
+    // A structural node's own text (an editorial note, a reserved marker) comes before its listing.
+    const body = n.level === "section" ? n.body || "[Reserved]" : [n.body, toc].filter(Boolean).join("\n\n");
     const fm = [
       "---",
       `id: ${q(n.id)}`,
@@ -436,5 +462,5 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     "",
   ].join("\n");
   files.push({ path: `cfr-title-${t}/_source.yaml`, text: sourceYaml });
-  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName, candidates };
+  return { files, sections: nodes.filter((n) => n.level === "section").length, nodes: nodes.length, effective, titleName, candidates, records: nodes };
 }

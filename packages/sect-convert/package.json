@@ -21,7 +21,8 @@
     "jsdom": "30.0.1",
     "mammoth": "1.12.2",
     "pdfjs-dist": "6.3.289",
-    "xlsx": "0.18.5"
+    "xlsx": "0.18.5",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",
