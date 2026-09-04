@@ -1,0 +1,12 @@
+name: cfr-title-4
+kind: base
+title: "Title 4 - Accounts"
+publisher: "Office of the Federal Register; GPO eCFR bulk XML (not the official legal edition)"
+precedence: 100
+id_prefix: "CFR:4-"
+id_pattern: "(?i)(?:\\b4\\s*C\\.?F\\.?R\\.?\\s*(?:§\\s*)?|§\\s*|\\bsection\\s+)(?P<part>\\d{1,4})\\.(?P<section>\\d{1,4}[a-z]?(?:-\\d+)?)(?:\\s*\\((?P<p1>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?(?:\\s*\\((?P<p2>[a-z]|\\d{1,2}|[ivx]{1,4})\\))?"
+id_template: "CFR:4-{part}.{section}"
+anchor_template: "{p1}-{p2}"
+legal_status: unofficial-xml
+version: "2024-07-18"
+acquire: "https://www.govinfo.gov/bulkdata/ECFR/title-4/ECFR-title4.xml"
