@@ -1,0 +1,757 @@
+{
+  "freshness": "default full scans",
+  "comparisons": [
+    {
+      "corpus": "corpora/corpus-creation-pilot-v2",
+      "generation": "01788581250937340100",
+      "rows": 9,
+      "exact_result_mismatches": [],
+      "before": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 75.41340000170749,
+            "cold_p95_ms": 614.1064000039478
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 84.81190000020433,
+            "cold_p95_ms": 758.3863000036217
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 89.96620000107214,
+            "cold_p95_ms": 740.1877000011154
+          }
+        }
+      },
+      "after": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 52.15909999969881,
+            "cold_p95_ms": 274.0546999993967
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 50.190699999802746,
+            "cold_p95_ms": 382.5289999949746
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 50.672899997152854,
+            "cold_p95_ms": 397.22279999841703
+          }
+        }
+      },
+      "before_peak_rss_bytes": 497967104,
+      "after_peak_rss_bytes": 512081920
+    },
+    {
+      "corpus": "corpora/qualification-synthetic-100k",
+      "generation": "01788581176064918500",
+      "rows": 9,
+      "exact_result_mismatches": [],
+      "before": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1041.5075999990222,
+            "cold_p95_ms": 3910.728499999095
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1104.0487999998732,
+            "cold_p95_ms": 4245.369500000379
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1173.0100000058883,
+            "cold_p95_ms": 4306.4104999939445
+          }
+        }
+      },
+      "after": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 781.5603999988525,
+            "cold_p95_ms": 2330.891400000837
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 830.8276999960071,
+            "cold_p95_ms": 2620.027700002538
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 822.3858999990625,
+            "cold_p95_ms": 2560.6890999988536
+          }
+        }
+      },
+      "before_peak_rss_bytes": 1310109696,
+      "after_peak_rss_bytes": 1742487552
+    }
+  ]
+}

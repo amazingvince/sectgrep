@@ -18,6 +18,8 @@ import { OpenAICompatibleTranscriber } from "./ocr/transcriber.js";
 import { loadDotEnv, modelConfig, providerExtras } from "./env.js";
 import { fetchSectionDates, readSectionDates, readTitleDate } from "./versioner.js";
 import { convertOverlay, extractedSha } from "./overlay.js";
+import { ingestFile } from "./ingest-file.js";
+import { packSource, exportSource } from "./document-store.js";
 
 // The nearest .env (gitignored) supplies keys and model choices; the shell wins over it.
 loadDotEnv();
@@ -88,7 +90,15 @@ async function convert(): Promise<void> {
 }
 
 const cmd = process.argv[2];
-if (cmd === "fetch") {
+if (cmd === "pack-source" || cmd === "export-source") {
+  const corpus = arg("corpus"), source = arg("source");
+  if (!corpus || !source) throw new Error(`usage: sect-convert ${cmd} --corpus CORPUS --source SOURCE_DIRECTORY`);
+  console.log(JSON.stringify((cmd === "pack-source" ? packSource : exportSource)(corpus, source)));
+} else if (cmd === "ingest-file") {
+  const input = arg("input"), out = arg("out"), source = arg("source"), id = arg("id"), effective = arg("effective");
+  if (!input || !out || !source || !id || !effective) throw new Error("usage: sect-convert ingest-file --input FILE --out CORPUS --source KEY --id STABLE_KEY --effective YYYY-MM-DD [--profile generic|lending|research|ecfr] [--work DIR]");
+  ingestFile({ input, out, source, id, effective, profile: arg("profile"), work: arg("work", "work")!, ocrServer: arg("ocr-server") ?? process.env.SECT_OCR_SERVER, ocrSecondaryServer: arg("ocr-secondary-server") ?? process.env.SECT_OCR_SECONDARY_SERVER, ocrPrimary: arg("ocr-primary") ?? process.env.SECT_OCR_PRIMARY, ocrSecondary: arg("ocr-secondary") ?? process.env.SECT_OCR_SECONDARY, apiKey: process.env.SECT_OCR_API_KEY, images: process.argv.includes("--images") }).then((r) => console.log(JSON.stringify(r))).catch((e) => { console.error(String(e)); process.exitCode = 1; });
+} else if (cmd === "fetch") {
   fetchTitle(Number(arg("title")), arg("out", "raw")!).catch((e) => {
     console.error(e);
     process.exit(1);
@@ -207,11 +217,11 @@ if (cmd === "fetch") {
   const sourceYaml = arg("source-yaml");
   extract({
     input, work,
-    // Flags, then SECT_OCR_* from the environment; the hosted model is the secondary by default.
+    // Flags or explicit SECT_OCR_* endpoints; a configured unrelated API key never selects a service.
     ocrServer: arg("ocr-server") ?? process.env.SECT_OCR_SERVER,
-    ocrSecondaryServer: arg("ocr-secondary-server") ?? process.env.SECT_OCR_SECONDARY_SERVER ?? (hosted.apiKey ? hosted.baseUrl : undefined),
+    ocrSecondaryServer: arg("ocr-secondary-server") ?? process.env.SECT_OCR_SECONDARY_SERVER,
     ocrPrimary: arg("ocr-primary") ?? process.env.SECT_OCR_PRIMARY,
-    ocrSecondary: arg("ocr-secondary") ?? process.env.SECT_OCR_SECONDARY ?? (hosted.apiKey ? hosted.model : undefined),
+    ocrSecondary: arg("ocr-secondary") ?? process.env.SECT_OCR_SECONDARY,
     apiKey: process.env.SECT_OCR_API_KEY ?? hosted.apiKey, extraBody: providerExtras(hosted),
     ocrConcurrency: arg("ocr-concurrency") ? Number(arg("ocr-concurrency")) : process.env.SECT_OCR_CONCURRENCY ? Number(process.env.SECT_OCR_CONCURRENCY) : undefined,
     pattern: sourceYaml ? readSourcePattern(sourceYaml) : null, homeTitle: arg("title"), images: process.argv.includes("--images"), force: process.argv.includes("--force"),

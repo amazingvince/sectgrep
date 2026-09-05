@@ -9,7 +9,9 @@ pub mod validate;
 pub mod walk;
 
 pub use cite::{Citation, Resolver};
-pub use document::{parse_document, slug, split_front_matter, AnchorLine, Definition, Document, Link, Table, Via};
+pub use document::{
+    parse_document, slug, split_front_matter, AnchorLine, Definition, Document, Link, Table, Via,
+};
 pub use fingerprint::{fingerprint_file, stat_file, Fingerprint};
 pub use validate::{validate, Issue, Level};
 pub use walk::{load_sources, walk_corpus, CorpusFile};

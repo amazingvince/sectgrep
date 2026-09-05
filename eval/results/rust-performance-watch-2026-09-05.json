@@ -1,0 +1,194 @@
+{
+  "configuration": "SECT_FRESHNESS_WATCH=1 (experimental, not default)",
+  "limitations": "Short run does not measure 60-second expiry, concurrent writers or external aliases. No corpus mutations during timing.",
+  "results": [
+    {
+      "corpus": "corpora/corpus-creation-pilot-v2",
+      "generation": "01788581250937340100",
+      "binary_sha256": "90cdf5702e4ae3611f2bc471143a7c726715afe266298e3d03d44aed5d0ecda4",
+      "warm_p95_ms": {
+        "body-bm25": 1.1324000006425194,
+        "sect": 5.780599996796809,
+        "verified": 6.003499998769257
+      },
+      "rows": [
+        {
+          "id": "creation-smoke-lending",
+          "variant": "body-bm25",
+          "warm_ms": [
+            0.8881000030669384,
+            0.7136999993235804,
+            0.7306999978027306
+          ]
+        },
+        {
+          "id": "creation-smoke-ml",
+          "variant": "body-bm25",
+          "warm_ms": [
+            1.1324000006425194,
+            1.0282000002916902,
+            1.0991000017384067
+          ]
+        },
+        {
+          "id": "creation-smoke-biomedical",
+          "variant": "body-bm25",
+          "warm_ms": [
+            0.8388999995077029,
+            0.808000004326459,
+            1.0636000006343238
+          ]
+        },
+        {
+          "id": "creation-smoke-lending",
+          "variant": "sect",
+          "warm_ms": [
+            5.602600002021063,
+            5.706299998564646,
+            5.200100000365637
+          ]
+        },
+        {
+          "id": "creation-smoke-ml",
+          "variant": "sect",
+          "warm_ms": [
+            5.780599996796809,
+            5.674700005329214,
+            5.676500004483387
+          ]
+        },
+        {
+          "id": "creation-smoke-biomedical",
+          "variant": "sect",
+          "warm_ms": [
+            5.487400005222298,
+            5.645899997034576,
+            5.664000003889669
+          ]
+        },
+        {
+          "id": "creation-smoke-lending",
+          "variant": "verified",
+          "warm_ms": [
+            5.449000003864057,
+            5.24010000663111,
+            5.324499994458165
+          ]
+        },
+        {
+          "id": "creation-smoke-ml",
+          "variant": "verified",
+          "warm_ms": [
+            5.716200001188554,
+            5.721000001358334,
+            6.003499998769257
+          ]
+        },
+        {
+          "id": "creation-smoke-biomedical",
+          "variant": "verified",
+          "warm_ms": [
+            5.540199999813922,
+            5.633799999486655,
+            5.529599999135826
+          ]
+        }
+      ],
+      "exact_result_mismatches": 0
+    },
+    {
+      "corpus": "corpora/qualification-synthetic-100k",
+      "generation": "01788581176064918500",
+      "binary_sha256": "90cdf5702e4ae3611f2bc471143a7c726715afe266298e3d03d44aed5d0ecda4",
+      "warm_p95_ms": {
+        "body-bm25": 11.97159999719588,
+        "sect": 42.18560000299476,
+        "verified": 42.34549999819137
+      },
+      "rows": [
+        {
+          "id": "synthetic-one",
+          "variant": "body-bm25",
+          "warm_ms": [
+            10.153499999432825,
+            10.086900001624599,
+            10.289799996826332
+          ]
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "body-bm25",
+          "warm_ms": [
+            11.97159999719588,
+            11.44639999984065,
+            10.591799997200724
+          ]
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "body-bm25",
+          "warm_ms": [
+            3.0499000058625825,
+            2.8365000034682453,
+            2.822599999490194
+          ]
+        },
+        {
+          "id": "synthetic-one",
+          "variant": "sect",
+          "warm_ms": [
+            40.52030000457307,
+            39.14169999916339,
+            40.143499994883314
+          ]
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "sect",
+          "warm_ms": [
+            42.18560000299476,
+            40.38080000464106,
+            39.18079999857582
+          ]
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "sect",
+          "warm_ms": [
+            38.88240000378573,
+            39.736499995342456,
+            39.58569999667816
+          ]
+        },
+        {
+          "id": "synthetic-one",
+          "variant": "verified",
+          "warm_ms": [
+            40.241800001240335,
+            39.82520000135992,
+            42.34549999819137
+          ]
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "verified",
+          "warm_ms": [
+            40.2923000001465,
+            40.62039999553235,
+            40.08939999766881
+          ]
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "verified",
+          "warm_ms": [
+            39.05200000008335,
+            39.72730000532465,
+            39.40219999640249
+          ]
+        }
+      ],
+      "exact_result_mismatches": 0
+    }
+  ]
+}

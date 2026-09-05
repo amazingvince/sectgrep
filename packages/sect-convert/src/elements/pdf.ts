@@ -33,12 +33,30 @@ export interface PdfPage {
   height: number;
   lines: Line[];
   chars: number;
+  /** Native PDF outline entries targeting this page. Titles must match a block exactly. */
+  outline?: Array<{ title: string; level: number }>;
 }
 
 export async function readPdfPages(data: Uint8Array): Promise<PdfPage[]> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   const doc = await pdfjs.getDocument({ data, useSystemFonts: true }).promise;
   const pages: PdfPage[] = [];
+  const outline = new Map<number, Array<{ title: string; level: number }>>();
+  async function visit(items: Awaited<ReturnType<typeof doc.getOutline>>, level = 1): Promise<void> {
+    for (const item of items ?? []) {
+      try {
+        const dest = typeof item.dest === "string" ? await doc.getDestination(item.dest) : item.dest;
+        if (Array.isArray(dest) && dest[0] != null) {
+          const page = (typeof dest[0] === "number" ? dest[0] : await doc.getPageIndex(dest[0])) + 1;
+          const entries = outline.get(page) ?? [];
+          entries.push({ title: item.title, level });
+          outline.set(page, entries);
+        }
+      } catch { /* Broken bookmarks do not erase otherwise extractable source text. */ }
+      await visit(item.items, level + 1);
+    }
+  }
+  await visit(await doc.getOutline());
   for (let p = 1; p <= doc.numPages; p++) {
     const page = await doc.getPage(p);
     const vp = page.getViewport({ scale: 1 });
@@ -69,7 +87,7 @@ export async function readPdfPages(data: Uint8Array): Promise<PdfPage[]> {
       items.push({ str: it.str, x: e, y: vp.height - f - h, w: it.width, h, size, bold });
     }
     const lines = groupLinesByColumn(items, vp.width);
-    pages.push({ page: p, width: vp.width, height: vp.height, lines, chars: items.reduce((n, i) => n + i.str.length, 0) });
+    pages.push({ page: p, width: vp.width, height: vp.height, lines, chars: items.reduce((n, i) => n + i.str.length, 0), outline: outline.get(p) });
   }
   return pages;
 }
@@ -155,41 +173,19 @@ function median(xs: number[]): number {
   return s.length ? s[Math.floor(s.length / 2)] : 0;
 }
 
-/** Column assignment: cluster line left edges; two clusters far apart on a wide page mean columns. */
-function columnsOf(lines: Line[], width: number): number[] {
-  const starts = lines.map((l) => l.x0);
-  const cols: number[] = [];
-  const centers: number[] = [];
-  for (const x of starts) {
-    let k = centers.findIndex((c) => Math.abs(c - x) < width * 0.12);
-    if (k < 0) {
-      centers.push(x);
-      k = centers.length - 1;
-    }
-    cols.push(k);
-  }
-  // Keep only clusters that carry a real share of lines; merge the rest into the nearest.
-  const counts = centers.map((_, k) => cols.filter((c) => c === k).length);
-  const keep = centers.map((_, k) => counts[k] >= Math.max(3, lines.length * 0.15));
-  const kept = centers.map((c, k) => (keep[k] ? c : null)).filter((c): c is number => c !== null).sort((a, b) => a - b);
-  if (kept.length < 2) return lines.map(() => 0);
-  return lines.map((l) => {
-    let best = 0;
-    for (let k = 1; k < kept.length; k++) if (Math.abs(kept[k] - l.x0) < Math.abs(kept[best] - l.x0)) best = k;
-    return best;
-  });
-}
-
 /** Lines of one page in reading order (column by column, top to bottom), grouped into blocks. */
 export function pageBlocks(page: PdfPage): Array<{ lines: Line[]; column: number }> {
-  const cols = page.lines.some((l) => l.column !== undefined) ? page.lines.map((l) => l.column ?? 0) : columnsOf(page.lines, page.width);
+  // An indented provision is not a second column. Only a measured gutter may reorder lines.
+  const cols = page.lines.map((l) => l.column ?? 0);
   const order = page.lines.map((l, i) => ({ l, c: cols[i] })).sort((a, b) => a.c - b.c || a.l.y0 - b.l.y0);
   const blocks: Array<{ lines: Line[]; column: number }> = [];
   for (const { l, c } of order) {
     const last = blocks[blocks.length - 1];
     const prev = last?.lines[last.lines.length - 1];
     const gap = prev ? l.y0 - prev.y1 : Infinity;
-    const newPara = !last || last.column !== c || gap > l.size * 0.9 || (Math.abs(l.size - prev!.size) > 1.5 && gap > 2) || /^\(?[a-z0-9]{1,4}\)\s/.test(l.text) || prev!.bold !== l.bold;
+    const numberedTitle = /^\d+(?:\.\d+)*\.?\s+[A-Z]/.test(l.text) && l.text.length < 120 && !/[.;:]$/.test(l.text);
+    const previousTitle = prev && /^\d+(?:\.\d+)*\.?\s+[A-Z]/.test(prev.text) && prev.text.length < 120 && !/[.;:]$/.test(prev.text);
+    const newPara = !last || last.column !== c || gap > l.size * 0.9 || (Math.abs(l.size - prev!.size) > 1.5 && gap > 2) || /^\(?[a-z0-9]{1,4}\)\s/.test(l.text) || prev!.bold !== l.bold || numberedTitle || previousTitle;
     if (newPara) blocks.push({ lines: [l], column: c });
     else last.lines.push(l);
   }
@@ -221,7 +217,11 @@ export function pdfElements(pages: PdfPage[], docSha: string): { elements: Eleme
       else if (y1 > p.height * 0.94 && b.lines.length <= 2) type = "footer";
       else if ((size >= bodySize * 1.15 || bold) && b.lines.length <= 3 && text.length < 200) type = "heading";
       else if (/^(\(?[a-z0-9]{1,4}\)|[•\-*]|\d+\.)\s/.test(text)) type = "list_item";
-      elements.push({ doc_sha: docSha, page: p.page, seq: seq++, type, text, bbox: [r(x0), r(y0), r(x1), r(y1)], font_size: size, bold, flags: [], confidence: 1.0 });
+      const normal = (s: string) => s.replace(/\s+/g, " ").trim();
+      const native = p.outline?.filter((entry) => normal(entry.title) === normal(text));
+      const level = native?.length === 1 ? native[0].level : undefined;
+      if (level) type = "heading";
+      elements.push({ doc_sha: docSha, page: p.page, seq: seq++, type, text, bbox: [r(x0), r(y0), r(x1), r(y1)], font_size: size, bold, heading_level: level, flags: level ? ["hierarchy:native_pdf_outline"] : [], confidence: 1.0 });
     }
   }
   return { elements, info, scanned };

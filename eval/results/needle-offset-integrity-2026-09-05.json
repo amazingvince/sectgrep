@@ -1,0 +1,21 @@
+{
+  "generation": "01788604232796918100",
+  "mechanical_integrity_passed": true,
+  "independent_relevance_judgments": false,
+  "raw_documents": 9,
+  "raw_bytes": 18310156,
+  "source_regions": 29406,
+  "canonical_expressions": 9576,
+  "stored_passages": 5799,
+  "content_passages": 3777,
+  "navigation_entries": 2022,
+  "source_spans_checked": 9689,
+  "support_spans_checked": 21,
+  "merged_passages": 2226,
+  "fallback_boundaries": 2,
+  "model_tokenizer_recounted": true,
+  "max_input_count": 796,
+  "median_content_words": 118,
+  "content_under_50_words": 670,
+  "failures": []
+}

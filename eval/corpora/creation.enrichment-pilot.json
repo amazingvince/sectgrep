@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "name": "Corpus enrichment pilot",
+  "root": "../..",
+  "run": "review/corpus-creation/enrichment-v1",
+  "corpus": "corpora/corpus-creation-pilot-v1",
+  "campaign": "review/corpus-creation",
+  "seed": "sect-public-corpus-creation-2026-09-04-v1",
+  "enrichment": "propose",
+  "discover_profiles": true,
+  "extraction_sample": {
+    "lending": 30,
+    "ml": 15,
+    "biomedical": 15
+  },
+  "sect_bin": "target/debug/sect.exe",
+  "sources": [
+    {
+      "id": "attention-v7",
+      "source": "research",
+      "input": "raw/qualification/attention-v7.pdf",
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "effective": "2023-08-02",
+      "profile": "profiles/research.json",
+      "domain": "research",
+      "discipline": "ml",
+      "license": "arXiv distribution license; no general redistribution license inferred",
+      "url": "https://arxiv.org/pdf/1706.03762v7"
+    },
+    {
+      "id": "fannie-self-employed",
+      "source": "lending",
+      "input": "raw/qualification/fannie-self-employed.html",
+      "sha256": "860e407228fe54158918360beba4aa6e7dff505bb098231d1cf7bd0039c1f8a8",
+      "effective": "2026-09-04",
+      "profile": "profiles/lending.json",
+      "domain": "lending",
+      "license": "Fannie Mae copyrighted material; acquisition for local evaluation, redistribution not authorized by this manifest",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-3.5-01/underwriting-factors-and-documentation-self-employed-borrower"
+    },
+    {
+      "id": "pmc11558476",
+      "source": "research",
+      "input": "raw/qualification/pmc11558476.xml",
+      "sha256": "09ded0074b15cbe8eadef274f5def7a79d2c87f1ba6a9bd8b19e109340760493",
+      "effective": "2024-11-12",
+      "profile": "profiles/research.json",
+      "domain": "research",
+      "discipline": "biomedical",
+      "license": "CC BY; exact license and exceptions retained in JATS permissions metadata",
+      "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11558476&metadataPrefix=pmc"
+    }
+  ]
+}

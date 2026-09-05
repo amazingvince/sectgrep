@@ -1,0 +1,16 @@
+{
+  "purpose": "bounded splitter scale retry; isolate earlier source loading bottleneck",
+  "corpus": "corpora/needle-scale-real-v1",
+  "binary_sha256": "1c9ff4774d5d7f6b9e41bb74ad226815cdc4154b52fe9764e1fccadec3bc142d",
+  "passage_recipe": "coherent-passages-v4",
+  "start": "2026-09-05T09:04:42.9325292Z",
+  "stopped_at": "2026-09-05T09:10:11.0260951Z",
+  "elapsed_ms_lower_bound": 328094.7093,
+  "cpu_seconds": 361.0,
+  "observed_peak_rss_bytes": 2554531840,
+  "published": false,
+  "completed": false,
+  "initial_phase_inference": "SECT_TIMING walk stage had not completed; passage compiler not reached",
+  "phase_inference_retracted": true,
+  "corrected_stage_evidence": "Delayed shell log delivery. Completed trace: walk 16710 ms; validate 3132 ms; tree+graph 12077 ms. Sustained work was in passage compilation."
+}

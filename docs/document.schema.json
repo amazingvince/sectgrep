@@ -1,0 +1,500 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DocumentArtifact",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "document": {
+      "type": "string"
+    },
+    "effective": {
+      "type": "string"
+    },
+    "raw": {
+      "type": "string"
+    },
+    "raw_sha256": {
+      "type": "string"
+    },
+    "format": {
+      "type": "string"
+    },
+    "parser": {
+      "type": "string"
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Region"
+      }
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AddressableUnit"
+      }
+    },
+    "derivations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Derivation"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document",
+    "effective",
+    "raw",
+    "raw_sha256",
+    "format",
+    "parser",
+    "regions",
+    "units",
+    "derivations"
+  ],
+  "$defs": {
+    "Region": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "native_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/Locator"
+        },
+        "order": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "heading_level": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          }
+        },
+        "caption_of": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "footnote_of": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uncertainty": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclusion": {
+          "description": "Why this region is absent from searchable text; the region itself remains intact.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "text",
+        "locator",
+        "order",
+        "cells",
+        "footnote_of",
+        "uncertainty"
+      ]
+    },
+    "Locator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "elements": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0
+              }
+            },
+            "bbox": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "type": {
+              "type": "string",
+              "const": "page"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "page",
+            "elements"
+          ]
+        },
+        {
+          "description": "Ordered source boxes for one region. The quote belongs to their union;\nindividual boxes do not assert character-level quote alignment.",
+          "type": "object",
+          "properties": {
+            "locations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PageLocation"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "pages"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "locations"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "xpath": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "xml"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "xpath"
+          ]
+        },
+        {
+          "description": "An XPath within a named XML member of an Office Open XML ZIP package.",
+          "type": "object",
+          "properties": {
+            "part": {
+              "type": "string"
+            },
+            "xpath": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "office"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "part",
+            "xpath"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "line_start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "line_end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "type": {
+              "type": "string",
+              "const": "text"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "line_start",
+            "line_end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sheet": {
+              "type": "string"
+            },
+            "range": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "sheet"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "sheet",
+            "range"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "slide": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "shape": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "const": "slide"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "slide"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pointer": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "record"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "pointer"
+          ]
+        }
+      ]
+    },
+    "PageLocation": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "bbox": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "elements"
+      ]
+    },
+    "TableCell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "row": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "column": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "row_span": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "column_span": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        },
+        "headers": {
+          "description": "Explicit parser associations only; empty is not a claim that no header exists.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "row",
+        "column",
+        "row_span",
+        "column_span",
+        "text",
+        "headers",
+        "role"
+      ]
+    },
+    "AddressableUnit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "native_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content_sha256": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "regions",
+        "content_sha256"
+      ]
+    },
+    "Derivation": {
+      "type": "object",
+      "properties": {
+        "stage": {
+          "type": "string"
+        },
+        "implementation": {
+          "type": "string"
+        },
+        "recipe_sha256": {
+          "type": "string"
+        },
+        "inputs": {
+          "description": "Input paths and SHA-256 hashes, including parser, prompt, model, and profile artifacts.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "implementation",
+        "recipe_sha256",
+        "inputs",
+        "outputs"
+      ]
+    }
+  }
+}

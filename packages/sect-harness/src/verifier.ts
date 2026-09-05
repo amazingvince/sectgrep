@@ -6,7 +6,7 @@
 // agreement is the auto tier, disagreement is a conflict a person resolves.
 
 import type { Usage } from "@mariozechner/pi-ai";
-import { providerExtras, splitFrontMatter } from "@sectgrep/convert";
+import { providerExtras, splitFrontMatter, tokens } from "@sectgrep/convert";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -15,6 +15,7 @@ import { evidenceChecks, type EvidenceIssue } from "./evidence.js";
 import { bareReferences, candidatesFor, collectKnown, hasChildren, isDeterministic, type Candidate, type Known } from "./refs.js";
 import { verifierModelFromEnv, type ModelChoice } from "./model.js";
 import { loadRecords, type StagedRecord } from "./tools.js";
+import { assertBinding, bindVerification, evidenceDependencies, type VerificationBinding } from "./binding.js";
 
 export interface VerifierAnswer {
   xrefs: Array<{ text: string; id: string | null; anchor?: string | null; confidence: number; reason?: string }>;
@@ -38,6 +39,8 @@ export interface Judgment {
   ingest_confidence?: number;
   ingest_search?: string;
   verifier_reason?: string;
+  ingest_kind?: string;
+  verifier_kind?: string;
   /** A person decided it (`ingest`, `verifier`, `none`, or an id); the two runs no longer matter. */
   resolved?: string;
   resolved_value?: string;
@@ -65,6 +68,7 @@ export interface SectionVerdict {
 }
 
 export interface VerifyReport {
+  binding?: VerificationBinding;
   run_id: string;
   verifier: { provider: string; model: string };
   level: SamplingLevel;
@@ -193,7 +197,7 @@ export function summarize(verdicts: SectionVerdict[], evidenceFails: number): { 
 /** Field-by-field comparison of the ingest record and the verifier's answer. */
 export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: string[], candidates: Map<string, Candidate[]>, level: SamplingLevel, front: { overrides?: unknown; narrows?: unknown; amended_by?: unknown; actions?: Array<{ action_id?: string; target_id: string; target_anchor?: string | null; kind?: string }> }): Judgment[] {
   const out: Judgment[] = [];
-  // The verifier may write the anchor into the id ("CFR:4-21.8#e"); ids compare without anchors.
+  // Normalize inline anchors, but require the complete target to agree.
   const split = (v: { id: string | null; anchor?: string | null }) => {
     const [base, inline] = (v.id ?? "").split("#");
     return { id: base || null, anchor: v.anchor ?? inline ?? null };
@@ -208,7 +212,7 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
     const det = isDeterministic(x, c);
     const ingest = idOf(x);
     const verifier = vs?.id ? idOf({ id: vs.id, anchor: vs.anchor }) : v ? "(none)" : "(not judged)";
-    let agree = det || (!!vs?.id && vs.id === x.id);
+    let agree = (!!vs?.id && idOf({ id: vs.id, anchor: vs.anchor }) === idOf(split(x) as { id: string; anchor?: string | null })) || (det && !v);
     if (agree && level === "tightened" && !det && x.confidence < 0.8) agree = false;
     out.push({ field: "xref", text: x.text, ingest, verifier, agree, deterministic: det, ingest_confidence: x.confidence, ingest_search: x.search, verifier_reason: v?.reason });
   }
@@ -238,9 +242,8 @@ export function consensus(record: StagedRecord, answer: VerifierAnswer, refs: st
     const vs = v?.target_id ? split({ id: v.target_id, anchor: v.target_anchor ?? null }) : null;
     const ingest = idOf({ id: a.target_id, anchor: a.target_anchor ?? null });
     const verifier = vs?.id ? idOf({ id: vs.id, anchor: vs.anchor }) : v ? "(none)" : "(not judged)";
-    const c = [...new Set((candidates.get(a.action_id) ?? []).map((x) => x.id))];
-    const det = c.length === 1 && c[0] === a.target_id && (!vs || vs.id === a.target_id);
-    out.push({ field: "action", text: a.action_id, ingest, verifier, agree: det || ingest === verifier, deterministic: det, verifier_reason: v ? `kind ${v.kind ?? "?"}` : undefined });
+    // A unique candidate proves neither the operation nor the affected paragraph.
+    out.push({ field: "action", text: a.action_id, ingest, verifier, ingest_kind: a.kind, verifier_kind: v?.kind, agree: !!v && ingest === verifier && a.kind === v.kind, deterministic: false, verifier_reason: v ? `kind ${v.kind ?? "?"}` : undefined });
   }
   return out;
 }
@@ -287,6 +290,8 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   const runId = path.basename(runDir);
   const inputDir = path.resolve(o.input);
   const records = loadRecords(runDir);
+  const roots = [runDir, inputDir, path.resolve(o.corpus)];
+  const binding = bindVerification(runDir, [inputDir, path.resolve(o.corpus), ...evidenceDependencies(roots, o.work)]);
   if (!records.length) throw new Error(`${o.runDir} has no .ingest records; ingest first`);
   const known = collectKnown([path.resolve(o.corpus), inputDir]);
   const level = o.level ?? "normal";
@@ -409,6 +414,14 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
         judgments = judgments.map((j) => (j.field === "xref" && j.ingest === "(left bare)" && !available.has(j.verifier.split("#")[0]) ? { ...j, agree: true, verifier_reason: `${j.verifier_reason ?? ""} (target outside this run and its corpus)`.trim() } : j));
       }
       const ev = evidenceByPath.get(r.path.replace(/\\/g, "/")) ?? [];
+      const candidate = splitFrontMatter(readFileSync(path.join(runDir, r.path), "utf8"));
+      if (!hasChildren(known, r.id) && JSON.stringify(tokens(candidate?.body ?? "")) !== JSON.stringify(tokens(split?.body ?? text))) {
+        ev.push({ path: r.path, id: r.id, field: "xref", level: "fail", message: "staged source text differs from the submitted extraction" });
+      }
+      for (const x of r.xrefs) {
+        const target = x.id + (x.anchor ? `#${x.anchor}` : "");
+        if (!(candidate?.body ?? "").includes(`](${target})`)) ev.push({ path: r.path, id: r.id, field: "xref", level: "fail", message: `recorded link ${target} is absent from the candidate bytes` });
+      }
       const conflict = judgments.some((j) => !j.agree) || ev.some((i) => i.level === "fail");
       verdicts.push({ id: r.id, path: r.path, input: r.input, tier: conflict ? "conflict" : "auto", judgments, evidence: ev });
       if (verdicts.length % 25 === 0) log(`${verdicts.length}/${todo.length} verified`);
@@ -417,6 +430,7 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
   await Promise.all(Array.from({ length: Math.max(1, o.concurrency ?? 8) }, worker));
   verdicts.sort((a, b) => a.path.localeCompare(b.path));
   const report: VerifyReport = {
+    binding,
     run_id: runId,
     verifier: o.verify ? { provider: "injected", model: "injected" } : { provider: choice!.config.provider, model: choice!.config.model },
     level,
@@ -424,6 +438,7 @@ export async function verifyRun(o: VerifyOptions): Promise<VerifyReport> {
     ...summarize(verdicts, evidence.issues.filter((i) => i.level === "fail").length),
     usage,
   };
+  assertBinding(runDir, binding);
   writeFileSync(path.join(runDir, "verify.json"), JSON.stringify(report, null, 2) + "\n", "utf-8");
   const review = path.resolve(o.review ?? "review");
   mkdirSync(review, { recursive: true });

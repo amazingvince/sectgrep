@@ -38,7 +38,12 @@ describe("notices end to end (D.2 step 9) on the fixture register document", () 
     // WS2's output for the notice: the fixture's converted notice, as delivered, with its registry entry.
     const input = path.join(root, "input", "fr");
     mkdirSync(path.join(input, "2026"), { recursive: true });
-    writeFileSync(path.join(input, "2026", "2026-00001.md"), readFileSync(path.join(fixture, "fr", "2026", "2026-00001.md"), "utf-8"), "utf-8");
+    const notice = splitFrontMatter(readFileSync(path.join(fixture, "fr", "2026", "2026-00001.md"), "utf-8"))!;
+    const rawNotice = readFileSync(path.join(fixtureRoot, "raw/fr/2025/2026-00001.xml"), "utf8");
+    // The historical fixture added headings absent from its XML. Use copied source paragraphs
+    // here; fidelity regressions separately verify that the old extra text is rejected.
+    const copied = [...rawNotice.matchAll(/<P>([\s\S]*?)<\/P>/g)].map((m) => m[1].replaceAll("&gt;", ">").replaceAll("&amp;", "&")).join("\n\n");
+    writeFileSync(path.join(input, "2026", "2026-00001.md"), `---\n${notice.front}\n---\n# Fixture Safety Administration\n\n${copied}\n`, "utf-8");
     writeFileSync(path.join(input, "_source.yaml"), readFileSync(path.join(fixture, "fr", "_source.yaml"), "utf-8"), "utf-8");
     const staging = path.join(root, "staging");
     const review = path.join(root, "review");
@@ -63,9 +68,9 @@ describe("notices end to end (D.2 step 9) on the fixture register document", () 
       runDir: run.runDir, input, source: "fr", corpus, staging, review, work: path.join(fixtureRoot, "work"), log: () => {},
       verify: async (prompt) => ({ answer: { xrefs: [], defines: [], actions: prompt.includes("instr-1") ? [{ action_id: "FR:2026-00001#instr-1", target_id: "CFR:99-2.7", target_anchor: "b", kind: "amend" }] : [] } }),
     });
-    const notice = report.sections.find((s) => s.id === "FR:2026-00001")!;
-    expect(notice.judgments.some((j) => j.field === "action" && j.agree)).toBe(true);
-    expect(notice.tier).toBe("auto");
+    const verdict = report.sections.find((s) => s.id === "FR:2026-00001")!;
+    expect(verdict.judgments.some((j) => j.field === "action" && j.agree)).toBe(true);
+    expect(verdict.tier, JSON.stringify(verdict)).toBe("auto");
     const derived = report.sections.find((s) => s.id === "CFR:99-2.7")!;
     expect(derived.evidence.filter((e) => e.level === "fail")).toEqual([]);
     expect(derived.tier).toBe("auto");
@@ -82,7 +87,7 @@ describe("overlays end to end (D.2 step 8) on the fixture city amendments", () =
   it("stages the items with their overrides, verifies against search-derived candidates, holds a disagreement, and merges the rest; resolve settles it", async () => {
     const root = tmp();
     const corpus = path.join(root, "corpus");
-    cpSync(fixture, corpus, { recursive: true, filter: (p) => !p.includes(".sect") && !p.includes("city-amendments") });
+    cpSync(fixture, corpus, { recursive: true, filter: (p) => !p.includes(".sect") && !p.includes("city-amendments") && !p.includes(`${path.sep}notes`) });
     spawnSync("git", ["init", "-q"], { cwd: root });
     spawnSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "init"], { cwd: root });
     const input = path.join(root, "input", "city-amendments");

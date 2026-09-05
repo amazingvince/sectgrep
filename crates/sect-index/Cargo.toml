@@ -7,6 +7,9 @@ license.workspace = true
 description = "Index build (walk, fingerprint, validate, structural files, manifest, log) and freshness checks"
 
 [dependencies]
+blake3.workspace = true
+memmap2.workspace = true
+sha2.workspace = true
 chrono.workspace = true
 rayon.workspace = true
 sect-core.workspace = true
@@ -19,3 +22,9 @@ sect-semantic.workspace = true
 sect-struct.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_Threading"] }

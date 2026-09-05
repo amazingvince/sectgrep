@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-05T12:10:50.868367+00:00",
+  "purpose": "large-corpus default-refresh mutation diagnostic; no relevance judgments",
+  "corpus": "C:\\Users\\amazi\\code\\sect\\corpora\\needle-scale-real-v3",
+  "binary_sha256": "dbc0e9aed8ccb4bd644b36b34a145c8bcbe2c6af57644c00e1197c1d5a631766",
+  "original_generation": "01788607189517248200",
+  "restored_mtime_stress": false,
+  "steps": [
+    {
+      "action": "create",
+      "elapsed_ms_including_refresh": 263121.2763999938,
+      "generation": "01788610405483943400",
+      "fresh": true,
+      "total_matches": 1
+    },
+    {
+      "action": "same-size edit",
+      "elapsed_ms_including_refresh": 387255.2494999982,
+      "generation": "01788610738052875700",
+      "fresh": true,
+      "total_matches": 1
+    },
+    {
+      "action": "delete",
+      "elapsed_ms_including_refresh": 416842.67670000554,
+      "generation": "01788611154511541700",
+      "fresh": true,
+      "total_matches": 0
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "The owned text probe exercises exact-search freshness; canonical passages remain unchanged.",
+    "Mutation timings and peak MCP RSS include automatic index rebuilds, not only retrieval.",
+    "Old artifact hashes check immutability; concurrent in-memory reader pins are covered by Rust regressions."
+  ],
+  "final_generation": "01788611154511541700",
+  "canonical_search_unchanged": true,
+  "raw_sources_unchanged": true,
+  "old_artifacts_immutable": true,
+  "canonical_passages_and_vectors_unchanged": true,
+  "peak_mcp_rss_including_rebuilds": 6687342592
+}

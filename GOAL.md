@@ -1,5 +1,36 @@
 # Goal: Implement `sectgrep` (Engineering Spec v0.4)
 
+> **Active direction (2026-09-05):** The user approved the
+> [needle retrieval plan](docs/needle-retrieval-plan.md). Its first implemented slice
+> separates source regions, document hierarchy, retrieval passages and evidence
+> packets. See [implementation and validation](docs/needle-retrieval-implementation.md).
+> [Document input bundles and mapped reads](docs/document-store-implementation.md)
+> now preserve those section addresses with fewer filesystem operations; the matched
+> pilot comparison passed after fixing lexical rebuild ties.
+> [Native source navigation](docs/source-navigation-implementation.md) now supports
+> passage expansion, Word package addresses and grouped PDF boxes. The
+> [local model comparison](docs/needle-model-experiments.md) keeps both contextual
+> embeddings and reranking experimental pending independent evaluation.
+> [Real-scale validation](docs/needle-scale-implementation.md) now records final
+> Windows/Linux query latency and memory passes on 111,091 content passages, preserved
+> query results and source artifacts, and successful ordinary create/edit/delete checks.
+> Large-corpus updates still take minutes and several GB; restored-size/mtime writes
+> require `index --full`. Independent relevance/extraction review remains open;
+> no generalized release or full-corpus migration has been qualified.
+> The next [compiled-passage cache implementation](docs/compiled-passage-cache.md)
+> reuses unchanged native document groups and legacy sections; remaining graph,
+> n-gram and snapshot costs are tracked separately from passage compilation.
+
+> **Current implementation direction (2026-09-04):** The user-approved
+> [Rust search plan](docs/sect-search-vnext.md) and
+> [repair backlog](docs/current-system-repairs.md) supersede conflicting historical
+> scope and acceptance rules below. Windows and Linux are now required; mortgage
+> guidelines and mixed-discipline papers are the generalization targets. Preserve
+> seven local Rust query verbs and portable data; no migration is required.
+> The [implementation report](docs/implementation-2026-09-04.md) records the new
+> behavior and tests. The generalized release remains experimental until its
+> independent quality and performance gates pass.
+
 **Source of truth:** `sectgrep-spec-v0.4.md` in this directory. Where this goal and the spec disagree, the spec wins. Where the spec is silent, decide, record the decision in `docs/decisions.md`, and continue.
 **Status:** Bootstrap, milestone 0 (gate passed: locate 0.95, definition 1.00), milestone 0.5 (no vendoring; `zg` turned out to be TypeScript, see `docs/decisions.md` 15a), and milestone 1 (13-crate workspace; `index`, `read`, `map`, `status`; `eval/results/m1.md`) complete as of 2026-09-03, and milestone 2 (structure: xrefs, Actions, terms, tables, as-of snapping, `refs`, `define`, `map --complete`, `read --history`; exact-match 1.00 on the fixture, `eval/results/m2.md`) and milestone 3 (`grep` on the ripgrep crates; 28 parity cases identical to ripgrep 14.1.1, `eval/results/m3.md`) and milestone 4 (tantivy + model2vec `search` with RRF; p95 240 ms on two converted eCFR titles, `eval/results/m4.md`; the eCFR XML half of C1 shipped as `packages/sect-convert`) and milestone 5 (signal table, citation and definition short-circuits, `--expand`, `--seed`, abstention; all seven E.1 gates pass, `eval/results/m5.md`) and milestone 6 (incremental rebuilds across every layer, the pre-query stat pass, synchronous or background refresh, `--freshness auto|wait|no`; B.6 targets met on Linux and the NTFS gap documented, `eval/results/m6.md`) and milestone 7 (`sect-mcp` on rmcp over stdio and loopback HTTP, tool schemas from the CLI's own definitions, `sect install`, `docs/SKILL.md`, Pi and Claude Agent SDK examples with tests; release R1 as tag v0.1.0, nothing published) and milestone 3b (the sparse n-gram prefilter for grep, kept: outputs identical to brute force on every case, median speedup 199x in-process and 6.3x wall on the three-title corpus, `eval/results/m3b.md`) and milestone C0 (the OCR bake-off on 30 documents with local vLLM inference: PaddleOCR-VL-1.5 pipeline primary, olmOCR-2 pipeline secondary, Marker over Docling as orchestrator, a transcriber API boundary with a repetition guard and a per-model page-scaling policy in the converter, `eval/results/c0.md`) and milestone C1 (the Federal Register parser with Action candidates, born-digital PDF/DOCX/HTML/XLSX elements with the C.4 passes, the dual-transcriber scan path on the API pair olmOCR-2 + GLM-OCR; full Title 29 plus six notices validate with 0 errors, `eval/results/c1.md`) and milestone C2 (the seven C.5 validators as a library and `sect-convert validate`, each with passing and failing tests, run by CI on the fixture, which now ships its raw sources; `sect-convert align` on versioner point-in-time XML; release R2 as tag v0.2.0, `eval/results/c2.md`) and milestone H1 (the ingest harness on Pi: the seven verbs and six harness tools as Pi tools, the staging guard with its test, `docs/SKILL-ingest.md`, idempotent and serialized runs, a container, and a live run over Title 4 with its validator pass rate and cost in `eval/results/h1.md`) and milestone H2 (evidence checks, the answer-blind verifier on DeepSeek, consensus with the conflict queue in `review/`, Z1.4 sampling with grading, the merge script and rollback, the first auto-merge of Title 4 into `corpus/`, release R3 as tag v0.3.0, `eval/results/h2.md`) the next day, and the pre-H3 groundwork G-N2 (explicit citations linked in code before any model turn, trimmed results and a compact prompt, per-section dates from the versioner, `sect-harness resolve`; `eval/results/gn2.md`) the same day. Open questions resolved with the human (`docs/decisions.md` #14, #23 to #31): name stays `sectgrep` / `sect`, GPUs under WSL2, public repo at `github.com/amazingvince/sectgrep`.
 **Written:** 2026-09-03

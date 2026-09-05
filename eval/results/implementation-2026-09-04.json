@@ -1,0 +1,1513 @@
+{
+  "schema_version": 1,
+  "status": "experimental; not independently qualified",
+  "hardware": {
+    "cpu": "AMD Ryzen 9 7950X",
+    "physical_cores": 16,
+    "logical_processors": 32,
+    "physical_memory_bytes": 67803906048,
+    "filesystem": "NTFS"
+  },
+  "tests": {
+    "rust_windows": 55,
+    "rust_linux_wsl_ubuntu_24_04": 55,
+    "additional_real_ecfr_grep_property_windows": "passed",
+    "typescript_windows": 104,
+    "qualification_python": 7,
+    "rust_fmt": "passed",
+    "rust_clippy_strict": "passed",
+    "generated_contract": "passed",
+    "typescript_linux": "not run",
+    "remote_ci": "not run"
+  },
+  "runs": {
+    "public_smoke": {
+      "environment": {
+        "platform": "Windows-11-10.0.26200-SP0",
+        "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+        "python": "3.13.5",
+        "binary_sha256": "4584bda7c573aab321af591f489c6f85dff2269692ffe030a2ceb9fea951a323",
+        "tasks_sha256": "a1376104e1c68287e1b19e35f3eba97aa5cb26cdcde443c7094bfdac765fc95f",
+        "warm_mcp_peak_rss_bytes": 455278592
+      },
+      "created_at": "2026-09-04T23:53:33.695384+00:00",
+      "index": {
+        "generation": "01788564939451879400",
+        "works": 10496,
+        "expressions": 10496,
+        "chunks": 10496,
+        "embedding": "model2vec:minishlab/potion-retrieval-32M",
+        "build_ms": 14187
+      },
+      "build": {
+        "files": 10496,
+        "works": 10496,
+        "chunks": 10496,
+        "elapsed_ms": 14187,
+        "layer_ms": {
+          "lexical": 757,
+          "ngram": 0,
+          "semantic": 1345,
+          "structural": 358,
+          "validate": 184,
+          "walk": 4036,
+          "write-caches": 235,
+          "write-structural": 7269
+        },
+        "written": true
+      },
+      "release": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 106.3337000014144,
+            "cold_p95_ms": 648.1996000002255
+          },
+          "explicit": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 109.7620000000461,
+            "cold_p95_ms": 729.2894999991404
+          },
+          "plain-hybrid": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 121.22660000022734,
+            "cold_p95_ms": 790.9773999999743
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 106.65159999916796,
+            "cold_p95_ms": 776.7261999979382
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 110.03780000464758,
+            "cold_p95_ms": 720.922900000005
+          }
+        }
+      },
+      "full_local_report_sha256": "1c8d5a5108b36be35f5c4027c4ac011e1ae1edc38dfc48837cfa92973d1459fb",
+      "rows": [
+        {
+          "id": "smoke-fannie-length",
+          "variant": "body-bm25",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            90.01459999853978,
+            91.14579999732086,
+            88.27320000273176
+          ],
+          "cold_ms": [
+            588.4628999992856,
+            562.4077000029502,
+            575.4505000004428
+          ],
+          "metrics": {
+            "recall_at_5": 0.0,
+            "precision_at_5": 0.0,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-assets",
+          "variant": "body-bm25",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            87.68459999555489,
+            89.86259999801405,
+            89.36820000235457
+          ],
+          "cold_ms": [
+            602.1404999992228,
+            596.2141999989399,
+            583.0493000030401
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fha-returns",
+          "variant": "body-bm25",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            88.63260000362061,
+            90.23010000237264,
+            104.74319999775616
+          ],
+          "cold_ms": [
+            564.2742000054568,
+            600.7841000027838,
+            648.1996000002255
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-attention-architecture",
+          "variant": "body-bm25",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            100.56490000715712,
+            97.96609999466455,
+            95.71740000683349
+          ],
+          "cold_ms": [
+            618.5056999966037,
+            591.5858999942429,
+            563.8635999930557
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-biomedical-statistics",
+          "variant": "body-bm25",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            94.81650000088848,
+            90.57370000664378,
+            88.12729999772273
+          ],
+          "cold_ms": [
+            585.6300000014016,
+            594.0612000049441,
+            563.1941999963601
+          ],
+          "metrics": {
+            "recall_at_5": 0.0,
+            "precision_at_5": 0.0,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-absent",
+          "variant": "body-bm25",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            90.93589999974938,
+            88.84039999975357,
+            106.3337000014144
+          ],
+          "cold_ms": [
+            577.36450000084,
+            573.3219000030658,
+            596.5002000011737
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": 1,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-length",
+          "variant": "plain-hybrid",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            121.22660000022734,
+            115.69949999829987,
+            105.3840999957174
+          ],
+          "cold_ms": [
+            720.0668000004953,
+            726.5378999945824,
+            679.7705000062706
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-assets",
+          "variant": "plain-hybrid",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            104.13179999886779,
+            121.0919000004651,
+            100.31109999545151
+          ],
+          "cold_ms": [
+            702.5763999990886,
+            710.6935999981943,
+            664.4841000015731
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fha-returns",
+          "variant": "plain-hybrid",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            93.61619999981485,
+            99.61240000120597,
+            96.61729999788804
+          ],
+          "cold_ms": [
+            697.3704999982147,
+            677.1730000036769,
+            666.6141000023345
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-attention-architecture",
+          "variant": "plain-hybrid",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            94.90670000377577,
+            98.3605000001262,
+            109.23149999871384
+          ],
+          "cold_ms": [
+            667.9814000017359,
+            665.6899000008707,
+            699.1850999984308
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-biomedical-statistics",
+          "variant": "plain-hybrid",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            103.59089999838034,
+            98.99610000138637,
+            98.39360000478337
+          ],
+          "cold_ms": [
+            669.2181000034907,
+            663.0565999948885,
+            662.0667000024696
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-absent",
+          "variant": "plain-hybrid",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            95.22130000550533,
+            111.09339999529766,
+            109.83010000200011
+          ],
+          "cold_ms": [
+            701.3232000026619,
+            718.240499998501,
+            790.9773999999743
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": 1,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-length",
+          "variant": "sect",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            106.65159999916796,
+            102.63200000190409,
+            97.06670000014128
+          ],
+          "cold_ms": [
+            776.7261999979382,
+            684.2155999984243,
+            759.0506999986246
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-assets",
+          "variant": "sect",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            105.03249999601394,
+            100.22870000102557,
+            97.07699999853503
+          ],
+          "cold_ms": [
+            685.4050999972969,
+            695.5247999940184,
+            669.7625999950105
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fha-returns",
+          "variant": "sect",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            96.02489999815589,
+            99.7438999984297,
+            97.21739999804413
+          ],
+          "cold_ms": [
+            669.9088999957894,
+            669.7921000013594,
+            701.4243000012357
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-attention-architecture",
+          "variant": "sect",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            95.18730000127107,
+            101.81839999859221,
+            96.52359999745386
+          ],
+          "cold_ms": [
+            721.8599000043469,
+            688.9848000064376,
+            677.5354999990668
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-biomedical-statistics",
+          "variant": "sect",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            93.63280000252416,
+            94.38860000227578,
+            93.4516999986954
+          ],
+          "cold_ms": [
+            677.435500001593,
+            699.0290000030654,
+            680.3858999992372
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-absent",
+          "variant": "sect",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            95.00300000217976,
+            92.63459999783663,
+            94.03980000206502
+          ],
+          "cold_ms": [
+            690.0363999957335,
+            663.0389999991166,
+            671.1450000002515
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": 1,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-length",
+          "variant": "explicit",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            102.58080000494374,
+            102.60920000291662,
+            101.7202000002726
+          ],
+          "cold_ms": [
+            681.2424000017927,
+            720.7731000016793,
+            699.129400003585
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-assets",
+          "variant": "explicit",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            102.47830000298563,
+            101.35289999743691,
+            99.5069999989937
+          ],
+          "cold_ms": [
+            674.3044000031659,
+            669.0716000011889,
+            684.1695999974036
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fha-returns",
+          "variant": "explicit",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            99.87879999971483,
+            98.82500000094296,
+            100.33819999807747
+          ],
+          "cold_ms": [
+            709.7108000016306,
+            674.008000001777,
+            707.2418000025209
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-attention-architecture",
+          "variant": "explicit",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            109.7620000000461,
+            106.47340000286931,
+            97.78409999853466
+          ],
+          "cold_ms": [
+            729.2894999991404,
+            720.4273999959696,
+            688.5324000031687
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-biomedical-statistics",
+          "variant": "explicit",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            98.5785999946529,
+            100.42310000426369,
+            98.0210000052466
+          ],
+          "cold_ms": [
+            670.9046000032686,
+            682.9062999968301,
+            663.2729999982985
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-absent",
+          "variant": "explicit",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            107.82789999939268,
+            100.3259999997681,
+            97.64239999640267
+          ],
+          "cold_ms": [
+            695.6360000040149,
+            689.3196999953943,
+            671.8746000042302
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": 1,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-length",
+          "variant": "verified",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            100.52529999666149,
+            98.24590000062017,
+            110.03780000464758
+          ],
+          "cold_ms": [
+            675.6007000003592,
+            660.1959999970859,
+            669.9649000001955
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fannie-assets",
+          "variant": "verified",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            98.3189999969909,
+            98.42689999641152,
+            100.28920000331709
+          ],
+          "cold_ms": [
+            686.6135999953258,
+            669.9395000032382,
+            676.7452000058256
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-fha-returns",
+          "variant": "verified",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            99.00599999673432,
+            104.2198999930406,
+            98.44400000292808
+          ],
+          "cold_ms": [
+            707.5244000006933,
+            720.922900000005,
+            705.2713999946718
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-attention-architecture",
+          "variant": "verified",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            99.71490000316408,
+            100.4728999978397,
+            101.30429999844637
+          ],
+          "cold_ms": [
+            670.477599996957,
+            673.5788000005414,
+            675.6887000010465
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-biomedical-statistics",
+          "variant": "verified",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            99.04039999673842,
+            108.217600005446,
+            99.27320000133477
+          ],
+          "cold_ms": [
+            679.3121000009705,
+            692.554300003394,
+            711.1349999977392
+          ],
+          "metrics": {
+            "recall_at_5": 1.0,
+            "precision_at_5": 0.2,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "smoke-absent",
+          "variant": "verified",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            96.90730000147596,
+            97.47710000374354,
+            99.21450000547338
+          ],
+          "cold_ms": [
+            676.8723999994108,
+            714.3054999978631,
+            676.3771000041743
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": 1,
+            "context_words": 0
+          }
+        }
+      ]
+    },
+    "synthetic_100k": {
+      "environment": {
+        "platform": "Windows-11-10.0.26200-SP0",
+        "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+        "python": "3.13.5",
+        "binary_sha256": "4584bda7c573aab321af591f489c6f85dff2269692ffe030a2ceb9fea951a323",
+        "tasks_sha256": "0e453d49a79c1b761b06bacd05761f063d3d1f80b50e22307b109651f0c46bc1",
+        "warm_mcp_peak_rss_bytes": 1308438528
+      },
+      "created_at": "2026-09-04T23:56:12.394302+00:00",
+      "index": {
+        "generation": "01788565034810356600",
+        "works": 101001,
+        "expressions": 101001,
+        "chunks": 101001,
+        "embedding": "model2vec:minishlab/potion-retrieval-32M",
+        "build_ms": 160197
+      },
+      "build": {
+        "files": 101001,
+        "works": 101001,
+        "chunks": 101001,
+        "elapsed_ms": 160197,
+        "layer_ms": {
+          "lexical": 4825,
+          "ngram": 0,
+          "semantic": 18940,
+          "structural": 2664,
+          "validate": 1741,
+          "walk": 95526,
+          "write-caches": 1111,
+          "write-structural": 35386
+        },
+        "written": true
+      },
+      "release": {
+        "qualified": false,
+        "blockers": [
+          "tuning/lending: requires 50 tasks",
+          "tuning/research: requires 50 tasks",
+          "tuning: both research disciplines required",
+          "heldout/lending: requires 100 tasks",
+          "heldout/research: requires 100 tasks",
+          "heldout: both research disciplines required",
+          "60 manually checked extraction regions missing",
+          "100k real searchable units missing",
+          "windows: warm_p95_ms gate not met",
+          "windows: cold_p95_ms gate not met",
+          "windows: rss_bytes gate not met",
+          "linux: warm_p95_ms gate not met",
+          "linux: cold_p95_ms gate not met",
+          "linux: rss_bytes gate not met",
+          "exact/structural/temporal invariants not qualified",
+          "accepted relation precision/coverage missing or below gate",
+          "three agent runs with >=30% fewer calls and no accuracy regression missing",
+          "release evidence requires a reviewer and artifact hashes",
+          "lending: recall_at_5 missing or below 0.9",
+          "lending: no_answer_correct missing or below 0.9",
+          "lending: support_recall improvement gate not met",
+          "lending: precision_at_5 improvement gate not met",
+          "research: recall_at_5 missing or below 0.9",
+          "research: no_answer_correct missing or below 0.9",
+          "research: support_recall improvement gate not met",
+          "research: precision_at_5 improvement gate not met",
+          "diagnostic/tuning run is not held-out hybrid qualification"
+        ],
+        "summary": {
+          "body-bm25": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1085.6589000031818,
+            "cold_p95_ms": 4013.9506999985315
+          },
+          "sect": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1131.810899998527,
+            "cold_p95_ms": 4095.7444999949075
+          },
+          "verified": {
+            "domains": {
+              "lending": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              },
+              "research": {
+                "recall_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "precision_at_5": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "support_recall": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                },
+                "no_answer_correct": {
+                  "n": 0,
+                  "mean": null,
+                  "ci95": null
+                }
+              }
+            },
+            "warm_p95_ms": 1195.8238999941386,
+            "cold_p95_ms": 4198.538099997677
+          }
+        }
+      },
+      "full_local_report_sha256": "4bccc4ef373731a52e35484e4edaa8704600b3b4f927bfd4fbbb47ad75fc92ee",
+      "rows": [
+        {
+          "id": "synthetic-one",
+          "variant": "sect",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1082.5251000060234,
+            1089.723099998082,
+            1079.867299995385
+          ],
+          "cold_ms": [
+            4063.5167000000365,
+            4070.6993999992847,
+            4090.4004000040004
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "sect",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1106.9175000011455,
+            1131.810899998527,
+            1103.2988000006299
+          ],
+          "cold_ms": [
+            4059.685599997465,
+            4043.0033999946318,
+            4005.0171999973827
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "sect",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            1083.462900001905,
+            1099.7595000008005,
+            1086.8487000043388
+          ],
+          "cold_ms": [
+            4016.065099996922,
+            4028.4973999951035,
+            4095.7444999949075
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-one",
+          "variant": "verified",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1132.3380000030738,
+            1195.8238999941386,
+            1139.2167000012705
+          ],
+          "cold_ms": [
+            4198.538099997677,
+            4133.829800004605,
+            4049.0187000032165
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "verified",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1183.6731000003056,
+            1154.8801000026288,
+            1158.2656000027782
+          ],
+          "cold_ms": [
+            4089.2674999995506,
+            4147.284300001047,
+            4188.642300003266
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "verified",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            1180.8277999953134,
+            1155.7063000000198,
+            1154.6804000026896
+          ],
+          "cold_ms": [
+            4141.945100003795,
+            4111.612300002889,
+            4176.266700000269
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-one",
+          "variant": "body-bm25",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1033.6167000059504,
+            1023.0185999971582,
+            1027.0064999931492
+          ],
+          "cold_ms": [
+            3798.0977999977767,
+            3820.0307000006433,
+            4012.0248000021093
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-two",
+          "variant": "body-bm25",
+          "domain": "lending",
+          "split": "smoke",
+          "kind": "locate",
+          "warm_ms": [
+            1035.8676000032574,
+            1050.336399996013,
+            1051.7491999999038
+          ],
+          "cold_ms": [
+            4013.9506999985315,
+            3813.0864999984624,
+            3822.6256999987527
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        },
+        {
+          "id": "synthetic-three",
+          "variant": "body-bm25",
+          "domain": "research",
+          "split": "smoke",
+          "kind": "absence",
+          "warm_ms": [
+            1029.5456999956514,
+            1028.6472000007052,
+            1085.6589000031818
+          ],
+          "cold_ms": [
+            3917.6399999996647,
+            3959.9710999973468,
+            3902.5579000008292
+          ],
+          "metrics": {
+            "recall_at_5": null,
+            "precision_at_5": null,
+            "support_recall": null,
+            "no_answer_correct": null,
+            "context_words": 0
+          }
+        }
+      ]
+    }
+  },
+  "interpretation": [
+    "Public tasks have machine-authored, nonindependent smoke labels; no release quality inference.",
+    "No human-reviewed knowledge relations in public smoke; relation benefit unmeasured.",
+    "Synthetic tasks are timing-only. At 101001 units, warm/cold latency targets fail; peak resident memory passes.",
+    "Source license metadata and hashes are in eval/corpora/sources.lock.json; full documents are not distributed in this record."
+  ]
+}

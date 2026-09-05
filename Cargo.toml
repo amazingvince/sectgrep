@@ -6,15 +6,17 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.80"
+rust-version = "1.92"
 license = "Apache-2.0"
 description = "sect: single-binary search and navigation over a structured markdown corpus of rules and guidelines, built for AI agents"
 
 [workspace.dependencies]
+sha2 = "0.10"
+memmap2 = "0.9"
 anyhow = "1"
 thiserror = "2"
 serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1", features = ["preserve_order"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
 serde_yaml_ng = "0.10"
 blake3 = "1"
 ignore = "0.4"

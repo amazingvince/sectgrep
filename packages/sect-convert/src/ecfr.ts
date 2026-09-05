@@ -28,6 +28,44 @@ export interface OutFile {
   text: string;
 }
 
+/** Keep source case distinctions on case-insensitive filesystems, including directories. */
+export function caseSafePaths(paths: string[]): string[] {
+  type Branch = { children: Map<string, Branch>; index?: number };
+  const root: Branch = { children: new Map() };
+  paths.forEach((path, index) => {
+    let branch = root;
+    for (const name of path.split("/")) {
+      if (!branch.children.has(name)) branch.children.set(name, { children: new Map() });
+      branch = branch.children.get(name)!;
+    }
+    if (branch.index !== undefined) throw new Error(`duplicate output path: ${path}`);
+    branch.index = index;
+  });
+  const result = new Array<string>(paths.length);
+  const visit = (branch: Branch, prefix: string) => {
+    if (branch.index !== undefined) {
+      if (branch.children.size) throw new Error(`output path is both file and directory: ${prefix}`);
+      result[branch.index] = prefix;
+    }
+    const groups = new Map<string, number>();
+    for (const name of branch.children.keys()) groups.set(name.toLowerCase(), (groups.get(name.toLowerCase()) ?? 0) + 1);
+    const emitted = new Set<string>();
+    for (const [name, child] of branch.children) {
+      let mapped = name;
+      if (groups.get(name.toLowerCase())! > 1) {
+        const suffix = "~" + createHash("sha256").update(name).digest("hex").slice(0, 12);
+        const dot = child.index === undefined ? -1 : name.lastIndexOf(".");
+        mapped = dot > 0 ? name.slice(0, dot) + suffix + name.slice(dot) : name + suffix;
+      }
+      if (emitted.has(mapped.toLowerCase())) throw new Error(`disambiguated output path collides: ${prefix}/${mapped}`);
+      emitted.add(mapped.toLowerCase());
+      visit(child, prefix ? `${prefix}/${mapped}` : mapped);
+    }
+  };
+  visit(root, "");
+  return result;
+}
+
 export interface NodeRec {
   id: string;
   node: string;
@@ -444,6 +482,14 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     dateOfNode.set(n.id, d);
     return d;
   };
+  // Source IDs are case-sensitive. Disambiguate the whole path tree before any
+  // writes so e.g. Subparts Cc and CC survive on Windows with separate children.
+  const paths = caseSafePaths(nodes.map((n) => `${n.dir ? n.dir + "/" : ""}${n.file}`));
+  nodes.forEach((n, i) => {
+    const slash = paths[i].lastIndexOf("/");
+    n.dir = slash < 0 ? "" : paths[i].slice(0, slash);
+    n.file = paths[i].slice(slash + 1);
+  });
   const files: OutFile[] = [];
   for (const n of nodes) {
     const kids = childrenOf.get(n.id) ?? [];
@@ -453,6 +499,7 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
     const toc = kids.map((k) => `- [${k.label} ${k.title}](${k.id})`).join("\n");
     // A structural node's own text (an editorial note, a reserved marker) comes before its listing.
     const body = n.level === "section" ? n.body || "[Reserved]" : [n.body, toc].filter(Boolean).join("\n\n");
+    const navigation = n.level !== "section" && !n.body.trim();
     const fm = [
       "---",
       `id: ${q(n.id)}`,
@@ -473,6 +520,7 @@ export function convertEcfr(xml: string, opts: ConvertOptions): { files: OutFile
       `citation: ${q(n.citation)}`,
       "tags: []",
       `context: ${q(contextFor(n, byId, titleName, t, kids))}`,
+      ...(navigation ? ["context_kind: navigation", "retrieval_role: navigation"] : []),
       "provenance:",
       `  raw: ${q(opts.rawPath)}`,
       `  raw_sha256: ${q(rawSha)}`,

@@ -1,0 +1,68 @@
+{
+  "name": "ecfr",
+  "version": "1",
+  "unit_types": [
+    "document",
+    "section",
+    "paragraph",
+    "table",
+    "figure",
+    "caption"
+  ],
+  "concept_types": [
+    "term",
+    "topic"
+  ],
+  "metadata_fields": [
+    "publisher",
+    "title",
+    "published",
+    "effective",
+    "license",
+    "source_url"
+  ],
+  "relation_types": [
+    {
+      "name": "references",
+      "description": "A source explicitly refers to another unit.",
+      "direction": "out",
+      "weight": 0.7,
+      "required_context": false
+    },
+    {
+      "name": "defines",
+      "description": "A unit supplies a scoped definition.",
+      "direction": "out",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "exception_to",
+      "description": "A source explicitly limits another statement.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "condition_of",
+      "description": "A condition applies to another unit.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "overrides",
+      "description": "An accepted overlay replaces the named provision.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "narrows",
+      "description": "An accepted overlay narrows the named provision.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    }
+  ]
+}

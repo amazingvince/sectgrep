@@ -48,7 +48,21 @@ pub struct GrepOptions {
 
 impl Default for GrepOptions {
     fn default() -> Self {
-        GrepOptions { patterns: vec![], ignore_case: false, word: false, fixed_strings: false, globs: vec![], before: 0, after: 0, count: false, files_with_matches: false, count_only: false, max_hits: DEFAULT_MAX_HITS, only_paths: None, files: None }
+        GrepOptions {
+            patterns: vec![],
+            ignore_case: false,
+            word: false,
+            fixed_strings: false,
+            globs: vec![],
+            before: 0,
+            after: 0,
+            count: false,
+            files_with_matches: false,
+            count_only: false,
+            max_hits: DEFAULT_MAX_HITS,
+            only_paths: None,
+            files: None,
+        }
     }
 }
 
@@ -91,15 +105,24 @@ pub struct GrepOutput {
 
 pub fn build_matcher(opts: &GrepOptions) -> Result<RegexMatcher> {
     if opts.patterns.is_empty() {
-        return Err(SectError::Other("grep needs a pattern (positional or -e)".into()));
+        return Err(SectError::Other(
+            "grep needs a pattern (positional or -e)".into(),
+        ));
     }
     let mut b = RegexMatcherBuilder::new();
-    b.case_insensitive(opts.ignore_case).word(opts.word).fixed_strings(opts.fixed_strings).line_terminator(Some(b'\n'));
-    b.build_many(&opts.patterns).map_err(|e| SectError::Other(format!("regex: {e}")))
+    b.case_insensitive(opts.ignore_case)
+        .word(opts.word)
+        .fixed_strings(opts.fixed_strings)
+        .line_terminator(Some(b'\n'));
+    b.build_many(&opts.patterns)
+        .map_err(|e| SectError::Other(format!("regex: {e}")))
 }
 
 fn rel(root: &Path, p: &Path) -> String {
-    p.strip_prefix(root).unwrap_or(p).to_string_lossy().replace('\\', "/")
+    p.strip_prefix(root)
+        .unwrap_or(p)
+        .to_string_lossy()
+        .replace('\\', "/")
 }
 
 /// Files ripgrep would search under `root`: hidden and gitignored entries skipped, `-g` globs
@@ -107,15 +130,20 @@ fn rel(root: &Path, p: &Path) -> String {
 fn overrides_for(root: &Path, globs: &[String]) -> Result<ignore::overrides::Override> {
     let mut ob = OverrideBuilder::new(root);
     for g in globs {
-        Glob::new(g.trim_start_matches('!')).map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
-        ob.add(g).map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
+        Glob::new(g.trim_start_matches('!'))
+            .map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
+        ob.add(g)
+            .map_err(|e| SectError::Other(format!("glob `{g}`: {e}")))?;
     }
-    ob.build().map_err(|e| SectError::Other(format!("globs: {e}")))
+    ob.build()
+        .map_err(|e| SectError::Other(format!("globs: {e}")))
 }
 
 /// The files to search: an explicit list filtered by the globs, or the walk.
 fn resolve_files(root: &Path, opts: &GrepOptions) -> Result<Vec<(String, PathBuf)>> {
-    let Some(list) = &opts.files else { return list_files(root, &opts.globs) };
+    let Some(list) = &opts.files else {
+        return list_files(root, &opts.globs);
+    };
     let ov = overrides_for(root, &opts.globs)?;
     Ok(list
         .iter()
@@ -134,9 +162,26 @@ fn resolve_files(root: &Path, opts: &GrepOptions) -> Result<Vec<(String, PathBuf
 }
 
 pub fn list_files(root: &Path, globs: &[String]) -> Result<Vec<(String, PathBuf)>> {
+    list_files_excluding(root, globs, &[])
+}
+
+/// Prune generated export directories before walking, rather than statting every export.
+pub fn list_files_excluding(
+    root: &Path,
+    globs: &[String],
+    excluded: &[PathBuf],
+) -> Result<Vec<(String, PathBuf)>> {
     let overrides = overrides_for(root, globs)?;
     let mut out = Vec::new();
-    for entry in WalkBuilder::new(root).hidden(true).git_ignore(true).overrides(overrides).sort_by_file_path(|a, b| a.cmp(b)).build() {
+    let excluded = excluded.to_vec();
+    for entry in WalkBuilder::new(root)
+        .hidden(true)
+        .git_ignore(true)
+        .filter_entry(move |e| !excluded.iter().any(|p| e.path().starts_with(p)))
+        .overrides(overrides)
+        .sort_by_file_path(|a, b| a.cmp(b))
+        .build()
+    {
         let entry = entry.map_err(|e| SectError::Other(format!("walk {}: {e}", root.display())))?;
         if entry.file_type().map(|t| t.is_file()).unwrap_or(false) {
             out.push((rel(root, entry.path()), entry.path().to_path_buf()));
@@ -165,18 +210,38 @@ fn strip_eol(b: &[u8]) -> String {
 impl Sink for Collector<'_> {
     type Error = std::io::Error;
 
-    fn matched(&mut self, _searcher: &Searcher, m: &SinkMatch<'_>) -> std::result::Result<bool, Self::Error> {
+    fn matched(
+        &mut self,
+        _searcher: &Searcher,
+        m: &SinkMatch<'_>,
+    ) -> std::result::Result<bool, Self::Error> {
         self.matches += 1;
         if self.want_lines && *self.budget > 0 {
             *self.budget -= 1;
-            self.lines.push(GrepLine { path: self.path.to_string(), line: m.line_number().unwrap_or(0), kind: LineKind::Match, text: strip_eol(m.bytes()), break_before: std::mem::take(&mut self.pending_break) });
+            self.lines.push(GrepLine {
+                path: self.path.to_string(),
+                line: m.line_number().unwrap_or(0),
+                kind: LineKind::Match,
+                text: strip_eol(m.bytes()),
+                break_before: std::mem::take(&mut self.pending_break),
+            });
         }
         Ok(true)
     }
 
-    fn context(&mut self, _searcher: &Searcher, c: &SinkContext<'_>) -> std::result::Result<bool, Self::Error> {
+    fn context(
+        &mut self,
+        _searcher: &Searcher,
+        c: &SinkContext<'_>,
+    ) -> std::result::Result<bool, Self::Error> {
         if self.want_lines && *self.budget > 0 {
-            self.lines.push(GrepLine { path: self.path.to_string(), line: c.line_number().unwrap_or(0), kind: LineKind::Context, text: strip_eol(c.bytes()), break_before: std::mem::take(&mut self.pending_break) });
+            self.lines.push(GrepLine {
+                path: self.path.to_string(),
+                line: c.line_number().unwrap_or(0),
+                kind: LineKind::Context,
+                text: strip_eol(c.bytes()),
+                break_before: std::mem::take(&mut self.pending_break),
+            });
         }
         Ok(true)
     }
@@ -190,6 +255,41 @@ impl Sink for Collector<'_> {
 /// Search every file under `root`. Exhaustive: every file is scanned even after `max_hits` is
 /// reached so the per-file counts are complete.
 pub fn grep(root: &Path, opts: &GrepOptions) -> Result<GrepOutput> {
+    let files = resolve_files(root, opts)?
+        .into_iter()
+        .map(|(p, a)| (p, Content::Path(a)))
+        .collect();
+    grep_contents(root, opts, files)
+}
+
+pub enum Content<'a> {
+    Path(PathBuf),
+    Bytes(&'a [u8]),
+}
+
+/// The same exhaustive matcher and output contract for physical and mapped virtual files.
+pub fn grep_contents(
+    root: &Path,
+    opts: &GrepOptions,
+    mut files: Vec<(String, Content<'_>)>,
+) -> Result<GrepOutput> {
+    files.sort_by(|a, b| a.0.cmp(&b.0));
+    let mut selection = opts.clone();
+    let candidates: Option<std::collections::HashSet<&str>> = opts
+        .files
+        .as_ref()
+        .map(|f| f.iter().map(String::as_str).collect());
+    selection.files = Some(
+        files
+            .iter()
+            .filter(|(p, _)| candidates.as_ref().is_none_or(|f| f.contains(p.as_str())))
+            .map(|(p, _)| p.clone())
+            .collect(),
+    );
+    let allowed: std::collections::HashSet<_> = resolve_files(root, &selection)?
+        .into_iter()
+        .map(|(p, _)| p)
+        .collect();
     let matcher = build_matcher(opts)?;
     let mut searcher = SearcherBuilder::new()
         .line_number(true)
@@ -197,14 +297,27 @@ pub fn grep(root: &Path, opts: &GrepOptions) -> Result<GrepOutput> {
         .after_context(opts.after)
         .binary_detection(BinaryDetection::quit(b'\x00'))
         .build();
-    let max_hits = if opts.max_hits == 0 { DEFAULT_MAX_HITS } else { opts.max_hits };
+    let max_hits = if opts.max_hits == 0 {
+        DEFAULT_MAX_HITS
+    } else {
+        opts.max_hits
+    };
     let want_lines = !(opts.count || opts.files_with_matches || opts.count_only);
     let context = opts.before > 0 || opts.after > 0;
-    let mut out = GrepOutput { max_hits, ..Default::default() };
+    let mut out = GrepOutput {
+        max_hits,
+        ..Default::default()
+    };
     // One more than the bound so we can tell "exactly max_hits" from "more than max_hits".
     let mut budget = max_hits + 1;
-    let only: Option<std::collections::HashSet<&str>> = opts.only_paths.as_ref().map(|v| v.iter().map(|s| s.as_str()).collect());
-    for (rel, abs) in resolve_files(root, opts)? {
+    let only: Option<std::collections::HashSet<&str>> = opts
+        .only_paths
+        .as_ref()
+        .map(|v| v.iter().map(|s| s.as_str()).collect());
+    for (rel, content) in files {
+        if !allowed.contains(&rel) {
+            continue;
+        }
         out.files_total += 1;
         if let Some(only) = &only {
             if !only.contains(rel.as_str()) {
@@ -214,14 +327,31 @@ pub fn grep(root: &Path, opts: &GrepOptions) -> Result<GrepOutput> {
         out.files_searched += 1;
         let start = out.lines.len();
         let matches = {
-            let mut c = Collector { path: &rel, lines: &mut out.lines, matches: 0, want_lines, budget: &mut budget, pending_break: false };
-            searcher.search_path(&matcher, &abs, &mut c).map_err(|e| SectError::io(&abs, e))?;
+            let mut c = Collector {
+                path: &rel,
+                lines: &mut out.lines,
+                matches: 0,
+                want_lines,
+                budget: &mut budget,
+                pending_break: false,
+            };
+            match content {
+                Content::Path(abs) => searcher
+                    .search_path(&matcher, &abs, &mut c)
+                    .map_err(|e| SectError::io(&abs, e))?,
+                Content::Bytes(bytes) => searcher
+                    .search_slice(&matcher, bytes, &mut c)
+                    .map_err(|e| SectError::io(&rel, e))?,
+            }
             c.matches
         };
         if matches > 0 {
             out.files_matched += 1;
             out.total_matches += matches;
-            out.per_file.push(FileCount { path: rel.clone(), matches });
+            out.per_file.push(FileCount {
+                path: rel.clone(),
+                matches,
+            });
             if context && start > 0 && out.lines.len() > start {
                 out.lines[start].break_before = true;
             }
@@ -244,33 +374,99 @@ mod tests {
 
     #[test]
     fn finds_lines_and_counts() {
-        let o = grep(&fixture(), &GrepOptions { patterns: vec!["toeboard".into()], ignore_case: true, ..Default::default() }).unwrap();
+        let o = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["toeboard".into()],
+                ignore_case: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert!(o.files_searched >= 44);
         assert!(o.files_matched >= 3, "{:?}", o.per_file);
-        assert!(o.lines.iter().all(|l| l.text.to_lowercase().contains("toeboard")));
+        assert!(o
+            .lines
+            .iter()
+            .all(|l| l.text.to_lowercase().contains("toeboard")));
         assert!(!o.truncated);
-        let counts = grep(&fixture(), &GrepOptions { patterns: vec!["toeboard".into()], ignore_case: true, count: true, ..Default::default() }).unwrap();
+        let counts = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["toeboard".into()],
+                ignore_case: true,
+                count: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert!(counts.lines.is_empty());
         assert_eq!(counts.per_file.len(), o.per_file.len());
     }
 
     #[test]
     fn bounds_at_max_hits_with_per_file_counts() {
-        let o = grep(&fixture(), &GrepOptions { patterns: vec!["the".into()], max_hits: 10, ..Default::default() }).unwrap();
+        let o = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["the".into()],
+                max_hits: 10,
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert!(o.truncated);
         assert!(o.lines.is_empty());
         assert!(o.total_matches > 10);
-        assert_eq!(o.per_file.iter().map(|f| f.matches).sum::<usize>(), o.total_matches);
+        assert_eq!(
+            o.per_file.iter().map(|f| f.matches).sum::<usize>(),
+            o.total_matches
+        );
     }
 
     #[test]
     fn globs_and_word_and_fixed() {
-        let o = grep(&fixture(), &GrepOptions { patterns: vec!["kind:".into()], globs: vec!["*.yaml".into()], ..Default::default() }).unwrap();
-        assert!(o.lines.iter().all(|l| l.path.ends_with("_source.yaml")), "{:?}", o.lines);
-        let o = grep(&fixture(), &GrepOptions { patterns: vec!["(a)".into()], fixed_strings: true, ..Default::default() }).unwrap();
+        let o = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["kind:".into()],
+                globs: vec!["*.yaml".into()],
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert!(
+            o.lines.iter().all(|l| l.path.ends_with("_source.yaml")),
+            "{:?}",
+            o.lines
+        );
+        let o = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["(a)".into()],
+                fixed_strings: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert!(o.total_matches > 20);
-        let w = grep(&fixture(), &GrepOptions { patterns: vec!["rail".into()], word: true, ..Default::default() }).unwrap();
-        let nw = grep(&fixture(), &GrepOptions { patterns: vec!["rail".into()], ..Default::default() }).unwrap();
+        let w = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["rail".into()],
+                word: true,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        let nw = grep(
+            &fixture(),
+            &GrepOptions {
+                patterns: vec!["rail".into()],
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert!(w.total_matches < nw.total_matches);
     }
 }

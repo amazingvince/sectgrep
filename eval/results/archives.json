@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "purpose": "Lossless packaging of original measurement bytes; original hashes remain valid after decompression.",
+  "reports": [
+    {
+      "report": "needle-scale-batched-query-windows-2026-09-05.json",
+      "archive": "needle-scale-batched-query-windows-2026-09-05.json.gz",
+      "original_bytes": 12191452,
+      "original_sha256": "a0c213a09d385eec474657de532d4359f47908cddba41c2dd9bf834744071d19",
+      "archive_bytes": 353529,
+      "archive_sha256": "54b1c94dda8c0423fef8b892a9a7759315b1fb6029cbe801a748707dc9794d57"
+    },
+    {
+      "report": "needle-scale-final-linux-2026-09-05.json",
+      "archive": "needle-scale-final-linux-2026-09-05.json.gz",
+      "original_bytes": 11842895,
+      "original_sha256": "c6200ccd6d0fdbb84ae3f42eac4ed5fc7c056839ca23d46fc0ce4b4581112fe6",
+      "archive_bytes": 353483,
+      "archive_sha256": "03203acaad2842770f896d801eafe572373f84433afdb2c777a9253d7c4ecea0"
+    },
+    {
+      "report": "needle-scale-final-windows-2026-09-05.json",
+      "archive": "needle-scale-final-windows-2026-09-05.json.gz",
+      "original_bytes": 12191465,
+      "original_sha256": "3380ea9566225bf379c8b591f7f0c5d7c51f895d6d92c497ce291656e47db642",
+      "archive_bytes": 353549,
+      "archive_sha256": "1fa1e786b16f8cafdad045ebb5109e26ef8aa69b33ab296cffa761a1579dedae"
+    },
+    {
+      "report": "needle-scale-parallel-query-linux-2026-09-05.json",
+      "archive": "needle-scale-parallel-query-linux-2026-09-05.json.gz",
+      "original_bytes": 11842885,
+      "original_sha256": "40ea6052599103a63c2d38b3349023e2b6efd9b8db6df945b0a1f2a0bd1902d7",
+      "archive_bytes": 353522,
+      "archive_sha256": "64f990a62aee79d0e0a662e551a2d15572b13a0fab0b2fa1ae79610450633f18"
+    },
+    {
+      "report": "needle-scale-parallel-query-windows-2026-09-05.json",
+      "archive": "needle-scale-parallel-query-windows-2026-09-05.json.gz",
+      "original_bytes": 12191460,
+      "original_sha256": "36c97f021c5bce2e5f36dd3b36b399b6fedda1824d17076cb732fbadbfc60deb",
+      "archive_bytes": 353538,
+      "archive_sha256": "095fb28695c4cd6e41d17a39c053f13d6ad4113a6cfd62220e988302074dbc13"
+    },
+    {
+      "report": "needle-scale-query-projection-windows-2026-09-05.json",
+      "archive": "needle-scale-query-projection-windows-2026-09-05.json.gz",
+      "original_bytes": 12191446,
+      "original_sha256": "7c4a24ca3269f1681b41cda2be349b0f5c0f53bbc5ca33aa25ac3f52b9318a61",
+      "archive_bytes": 353536,
+      "archive_sha256": "6890b25eca71544048f2b0e0ef4547419ce0bba6e54ca5218158a22703aef84a"
+    },
+    {
+      "report": "needle-scale-shared-terms-windows-2026-09-05.json",
+      "archive": "needle-scale-shared-terms-windows-2026-09-05.json.gz",
+      "original_bytes": 12191464,
+      "original_sha256": "c3cdf4f63ac879aa98b7158ede0e6aac7e53ec475efc87a58059fe5426c97e1f",
+      "archive_bytes": 353534,
+      "archive_sha256": "aa03f62bb65e4d7df200186bc3cdf4a2bebedc96af17c0fc809d790d32aca9f4"
+    },
+    {
+      "report": "needle-scale-windows-2026-09-05.json",
+      "archive": "needle-scale-windows-2026-09-05.json.gz",
+      "original_bytes": 12191399,
+      "original_sha256": "da6d1848c36c2d070826f3ccdf0d455971c2c9729cc877b7c3a669178aa4cd3f",
+      "archive_bytes": 353519,
+      "archive_sha256": "37abbb5a602b72097ffda550a229f8e2c94d65044d47c6383fb818171df2f552"
+    }
+  ]
+}

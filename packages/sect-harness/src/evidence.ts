@@ -136,9 +136,9 @@ export function evidenceChecks(o: EvidenceOptions): EvidenceReport {
         continue;
       }
       const above = new Set<string>();
-      for (let p = d.front.parent ? String(d.front.parent) : null, n = 0; p && n < 12; n++) {
+      for (let p = d.front.parent ? String(d.front.parent) : null; p && !above.has(p);) {
         above.add(p);
-        const pd = (byId.get(p) ?? [])[0];
+        const pd = expressionAt(byId, p, date);
         p = pd?.front.parent ? String(pd.front.parent) : null;
       }
       if (action.target_id !== d.front.id && !above.has(action.target_id)) issue(d, "amended_by", "fail", `${ref} targets ${action.target_id}, not this section nor a container above it`);
@@ -200,9 +200,9 @@ export function evidenceChecks(o: EvidenceOptions): EvidenceReport {
     checked.ocr++;
     const body = tokens(d.body).join(" ");
     for (const line of readFileSync(elements, "utf-8").split("\n")) {
-      if (!line.includes("ocr_divergent")) continue;
+      if (!line.includes("ocr_divergent") && !line.includes("ocr_unverified")) continue;
       const e = JSON.parse(line) as { text: string; flags: string[] };
-      if (!e.flags.includes("ocr_divergent")) continue;
+      if (!e.flags.includes("ocr_divergent") && !e.flags.includes("ocr_unverified")) continue;
       const span = tokens(e.text).slice(0, 8).join(" ");
       if (span && body.includes(span)) issue(d, "ocr", "fail", `an OCR-divergent span sits in rule text: "${e.text.slice(0, 60)}"`);
     }

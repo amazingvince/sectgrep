@@ -35,7 +35,10 @@ mod tests {
     fn expr_roundtrip() {
         let d = NaiveDate::from_ymd_opt(2024, 1, 1).unwrap();
         assert_eq!(expr_id("CFR:99-2.7", Some(d)), "CFR:99-2.7@2024-01-01");
-        assert_eq!(split_expr("CFR:99-2.7@2024-01-01"), ("CFR:99-2.7", Some("2024-01-01")));
+        assert_eq!(
+            split_expr("CFR:99-2.7@2024-01-01"),
+            ("CFR:99-2.7", Some("2024-01-01"))
+        );
         assert_eq!(split_expr("CFR:99-2.7"), ("CFR:99-2.7", None));
         assert_eq!(split_anchor("CFR:99-1.5#a-2"), ("CFR:99-1.5", Some("a-2")));
     }

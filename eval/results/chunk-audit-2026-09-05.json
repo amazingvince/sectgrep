@@ -1,0 +1,3648 @@
+{
+  "corpus": "corpora\\corpus-creation-pilot-v2",
+  "generation": "01788581250937340100",
+  "word_count_method": "whitespace split; not model-token counts",
+  "documents": 33,
+  "units": 11057,
+  "chunks": 11091,
+  "chunk_sha256": "48e5b0b5c6cb5a9b2bead067a376305902e4620025454b9e468227fcd0dcebfa",
+  "chunk_body_words": {
+    "n": 11091,
+    "min": 2,
+    "p10": 6,
+    "median": 41,
+    "p90": 140,
+    "max": 70524,
+    "under_20": 2766,
+    "under_50": 6334,
+    "over_2000": 12
+  },
+  "chunk_embedded_words": {
+    "n": 11091,
+    "min": 12,
+    "p10": 31,
+    "median": 70,
+    "p90": 168,
+    "max": 70532,
+    "under_20": 18,
+    "under_50": 3390,
+    "over_2000": 13
+  },
+  "formats": {
+    "html": {
+      "documents": 12,
+      "units": 120,
+      "chunks": 132,
+      "body_words": {
+        "n": 132,
+        "min": 6,
+        "p10": 11,
+        "median": 15.0,
+        "p90": 203,
+        "max": 1848,
+        "under_20": 74,
+        "under_50": 91,
+        "over_2000": 0
+      },
+      "heading_only_units": 2,
+      "heading_without_level": 0
+    },
+    "pdf": {
+      "documents": 11,
+      "units": 10603,
+      "chunks": 10615,
+      "body_words": {
+        "n": 10615,
+        "min": 2,
+        "p10": 6,
+        "median": 41,
+        "p90": 132,
+        "max": 70524,
+        "under_20": 2634,
+        "under_50": 6151,
+        "over_2000": 6
+      },
+      "heading_only_units": 2247,
+      "heading_without_level": 10594
+    },
+    "xml": {
+      "documents": 10,
+      "units": 334,
+      "chunks": 344,
+      "body_words": {
+        "n": 344,
+        "min": 2,
+        "p10": 9,
+        "median": 110.0,
+        "p90": 607,
+        "max": 5631,
+        "under_20": 58,
+        "under_50": 92,
+        "over_2000": 6
+      },
+      "heading_only_units": 29,
+      "heading_without_level": 0
+    }
+  },
+  "documents_detail": [
+    {
+      "document": "DOC:research:arxiv-1308-0850v1",
+      "format": "pdf",
+      "raw": "assets/c421fefbd16c513197fa5c0359f9717ec29e813ecba12f0781a179f6142deef8.pdf",
+      "regions": 334,
+      "kinds": {
+        "paragraph": 278,
+        "heading": 19,
+        "footer": 31,
+        "list_item": 1,
+        "header": 5
+      },
+      "units": 20,
+      "heading_only_units": 0,
+      "heading_without_level": 19,
+      "body_words": {
+        "n": 20,
+        "min": 39,
+        "p10": 75,
+        "median": 460.5,
+        "p90": 873,
+        "max": 4096,
+        "under_20": 0,
+        "under_50": 1,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 21,
+        "min": 41,
+        "p10": 80,
+        "median": 460,
+        "p90": 878,
+        "max": 4100,
+        "under_20": 0,
+        "under_50": 1,
+        "over_2000": 1
+      },
+      "examples": [],
+      "units_without_parent": 20,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1308-0850v1",
+          1
+        ],
+        [
+          "1 Introduction",
+          1
+        ],
+        [
+          "Generating Sequences With Recurrent Neural Networks",
+          1
+        ],
+        [
+          "2 Prediction Network",
+          1
+        ],
+        [
+          "2.1 Long Short-Term Memory",
+          1
+        ],
+        [
+          "3 Text Prediction",
+          1
+        ],
+        [
+          "3.1 Penn Treebank Experiments",
+          1
+        ],
+        [
+          "3.2 Wikipedia Experiments",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1508-04025v1",
+      "format": "pdf",
+      "raw": "assets/baf0b2710ae484792e12434a69ab6ea948ba429c47c2d66203cd6e987606d33c.pdf",
+      "regions": 151,
+      "kinds": {
+        "header": 3,
+        "heading": 25,
+        "paragraph": 122,
+        "list_item": 1
+      },
+      "units": 26,
+      "heading_only_units": 0,
+      "heading_without_level": 25,
+      "body_words": {
+        "n": 26,
+        "min": 7,
+        "p10": 37,
+        "median": 141.0,
+        "p90": 589,
+        "max": 725,
+        "under_20": 1,
+        "under_50": 4,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 27,
+        "min": 9,
+        "p10": 40,
+        "median": 144,
+        "p90": 594,
+        "max": 733,
+        "under_20": 1,
+        "under_50": 3,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1508-04025v1/u000001",
+          "title": "DOC:research:arxiv-1508-04025v1",
+          "body": "Effective Approaches to Attention-based Neural Machine Translation",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 26,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1508-04025v1",
+          1
+        ],
+        [
+          "Minh-Thang Luong Hieu Pham Christopher D. Manning",
+          1
+        ],
+        [
+          "2 Neural Machine Translation",
+          1
+        ],
+        [
+          "3 Attention-based Models",
+          1
+        ],
+        [
+          "3.1 Global Attention",
+          1
+        ],
+        [
+          "3.2 Local Attention",
+          1
+        ],
+        [
+          "3.3 Input-feeding Approach",
+          1
+        ],
+        [
+          "4 Experiments",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1508-07909v1",
+      "format": "pdf",
+      "raw": "assets/1c3665998df191f8a63488eff25beb7313ce27137d8f3a153b00ce94a51d0f60.pdf",
+      "regions": 116,
+      "kinds": {
+        "header": 1,
+        "paragraph": 92,
+        "heading": 16,
+        "list_item": 5,
+        "footer": 2
+      },
+      "units": 17,
+      "heading_only_units": 0,
+      "heading_without_level": 16,
+      "body_words": {
+        "n": 17,
+        "min": 8,
+        "p10": 25,
+        "median": 364,
+        "p90": 671,
+        "max": 1081,
+        "under_20": 1,
+        "under_50": 3,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 18,
+        "min": 11,
+        "p10": 27,
+        "median": 340.5,
+        "p90": 675,
+        "max": 1092,
+        "under_20": 1,
+        "under_50": 3,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1508-07909v1/u000012",
+          "title": "5 Analysis",
+          "body": "The performance of our NMT systems is below",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 17,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1508-07909v1",
+          1
+        ],
+        [
+          "Abstract mation processes such as agglutination and com-",
+          1
+        ],
+        [
+          "1 Introduction This paper has two main contributions:",
+          1
+        ],
+        [
+          "2 Neural Machine Translation",
+          1
+        ],
+        [
+          "3 Subword Translation",
+          1
+        ],
+        [
+          "3.1 Related Work",
+          1
+        ],
+        [
+          "3.2 Byte Pair Encoding (BPE)",
+          1
+        ],
+        [
+          "print(best)",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1511-06114v1",
+      "format": "pdf",
+      "raw": "assets/7976e5377fc73404b567608b049b12d5ac43b5e0bda0adffa8e10b0724b5caf9.pdf",
+      "regions": 124,
+      "kinds": {
+        "header": 9,
+        "heading": 17,
+        "paragraph": 86,
+        "footer": 9,
+        "list_item": 3
+      },
+      "units": 18,
+      "heading_only_units": 1,
+      "heading_without_level": 17,
+      "body_words": {
+        "n": 18,
+        "min": 0,
+        "p10": 2,
+        "median": 173.0,
+        "p90": 601,
+        "max": 869,
+        "under_20": 4,
+        "under_50": 5,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 19,
+        "min": 5,
+        "p10": 6,
+        "median": 161,
+        "p90": 603,
+        "max": 874,
+        "under_20": 4,
+        "under_50": 5,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1511-06114v1/u000001",
+          "title": "DOC:research:arxiv-1511-06114v1",
+          "body": "Under review as a conference paper at ICLR 2016",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:arxiv-1511-06114v1/u000002",
+          "title": "MULTI-TASK SEQUENCE TO SEQUENCE LEARNING",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:arxiv-1511-06114v1/u000003",
+          "title": "Minh-Thang Luong∗",
+          "body": "Stanford lmthang@stanford.edu",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:arxiv-1511-06114v1/u000004",
+          "title": "Quoc V. Le, Ilya Sutskever, Oriol Vinyals, Lukasz Kaiser",
+          "body": "Google {qvl,ilyasu,vinyals,lukaszkaiser}@google.com",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 18,
+      "repeated_titles": [
+        [
+          "Perplexity Task",
+          5
+        ],
+        [
+          "DOC:research:arxiv-1511-06114v1",
+          1
+        ],
+        [
+          "MULTI-TASK SEQUENCE TO SEQUENCE LEARNING",
+          1
+        ],
+        [
+          "Minh-Thang Luong∗",
+          1
+        ],
+        [
+          "Quoc V. Le, Ilya Sutskever, Oriol Vinyals, Lukasz Kaiser",
+          1
+        ],
+        [
+          "ABSTRACT",
+          1
+        ],
+        [
+          "1 INTRODUCTION",
+          1
+        ],
+        [
+          "2 SEQUENCE TO SEQUENCE LEARNING",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1601-06733v1",
+      "format": "pdf",
+      "raw": "assets/d2792f0bdbad84291d77e6032f67c6f2bae7dc6c4700c87aea2613b7629d913d.pdf",
+      "regions": 92,
+      "kinds": {
+        "header": 1,
+        "paragraph": 86,
+        "list_item": 5
+      },
+      "units": 1,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 1,
+        "min": 5891,
+        "p10": 5891,
+        "median": 5891,
+        "p90": 5891,
+        "max": 5891,
+        "under_20": 0,
+        "under_50": 0,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 3,
+        "min": 4,
+        "p10": 4,
+        "median": 2772,
+        "p90": 2772,
+        "max": 3121,
+        "under_20": 1,
+        "under_50": 1,
+        "over_2000": 2
+      },
+      "examples": [],
+      "units_without_parent": 1,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1601-06733v1",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1602-02410v1",
+      "format": "pdf",
+      "raw": "assets/e0d04ff757a9c495a7e6156e621be7dd08351b95a056fd0bc3da06673f24d827.pdf",
+      "regions": 139,
+      "kinds": {
+        "header": 11,
+        "paragraph": 113,
+        "heading": 9,
+        "list_item": 6
+      },
+      "units": 10,
+      "heading_only_units": 0,
+      "heading_without_level": 9,
+      "body_words": {
+        "n": 10,
+        "min": 23,
+        "p10": 23,
+        "median": 832.0,
+        "p90": 1317,
+        "max": 1659,
+        "under_20": 0,
+        "under_50": 2,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 11,
+        "min": 25,
+        "p10": 29,
+        "median": 805,
+        "p90": 1322,
+        "max": 1664,
+        "under_20": 0,
+        "under_50": 3,
+        "over_2000": 0
+      },
+      "examples": [],
+      "units_without_parent": 10,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1602-02410v1",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "1. Introduction",
+          1
+        ],
+        [
+          "2. Related Work",
+          1
+        ],
+        [
+          "3. Language Modeling Improvements",
+          1
+        ],
+        [
+          "3.3. Char LSTM Predictions 4. Experiments",
+          1
+        ],
+        [
+          "5. Results and Analysis",
+          1
+        ],
+        [
+          "6. Discussion and Conclusions",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1607-06450v1",
+      "format": "pdf",
+      "raw": "assets/c464f839fb8d59f7fde92f9b4caa67c2d1f2f196b88f93fb60502249df0aaef7.pdf",
+      "regions": 171,
+      "kinds": {
+        "header": 3,
+        "paragraph": 141,
+        "heading": 10,
+        "footer": 14,
+        "list_item": 3
+      },
+      "units": 11,
+      "heading_only_units": 0,
+      "heading_without_level": 10,
+      "body_words": {
+        "n": 11,
+        "min": 12,
+        "p10": 26,
+        "median": 372,
+        "p90": 1945,
+        "max": 2422,
+        "under_20": 1,
+        "under_50": 2,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 12,
+        "min": 14,
+        "p10": 28,
+        "median": 303.0,
+        "p90": 1819,
+        "max": 2426,
+        "under_20": 1,
+        "under_50": 3,
+        "over_2000": 1
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1607-06450v1/u000010",
+          "title": "Acknowledgments",
+          "body": "This research was funded by grants from NSERC, CFI, and Google.\n10",
+          "regions": 3
+        }
+      ],
+      "units_without_parent": 11,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1607-06450v1",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "1 Introduction",
+          1
+        ],
+        [
+          "2 Background",
+          1
+        ],
+        [
+          "3 Layer normalization",
+          1
+        ],
+        [
+          "4 Related work",
+          1
+        ],
+        [
+          "5 Analysis",
+          1
+        ],
+        [
+          "6 Experimental results",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1608-05859v1",
+      "format": "pdf",
+      "raw": "assets/f0d1f3513e0c73e9695bfa41536d0cbb2a26bc6c8b93fc974b911a74b8f1ac93.pdf",
+      "regions": 60,
+      "kinds": {
+        "header": 1,
+        "paragraph": 46,
+        "heading": 11,
+        "list_item": 2
+      },
+      "units": 12,
+      "heading_only_units": 1,
+      "heading_without_level": 11,
+      "body_words": {
+        "n": 12,
+        "min": 0,
+        "p10": 22,
+        "median": 230.0,
+        "p90": 425,
+        "max": 926,
+        "under_20": 1,
+        "under_50": 2,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 13,
+        "min": 3,
+        "p10": 24,
+        "median": 222,
+        "p90": 428,
+        "max": 932,
+        "under_20": 1,
+        "under_50": 3,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1608-05859v1/u000005",
+          "title": "2 Models",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 12,
+      "repeated_titles": [
+        [
+          "DOC:research:arxiv-1608-05859v1",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "1 Introduction",
+          1
+        ],
+        [
+          "1.1 Previous Work",
+          1
+        ],
+        [
+          "2 Models",
+          1
+        ],
+        [
+          "2.1 Neural Network Language Models",
+          1
+        ],
+        [
+          "2.2 word2vec",
+          1
+        ],
+        [
+          "2.3 Neural Machine Translation",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:arxiv-1609-08144v1",
+      "format": "pdf",
+      "raw": "assets/6c04898c80c2e2aa1276e053a7c434186416bae73f098b1f14c0197c19ef49b0.pdf",
+      "regions": 272,
+      "kinds": {
+        "heading": 41,
+        "paragraph": 200,
+        "footer": 27,
+        "list_item": 4
+      },
+      "units": 41,
+      "heading_only_units": 3,
+      "heading_without_level": 41,
+      "body_words": {
+        "n": 41,
+        "min": 0,
+        "p10": 7,
+        "median": 205,
+        "p90": 604,
+        "max": 1810,
+        "under_20": 6,
+        "under_50": 10,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 42,
+        "min": 2,
+        "p10": 14,
+        "median": 207.5,
+        "p90": 588,
+        "max": 1812,
+        "under_20": 6,
+        "under_50": 10,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000007",
+          "title": "1 2 M",
+          "body": "P (Y |X) = P (Y |x , x , x , ..., x )",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000016",
+          "title": "sub-word units, e.g., chararacters [10], mixed word/characters [27], or more intelligent sub-words [37].",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000025",
+          "title": "t s t",
+          "body": "v′ = max(−γ, min(γ, v )) (13)",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000026",
+          "title": "t t",
+          "body": "p = sof tmax(v′ )",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000027",
+          "title": "t t",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:arxiv-1609-08144v1/u000028",
+          "title": "t",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 41,
+      "repeated_titles": [
+        [
+          "i",
+          3
+        ],
+        [
+          "t t",
+          3
+        ],
+        [
+          "s",
+          2
+        ],
+        [
+          "Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "1 Introduction",
+          1
+        ],
+        [
+          "2 Related Work",
+          1
+        ],
+        [
+          "3 Model Architecture",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:attention-v7",
+      "format": "pdf",
+      "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+      "regions": 178,
+      "kinds": {
+        "heading": 10,
+        "paragraph": 145,
+        "footer": 15,
+        "header": 7,
+        "list_item": 1
+      },
+      "units": 10,
+      "heading_only_units": 1,
+      "heading_without_level": 10,
+      "body_words": {
+        "n": 10,
+        "min": 0,
+        "p10": 0,
+        "median": 489.5,
+        "p90": 1282,
+        "max": 1680,
+        "under_20": 1,
+        "under_50": 2,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 11,
+        "min": 27,
+        "p10": 48,
+        "median": 478,
+        "p90": 1284,
+        "max": 1684,
+        "under_20": 0,
+        "under_50": 2,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:attention-v7/u000001",
+          "title": "Provided proper attribution is provided, Google hereby grants permission to reproduce the tables and figures in this paper solely for use in journalistic or scholarly works.",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 10,
+      "repeated_titles": [
+        [
+          "Provided proper attribution is provided, Google hereby grants permission to reproduce the tables and figures in this paper solely for use in journalistic or scholarly works.",
+          1
+        ],
+        [
+          "Attention Is All You Need",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "2 Background",
+          1
+        ],
+        [
+          "3 Model Architecture",
+          1
+        ],
+        [
+          "4 Why Self-Attention",
+          1
+        ],
+        [
+          "5 Training",
+          1
+        ],
+        [
+          "6 Results",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc10538420",
+      "format": "xml",
+      "raw": "assets/6fcfe01b7ec605c404cc4b8d2fee05be1058809c3703dda0d5e03093dc70d031.xml",
+      "regions": 233,
+      "kinds": {
+        "paragraph": 203,
+        "heading": 23,
+        "caption": 5,
+        "table": 2
+      },
+      "units": 24,
+      "heading_only_units": 1,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 24,
+        "min": 0,
+        "p10": 5,
+        "median": 81.0,
+        "p90": 326,
+        "max": 1618,
+        "under_20": 5,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 25,
+        "min": 2,
+        "p10": 9,
+        "median": 80,
+        "p90": 329,
+        "max": 2672,
+        "under_20": 4,
+        "under_50": 6,
+        "over_2000": 1
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc10538420/u000001",
+          "title": "DOC:research:pmc10538420",
+          "body": "2026-09-05T01:04:05Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:10538420\n2024-10-01\npmc-open\npmc\nPediatr Pulmonol\nPediatr Pulmonol\n319\nnihpa\n8510590",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc10538420/u000002",
+          "title": "Pediatric pulmonology",
+          "body": "8755-6863\n1099-0496\npmc-is-collection-domain\nyes\npmc-collection-title\nNIHPA Author Manuscripts\nPMC10538420\nPMC10538420.319\n10538420\n10538420\nNIHMS1916622\n37449768\n10.1002/ppul.26594\nNIHMS1916622\nNIHPA1916622\n319\nArticle",
+          "regions": 18
+        },
+        {
+          "id": "DOC:research:pmc10538420/u000009",
+          "title": "Methods",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc10538420/u000021",
+          "title": "Supplementary Material",
+          "body": "Supinfo",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc10538420/u000023",
+          "title": "Data sharing statement:",
+          "body": "Research data are not shared.",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 5,
+      "repeated_titles": [
+        [
+          "DOC:research:pmc10538420",
+          1
+        ],
+        [
+          "Pediatric pulmonology",
+          1
+        ],
+        [
+          "Encouraging Adherence in Adolescents with Asthma Using Financial Incentives: An RCT",
+          1
+        ],
+        [
+          "Background:",
+          1
+        ],
+        [
+          "Methods:",
+          1
+        ],
+        [
+          "Results:",
+          1
+        ],
+        [
+          "Conclusion:",
+          1
+        ],
+        [
+          "Introduction",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc11093778",
+      "format": "xml",
+      "raw": "assets/94daeb8607a4c115cc1fc757217758f560fd58a7a14fb430a4cec32940538829.xml",
+      "regions": 249,
+      "kinds": {
+        "paragraph": 216,
+        "heading": 33
+      },
+      "units": 34,
+      "heading_only_units": 5,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 34,
+        "min": 0,
+        "p10": 0,
+        "median": 54.0,
+        "p90": 764,
+        "max": 906,
+        "under_20": 11,
+        "under_50": 15,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 35,
+        "min": 2,
+        "p10": 3,
+        "median": 62,
+        "p90": 766,
+        "max": 908,
+        "under_20": 11,
+        "under_50": 15,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc11093778/u000001",
+          "title": "DOC:research:pmc11093778",
+          "body": "2026-09-05T01:04:07Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:11093778\n2024-05-16\npmc-open\npmc\nPrev Sci\nPrev Sci\n365\nspringeropen\n100894724",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000002",
+          "title": "Prevention Science",
+          "body": "1389-4986\n1573-6695\npmc-is-collection-domain\nyes\npmc-collection-title\nSpringer\nPMC11093778\nPMC11093778.1\n11093778\n11093778\n38429618\n10.1007/s11121-024-01660-3\n1660\n1\nArticle",
+          "regions": 16
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000004",
+          "title": "Supplementary Information",
+          "body": "The online version contains supplementary material available at 10.1007/s11121-024-01660-3.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000007",
+          "title": "Methods",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000010",
+          "title": "Study Conditions",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000013",
+          "title": "Analytic Plan",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000016",
+          "title": "Results",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11093778/u000028",
+          "title": "Data Availability",
+          "body": "The declaration statement regarding protocol availability will help readers contact the authors if needed.",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 8,
+      "repeated_titles": [
+        [
+          "Supplementary Information",
+          2
+        ],
+        [
+          "DOC:research:pmc11093778",
+          1
+        ],
+        [
+          "Prevention Science",
+          1
+        ],
+        [
+          "Efficacy of Behavioral Economic Nudges to Assist Teen Mothers: the Healthy Adolescent Transitions Randomized Controlled Trial",
+          1
+        ],
+        [
+          "Keywords",
+          1
+        ],
+        [
+          "Introduction",
+          1
+        ],
+        [
+          "Methods",
+          1
+        ],
+        [
+          "Participants",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc11156570",
+      "format": "xml",
+      "raw": "assets/3af6a46ef7ce70a58451ad0dfb10ce385cca989565ec7884ced525ef5182f775.xml",
+      "regions": 348,
+      "kinds": {
+        "paragraph": 311,
+        "heading": 31,
+        "caption": 3,
+        "table": 3
+      },
+      "units": 32,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 32,
+        "min": 17,
+        "p10": 69,
+        "median": 147.5,
+        "p90": 332,
+        "max": 4298,
+        "under_20": 2,
+        "under_50": 2,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 33,
+        "min": 19,
+        "p10": 71,
+        "median": 151,
+        "p90": 335,
+        "max": 5631,
+        "under_20": 1,
+        "under_50": 2,
+        "over_2000": 1
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc11156570/u000001",
+          "title": "DOC:research:pmc11156570",
+          "body": "2026-09-05T01:04:08Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:11156570\n2025-05-01\npmc-open\npmc\nAnnu Rev Public Health\nAnnu Rev Public Health\n319\nnihpa\n8006431",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc11156570/u000002",
+          "title": "Annual review of public health",
+          "body": "0163-7525\n1545-2093\npmc-is-collection-domain\nyes\npmc-collection-title\nNIHPA Author Manuscripts\nPMC11156570\nPMC11156570.319\n11156570\n11156570\nNIHMS1965439\n38100649\n10.1146/annurev-publhealth-061022-044737\nNIHMS1965439\nNIHPA1965439\n319\nArticle",
+          "regions": 18
+        }
+      ],
+      "units_without_parent": 5,
+      "repeated_titles": [
+        [
+          "DOC:research:pmc11156570",
+          1
+        ],
+        [
+          "Annual review of public health",
+          1
+        ],
+        [
+          "Conceptualizing and Measuring Trust, Mistrust, and Distrust: Implications for Health Equity and Building Trustworthiness",
+          1
+        ],
+        [
+          "Introduction",
+          1
+        ],
+        [
+          "Conceptualizing and Defining Trust, Mistrust, Distrust, and Trustworthiness",
+          1
+        ],
+        [
+          "Problematic Conceptualizations and Definitions: Paternalism and Racism",
+          1
+        ],
+        [
+          "Frameworks and Models of Trust, Mistrust, Distrust, and Trustworthiness",
+          1
+        ],
+        [
+          "Trust",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc11558476",
+      "format": "xml",
+      "raw": "assets/09ded0074b15cbe8eadef274f5def7a79d2c87f1ba6a9bd8b19e109340760493.xml",
+      "regions": 270,
+      "kinds": {
+        "paragraph": 229,
+        "heading": 34,
+        "caption": 5,
+        "table": 2
+      },
+      "units": 35,
+      "heading_only_units": 5,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 35,
+        "min": 0,
+        "p10": 0,
+        "median": 70,
+        "p90": 388,
+        "max": 622,
+        "under_20": 9,
+        "under_50": 15,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 36,
+        "min": 2,
+        "p10": 8,
+        "median": 91.0,
+        "p90": 395,
+        "max": 846,
+        "under_20": 7,
+        "under_50": 14,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc11558476/u000001",
+          "title": "DOC:research:pmc11558476",
+          "body": "2026-09-04T23:10:27Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:11558476\n2024-11-14\npmc-open\npmc\nJAMA Netw Open\nJAMA Netw Open\n3211\njamasd\n101729235",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000003",
+          "title": "Culturally Tailored Messages and Trial Registry Enrollment",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000004",
+          "title": "A Randomized Clinical Trial",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000005",
+          "title": "Culturally Tailored Messages and Trial Registry Enrollment",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000008",
+          "title": "Key Points",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000009",
+          "title": "Question",
+          "body": "Does a culturally tailored video message impact parents’ willingness to enroll Black children in clinical trials?",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000013",
+          "title": "Objective",
+          "body": "To determine whether culturally tailored video improves parents’ decision to enroll (DTE) Black children in a research registry.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc11558476/u000016",
+          "title": "Main Outcome and Measures",
+          "body": "The primary outcome was DTE. Covariates were message effectiveness, clinical trial knowledge, and trust. Intention-to-treat analysis was performed.",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 9,
+      "repeated_titles": [
+        [
+          "Culturally Tailored Messages and Trial Registry Enrollment",
+          3
+        ],
+        [
+          "Results",
+          2
+        ],
+        [
+          "DOC:research:pmc11558476",
+          1
+        ],
+        [
+          "JAMA Network Open",
+          1
+        ],
+        [
+          "A Randomized Clinical Trial",
+          1
+        ],
+        [
+          "Article Information",
+          1
+        ],
+        [
+          "Key Points",
+          1
+        ],
+        [
+          "Question",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc3424340",
+      "format": "xml",
+      "raw": "assets/9adf9bba39b1694b81daaa4bcf3d2915ea20a73a172769686169f045b53308f5.xml",
+      "regions": 243,
+      "kinds": {
+        "paragraph": 221,
+        "heading": 19,
+        "caption": 2,
+        "table": 1
+      },
+      "units": 20,
+      "heading_only_units": 2,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 20,
+        "min": 0,
+        "p10": 0,
+        "median": 211.5,
+        "p90": 784,
+        "max": 2234,
+        "under_20": 5,
+        "under_50": 5,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 21,
+        "min": 2,
+        "p10": 14,
+        "median": 196,
+        "p90": 787,
+        "max": 4069,
+        "under_20": 3,
+        "under_50": 5,
+        "over_2000": 1
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc3424340/u000001",
+          "title": "DOC:research:pmc3424340",
+          "body": "2026-09-05T01:04:17Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:3424340\n2013-11-01\npmc-open\nPrev Med\nPrev Med\n319\nnihpa\n0322116",
+          "regions": 10
+        },
+        {
+          "id": "DOC:research:pmc3424340/u000002",
+          "title": "Preventive medicine",
+          "body": "0091-7435\n1096-0260\npmc-is-collection-domain\nyes\npmc-collection-title\nNIHPA Author Manuscripts\nPMC3424340\nPMC3424340.1\n3424340\n3424340\nNIHMS374528\n22580095\n10.1016/j.ypmed.2012.04.017\nNIHMS374528\nNIHPA374528\n1\nArticle",
+          "regions": 18
+        },
+        {
+          "id": "DOC:research:pmc3424340/u000005",
+          "title": "Methods",
+          "body": "We conducted a systematic review of peer-reviewed empirical evaluations of incentives provided to patients contingent upon medication adherence.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc3424340/u000010",
+          "title": "Results",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc3424340/u000015",
+          "title": "Individual Studies on Other Medications",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 3,
+      "repeated_titles": [
+        [
+          "Methods",
+          2
+        ],
+        [
+          "Results",
+          2
+        ],
+        [
+          "Conclusions",
+          2
+        ],
+        [
+          "DOC:research:pmc3424340",
+          1
+        ],
+        [
+          "Preventive medicine",
+          1
+        ],
+        [
+          "The use of incentives to reinforce medication adherence",
+          1
+        ],
+        [
+          "Objective",
+          1
+        ],
+        [
+          "Introduction",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc6498183",
+      "format": "xml",
+      "raw": "assets/85c5a64c80419fb5ced4be3a4aa5f497ae3fc2113c434f581714a8c9344f0365.xml",
+      "regions": 235,
+      "kinds": {
+        "paragraph": 210,
+        "heading": 18,
+        "caption": 5,
+        "table": 2
+      },
+      "units": 19,
+      "heading_only_units": 2,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 19,
+        "min": 0,
+        "p10": 0,
+        "median": 106,
+        "p90": 699,
+        "max": 795,
+        "under_20": 5,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 20,
+        "min": 2,
+        "p10": 4,
+        "median": 107.5,
+        "p90": 701,
+        "max": 1586,
+        "under_20": 2,
+        "under_50": 5,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc6498183/u000001",
+          "title": "DOC:research:pmc6498183",
+          "body": "2026-09-05T01:04:09Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:6498183\n2019-05-17\nfrontpubhealth\npmc-open\nFront Public Health\nFront Public Health\n2277\nfrontpubhealth\n101616579\nFront. Public Health",
+          "regions": 12
+        },
+        {
+          "id": "DOC:research:pmc6498183/u000002",
+          "title": "Frontiers in Public Health",
+          "body": "2296-2565\nFrontiers Media SA\nPMC6498183\nPMC6498183.1\n6498183\n6498183\n31106188\n10.3389/fpubh.2019.00104\n1\nPublic Health\nOriginal Research",
+          "regions": 12
+        },
+        {
+          "id": "DOC:research:pmc6498183/u000005",
+          "title": "Materials and Methods",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc6498183/u000012",
+          "title": "Results",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc6498183/u000018",
+          "title": "Supplementary Material",
+          "body": "The Supplementary Material for this article can be found online at: https://www.frontiersin.org/articles/10.3389/fpubh.2019.00104/full#supplementary-material\nClick here for additional data file.",
+          "regions": 3
+        }
+      ],
+      "units_without_parent": 4,
+      "repeated_titles": [
+        [
+          "DOC:research:pmc6498183",
+          1
+        ],
+        [
+          "Frontiers in Public Health",
+          1
+        ],
+        [
+          "The Impact of an Educational Video on Clinical Trial Enrollment and Knowledge in Ethnic Minorities: A Randomized Control Trial",
+          1
+        ],
+        [
+          "Introduction",
+          1
+        ],
+        [
+          "Materials and Methods",
+          1
+        ],
+        [
+          "Study Design",
+          1
+        ],
+        [
+          "Participants and Setting",
+          1
+        ],
+        [
+          "Intervention",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc7268329",
+      "format": "xml",
+      "raw": "assets/49edb5de41c0ac577f605bc07076d8ec3bae248b08c33dfe70fd55ebb26f4fa6.xml",
+      "regions": 352,
+      "kinds": {
+        "paragraph": 299,
+        "heading": 53
+      },
+      "units": 54,
+      "heading_only_units": 3,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 54,
+        "min": 0,
+        "p10": 7,
+        "median": 85.5,
+        "p90": 297,
+        "max": 1042,
+        "under_20": 10,
+        "under_50": 15,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 55,
+        "min": 3,
+        "p10": 10,
+        "median": 94,
+        "p90": 304,
+        "max": 1046,
+        "under_20": 9,
+        "under_50": 13,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc7268329/u000001",
+          "title": "DOC:research:pmc7268329",
+          "body": "2026-09-05T01:04:10Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:7268329\n2020-06-07\nbmcph\npmc-open\nBMC Public Health\nBMC Public Health\n63\nbmcph\n100968562",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000002",
+          "title": "BMC Public Health",
+          "body": "1471-2458\nBMC\nPMC7268329\nPMC7268329.1\n7268329\n7268329\n32493245\n10.1186/s12889-020-08939-4\n8939\n1\nResearch Article",
+          "regions": 12
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000014",
+          "title": "Phase 2: community-member focus groups, 2014–2015",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000021",
+          "title": "Phase 3: Reading assessment with community input, 2016–2017",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000034",
+          "title": "Program finalization",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000044",
+          "title": "Supplementary information",
+          "body": "Additional file 1. Focus Group Guide.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000046",
+          "title": "Supplementary information",
+          "body": "Supplementary information accompanies this paper at 10.1186/s12889-020-08939-4.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc7268329/u000050",
+          "title": "Availability of data and materials",
+          "body": "The data are not publicly available due to them containing information that could compromise research participant privacy/consent.",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 13,
+      "repeated_titles": [
+        [
+          "Background",
+          2
+        ],
+        [
+          "Methods",
+          2
+        ],
+        [
+          "Results",
+          2
+        ],
+        [
+          "Scientific review",
+          2
+        ],
+        [
+          "Reading level assessment",
+          2
+        ],
+        [
+          "Supplementary information",
+          2
+        ],
+        [
+          "DOC:research:pmc7268329",
+          1
+        ],
+        [
+          "BMC Public Health",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc8363345",
+      "format": "xml",
+      "raw": "assets/7e0ee2aaf6c6b0d401c5d79bfee1e283c7a5975d157c798a531f6cfbe2bf5a78.xml",
+      "regions": 330,
+      "kinds": {
+        "paragraph": 280,
+        "heading": 43,
+        "caption": 5,
+        "table": 2
+      },
+      "units": 44,
+      "heading_only_units": 2,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 44,
+        "min": 0,
+        "p10": 2,
+        "median": 94.5,
+        "p90": 195,
+        "max": 2648,
+        "under_20": 10,
+        "under_50": 17,
+        "over_2000": 2
+      },
+      "chunk_body_words": {
+        "n": 45,
+        "min": 2,
+        "p10": 8,
+        "median": 102,
+        "p90": 206,
+        "max": 4971,
+        "under_20": 10,
+        "under_50": 17,
+        "over_2000": 2
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc8363345/u000001",
+          "title": "DOC:research:pmc8363345",
+          "body": "2026-09-05T01:04:12Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:8363345\n2021-08-23\nnursopen\npmc-open\nNurs Open\nNurs Open\n3024\nnursopen\n101675107\nNOP2",
+          "regions": 12
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000002",
+          "title": "Nursing Open",
+          "body": "2054-1058\nWiley\nPMC8363345\nPMC8363345.1\n8363345\n8363345\n34388862\n10.1002/nop2.733\nNOP2733\n1\nReview Article\nReview Articles",
+          "regions": 13
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000003",
+          "title": "Culturally tailored interventions for ethnic minorities: A scoping review",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000005",
+          "title": "Abstract",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000007",
+          "title": "Design",
+          "body": "Scoping review.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000012",
+          "title": "METHODS",
+          "body": "2.1",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000038",
+          "title": "DATA AVAILABILITY STATEMENT/DATA ACCESSIBILITY STATEMENT",
+          "body": "None.\n7",
+          "regions": 3
+        },
+        {
+          "id": "DOC:research:pmc8363345/u000039",
+          "title": "DECLARATION OF CONFLICTS OF INTEREST",
+          "body": "None.",
+          "regions": 2
+        }
+      ],
+      "units_without_parent": 7,
+      "repeated_titles": [
+        [
+          "Aim",
+          2
+        ],
+        [
+          "DOC:research:pmc8363345",
+          1
+        ],
+        [
+          "Nursing Open",
+          1
+        ],
+        [
+          "Culturally tailored interventions for ethnic minorities: A scoping review",
+          1
+        ],
+        [
+          "JOO and LIU",
+          1
+        ],
+        [
+          "Abstract",
+          1
+        ],
+        [
+          "Design",
+          1
+        ],
+        [
+          "Methods",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc8665835",
+      "format": "xml",
+      "raw": "assets/e0e4e5e8ca87469202648e3529438cff10b4a57fbd36641e41f05c94d7ffb506.xml",
+      "regions": 372,
+      "kinds": {
+        "paragraph": 324,
+        "heading": 33,
+        "caption": 8,
+        "table": 7
+      },
+      "units": 34,
+      "heading_only_units": 3,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 34,
+        "min": 0,
+        "p10": 1,
+        "median": 181.5,
+        "p90": 527,
+        "max": 2713,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 35,
+        "min": 2,
+        "p10": 4,
+        "median": 189,
+        "p90": 717,
+        "max": 4711,
+        "under_20": 5,
+        "under_50": 6,
+        "over_2000": 1
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc8665835/u000001",
+          "title": "DOC:research:pmc8665835",
+          "body": "2026-09-05T01:04:13Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:8665835\n2022-10-01\npmc-open\npmc\nContemp Clin Trials\nContemp Clin Trials\n319\nnihpa\n101242342",
+          "regions": 11
+        },
+        {
+          "id": "DOC:research:pmc8665835/u000002",
+          "title": "Contemporary clinical trials",
+          "body": "1551-7144\n1559-2030\npmc-is-collection-domain\nyes\npmc-collection-title\nNIHPA Author Manuscripts\nPMC8665835\nPMC8665835.1\n8665835\n8665835\nNIHMS1734497\n34333138\n10.1016/j.cct.2021.106519\nNIHMS1734497\nNIHPA1734497\n1\nArticle",
+          "regions": 18
+        },
+        {
+          "id": "DOC:research:pmc8665835/u000005",
+          "title": "METHODS",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc8665835/u000020",
+          "title": "Limitations",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc8665835/u000027",
+          "title": "Supplementary Material",
+          "body": "1",
+          "regions": 2
+        },
+        {
+          "id": "DOC:research:pmc8665835/u000029",
+          "title": "APPENDIX",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 6,
+      "repeated_titles": [
+        [
+          "DOC:research:pmc8665835",
+          1
+        ],
+        [
+          "Contemporary clinical trials",
+          1
+        ],
+        [
+          "Using Increased Trust in Medical Researchers to Increase Minority Recruitment: The RECRUIT Cluster Randomized Clinical Trial",
+          1
+        ],
+        [
+          "INTRODUCTION",
+          1
+        ],
+        [
+          "METHODS",
+          1
+        ],
+        [
+          "Study Design, Setting, and Hypothesis",
+          1
+        ],
+        [
+          "RECRUIT Trust-Based and Continuous Quality Improvement Intervention",
+          1
+        ],
+        [
+          "Data Collection",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:research:pmc9153910",
+      "format": "xml",
+      "raw": "assets/8fb3725b749a4319d7f71f806185a332510db2ab02df225b6e8cfd862475cff5.xml",
+      "regions": 428,
+      "kinds": {
+        "paragraph": 384,
+        "heading": 37,
+        "caption": 5,
+        "table": 2
+      },
+      "units": 38,
+      "heading_only_units": 6,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 38,
+        "min": 0,
+        "p10": 0,
+        "median": 124.5,
+        "p90": 603,
+        "max": 1041,
+        "under_20": 8,
+        "under_50": 10,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 39,
+        "min": 2,
+        "p10": 2,
+        "median": 130,
+        "p90": 605,
+        "max": 1999,
+        "under_20": 6,
+        "under_50": 9,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:research:pmc9153910/u000001",
+          "title": "DOC:research:pmc9153910",
+          "body": "2026-09-05T01:04:14Z\nhttps://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/\noai:pubmedcentral.nih.gov:9153910\n2022-06-01\njmirphs\npmc-open\npmc\nJMIR Public Health Surveill\nJMIR Public Health Surveill\n3000\njmirphs\n101669345\nJPH",
+          "regions": 13
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000002",
+          "title": "JMIR Public Health and Surveillance",
+          "body": "2369-2960\nJMIR Publications Inc.\nPMC9153910\nPMC9153910.1\n9153910\n9153910\n35544437\n10.2196/37328\nv8i5e37328\n1\nOriginal Paper\nOriginal Paper",
+          "regions": 13
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000011",
+          "title": "Methods",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000015",
+          "title": "Interventions",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000018",
+          "title": "Measures",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000023",
+          "title": "Data Analysis",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000028",
+          "title": "Results",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:research:pmc9153910/u000033",
+          "title": "Discussion",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 4,
+      "repeated_titles": [
+        [
+          "Methods",
+          2
+        ],
+        [
+          "Results",
+          2
+        ],
+        [
+          "DOC:research:pmc9153910",
+          1
+        ],
+        [
+          "JMIR Public Health and Surveillance",
+          1
+        ],
+        [
+          "The Efficacy of a Brief, Altruism-Eliciting Video Intervention in Enhancing COVID-19 Vaccination Intentions Among a Population-Based Sample of Younger Adults: Randomized Controlled Trial",
+          1
+        ],
+        [
+          "Background",
+          1
+        ],
+        [
+          "Objective",
+          1
+        ],
+        [
+          "Conclusions",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-1-01",
+      "format": "html",
+      "raw": "assets/2cecf4123105e541e0e53967bed5926864a0fd55cf0e97b996e304ac9414c11f.html",
+      "regions": 113,
+      "kinds": {
+        "other": 15,
+        "heading": 21,
+        "list_item": 51,
+        "figure": 4,
+        "paragraph": 21,
+        "table": 1
+      },
+      "units": 15,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 15,
+        "min": 8,
+        "p10": 9,
+        "median": 33,
+        "p90": 147,
+        "max": 235,
+        "under_20": 6,
+        "under_50": 10,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 16,
+        "min": 11,
+        "p10": 12,
+        "median": 44.5,
+        "p90": 168,
+        "max": 239,
+        "under_20": 6,
+        "under_50": 8,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000001",
+          "title": "DOC:lending:fannie-b3-3-1-01",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000011",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000012",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000013",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000014",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-01/u000015",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-1-01",
+          1
+        ],
+        [
+          "B3-3.1-01, General Income Information (03/04/2026)",
+          1
+        ],
+        [
+          "Stable and Predictable Income",
+          1
+        ],
+        [
+          "Continuance of Income",
+          1
+        ],
+        [
+          "Verification of Income for Non-U.S. Citizen Borrowers",
+          1
+        ],
+        [
+          "Non-Occupant Borrower Income",
+          1
+        ],
+        [
+          "Nontaxable Income",
+          1
+        ],
+        [
+          "Income Paid in Virtual Currency",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-1-02",
+      "format": "html",
+      "raw": "assets/a7bca53e6c9573f77634c59fe91e32c52fd6e246c45cee0c287e5ff24229dd67.html",
+      "regions": 113,
+      "kinds": {
+        "other": 15,
+        "heading": 17,
+        "list_item": 54,
+        "figure": 4,
+        "paragraph": 22,
+        "table": 1
+      },
+      "units": 11,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 11,
+        "min": 8,
+        "p10": 9,
+        "median": 12,
+        "p90": 189,
+        "max": 493,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 12,
+        "min": 11,
+        "p10": 12,
+        "median": 39.0,
+        "p90": 152,
+        "max": 504,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000001",
+          "title": "DOC:lending:fannie-b3-3-1-02",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000007",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000008",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000009",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000010",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-02/u000011",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-1-02",
+          1
+        ],
+        [
+          "B3-3.1-02, Tax Return and Transcript Documentation Requirements (06/03/2026)",
+          1
+        ],
+        [
+          "Federal Income Tax Return Standards",
+          1
+        ],
+        [
+          "Using Tax Return Transcripts in Lieu of Tax Returns",
+          1
+        ],
+        [
+          "Use of IRS Form 4506-C to Verify Borrower Income Documentation",
+          1
+        ],
+        [
+          "Retaining Tax Documents",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-1-03",
+      "format": "html",
+      "raw": "assets/addc3bd69769f3862efeb2f1e8219c66b2d365f5a0213ef3dcf283e68f4e3adb.html",
+      "regions": 96,
+      "kinds": {
+        "other": 15,
+        "heading": 18,
+        "list_item": 45,
+        "figure": 4,
+        "paragraph": 12,
+        "table": 2
+      },
+      "units": 12,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 12,
+        "min": 8,
+        "p10": 9,
+        "median": 15.5,
+        "p90": 62,
+        "max": 170,
+        "under_20": 7,
+        "under_50": 9,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 13,
+        "min": 11,
+        "p10": 12,
+        "median": 24,
+        "p90": 65,
+        "max": 334,
+        "under_20": 6,
+        "under_50": 10,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000001",
+          "title": "DOC:lending:fannie-b3-3-1-03",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000002",
+          "title": "B3-3.1-03, Income Calculator (03/04/2026)",
+          "body": "Introduction\nThis topic contains the following:\nOverview\nFindings Report\nTechnology Service Provider\nRepresentations and Warranties Enforcement Relief\nAdditional Requirements",
+          "regions": 8
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000008",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000009",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000010",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000011",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-03/u000012",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-1-03",
+          1
+        ],
+        [
+          "B3-3.1-03, Income Calculator (03/04/2026)",
+          1
+        ],
+        [
+          "Overview",
+          1
+        ],
+        [
+          "Findings Report",
+          1
+        ],
+        [
+          "Technology Service Provider",
+          1
+        ],
+        [
+          "Representations and Warranties Enforcement Relief",
+          1
+        ],
+        [
+          "Additional Requirements",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-1-04",
+      "format": "html",
+      "raw": "assets/7d83ebecec181b4c37b371a6c794ae5651422489fd178aaa1d3dcec445b7b245.html",
+      "regions": 82,
+      "kinds": {
+        "other": 13,
+        "heading": 13,
+        "list_item": 40,
+        "figure": 4,
+        "paragraph": 10,
+        "table": 2
+      },
+      "units": 7,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 7,
+        "min": 8,
+        "p10": 8,
+        "median": 9,
+        "p90": 12,
+        "max": 998,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 8,
+        "min": 11,
+        "p10": 11,
+        "median": 14.0,
+        "p90": 30,
+        "max": 1848,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000001",
+          "title": "DOC:lending:fannie-b3-3-1-04",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000003",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000004",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000005",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000006",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1-04/u000007",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-1-04",
+          1
+        ],
+        [
+          "B3-3.1-04, Verbal Verification of Employment (03/04/2026)",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-1",
+      "format": "html",
+      "raw": "assets/a5512774872570fab597154d2da39e87c465ea27fb0f3eaa76392cd96625a5a3.html",
+      "regions": 77,
+      "kinds": {
+        "other": 10,
+        "heading": 14,
+        "list_item": 43,
+        "figure": 4,
+        "paragraph": 6
+      },
+      "units": 8,
+      "heading_only_units": 1,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 8,
+        "min": 0,
+        "p10": 0,
+        "median": 9.0,
+        "p90": 12,
+        "max": 21,
+        "under_20": 7,
+        "under_50": 8,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 9,
+        "min": 6,
+        "p10": 6,
+        "median": 14,
+        "p90": 28,
+        "max": 36,
+        "under_20": 7,
+        "under_50": 9,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000001",
+          "title": "DOC:lending:fannie-b3-3-1",
+          "body": "Skip to main content\nSearch the Guide:",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000002",
+          "title": "Section B3-3.1, General Income Requirements",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000004",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000005",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000006",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000007",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-1/u000008",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-1",
+          1
+        ],
+        [
+          "Section B3-3.1, General Income Requirements",
+          1
+        ],
+        [
+          "General Income Requirements Table of contents",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-2-01",
+      "format": "html",
+      "raw": "assets/f07ae464950eb4a33062e7b5a732b3692820547a87dcff875317742110a02d4c.html",
+      "regions": 106,
+      "kinds": {
+        "other": 15,
+        "heading": 17,
+        "list_item": 48,
+        "figure": 4,
+        "paragraph": 19,
+        "table": 3
+      },
+      "units": 11,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 11,
+        "min": 8,
+        "p10": 9,
+        "median": 12,
+        "p90": 251,
+        "max": 263,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 12,
+        "min": 11,
+        "p10": 12,
+        "median": 30.0,
+        "p90": 211,
+        "max": 543,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000001",
+          "title": "DOC:lending:fannie-b3-3-2-01",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000007",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000008",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000009",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000010",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-01/u000011",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-2-01",
+          1
+        ],
+        [
+          "B3-3.2-01, Standards for Employment and Income Documentation (03/04/2026)",
+          1
+        ],
+        [
+          "General Documentation Requirements",
+          1
+        ],
+        [
+          "Documentation Provided by the Borrower",
+          1
+        ],
+        [
+          "Documentation Provided by the Borrower's Employer",
+          1
+        ],
+        [
+          "Documentation Provided by a Third-Party Employment Verification Vendor",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-2-02",
+      "format": "html",
+      "raw": "assets/b1c88c7d7f96d57670f6aa766b0e99816c9df4d16792e41cf5384410e96fc4aa.html",
+      "regions": 80,
+      "kinds": {
+        "other": 13,
+        "heading": 13,
+        "list_item": 40,
+        "figure": 4,
+        "paragraph": 8,
+        "table": 2
+      },
+      "units": 7,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 7,
+        "min": 8,
+        "p10": 8,
+        "median": 9,
+        "p90": 12,
+        "max": 744,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 8,
+        "min": 11,
+        "p10": 11,
+        "median": 14.0,
+        "p90": 30,
+        "max": 1498,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000001",
+          "title": "DOC:lending:fannie-b3-3-2-02",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000003",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000004",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000005",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000006",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2-02/u000007",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-2-02",
+          1
+        ],
+        [
+          "B3-3.2-02, Standards for Employment-Related Income (03/04/2026)",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-2",
+      "format": "html",
+      "raw": "assets/1a9499a84bff1c46df6dd6ea612efd3aa06ca985e9e6b9713593328499656351.html",
+      "regions": 75,
+      "kinds": {
+        "other": 10,
+        "heading": 14,
+        "list_item": 41,
+        "figure": 4,
+        "paragraph": 6
+      },
+      "units": 8,
+      "heading_only_units": 1,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 8,
+        "min": 0,
+        "p10": 0,
+        "median": 9.0,
+        "p90": 12,
+        "max": 14,
+        "under_20": 8,
+        "under_50": 8,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 9,
+        "min": 7,
+        "p10": 7,
+        "median": 14,
+        "p90": 22,
+        "max": 38,
+        "under_20": 7,
+        "under_50": 9,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000001",
+          "title": "DOC:lending:fannie-b3-3-2",
+          "body": "Skip to main content\nSearch the Guide:",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000002",
+          "title": "Section B3-3.2, Requirements for Employment-Related Income",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000003",
+          "title": "Requirements for Employment-Related Income Table of contents",
+          "body": "B3-3.2-01, Standards for Employment and Income Documentation\nB3-3.2-02, Standards for Employment-Related Income\nAsk Poli",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000004",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000005",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000006",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000007",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-2/u000008",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-2",
+          1
+        ],
+        [
+          "Section B3-3.2, Requirements for Employment-Related Income",
+          1
+        ],
+        [
+          "Requirements for Employment-Related Income Table of contents",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-3-01",
+      "format": "html",
+      "raw": "assets/0b35707fbfb79f5b63f604143ceda924965a23621e5b3eaafeb94294efedaf20.html",
+      "regions": 93,
+      "kinds": {
+        "other": 15,
+        "heading": 16,
+        "list_item": 45,
+        "figure": 4,
+        "paragraph": 10,
+        "table": 3
+      },
+      "units": 10,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 10,
+        "min": 8,
+        "p10": 8,
+        "median": 11.5,
+        "p90": 293,
+        "max": 362,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 11,
+        "min": 11,
+        "p10": 12,
+        "median": 15,
+        "p90": 586,
+        "max": 671,
+        "under_20": 6,
+        "under_50": 8,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000001",
+          "title": "DOC:lending:fannie-b3-3-3-01",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000006",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000007",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000008",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000009",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-01/u000010",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-3-01",
+          1
+        ],
+        [
+          "B3-3.3-01, Base Income (03/04/2026)",
+          1
+        ],
+        [
+          "Overview",
+          1
+        ],
+        [
+          "Fixed Base Income",
+          1
+        ],
+        [
+          "Variable Base Income",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-3-02",
+      "format": "html",
+      "raw": "assets/f0f0e326d88b0f6b4e200048640f247890d714496b0e9ceb2b32fe69866d0635.html",
+      "regions": 80,
+      "kinds": {
+        "other": 13,
+        "heading": 13,
+        "list_item": 40,
+        "figure": 4,
+        "paragraph": 8,
+        "table": 2
+      },
+      "units": 7,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 7,
+        "min": 8,
+        "p10": 8,
+        "median": 9,
+        "p90": 12,
+        "max": 401,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 8,
+        "min": 11,
+        "p10": 11,
+        "median": 14.0,
+        "p90": 32,
+        "max": 804,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000001",
+          "title": "DOC:lending:fannie-b3-3-3-02",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000003",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000004",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000005",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000006",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-02/u000007",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-3-02",
+          1
+        ],
+        [
+          "B3-3.3-02, Bonus, Commission, Overtime, and Tip Income (03/04/2026)",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-b3-3-3-03",
+      "format": "html",
+      "raw": "assets/8d784b6085bc95a2bcdd12decacf8e32f6faf783545b2a594c88cd76a4a88cdc.html",
+      "regions": 81,
+      "kinds": {
+        "other": 13,
+        "heading": 13,
+        "list_item": 40,
+        "figure": 4,
+        "paragraph": 9,
+        "table": 2
+      },
+      "units": 7,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 7,
+        "min": 8,
+        "p10": 8,
+        "median": 9,
+        "p90": 12,
+        "max": 756,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 8,
+        "min": 11,
+        "p10": 11,
+        "median": 14.0,
+        "p90": 30,
+        "max": 1073,
+        "under_20": 6,
+        "under_50": 7,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000001",
+          "title": "DOC:lending:fannie-b3-3-3-03",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000003",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000004",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000005",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000006",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-b3-3-3-03/u000007",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-b3-3-3-03",
+          1
+        ],
+        [
+          "B3-3.3-03, Employment Offers or Contracts (03/04/2026)",
+          1
+        ],
+        [
+          "Have questions?",
+          1
+        ],
+        [
+          "Work with Fannie Mae",
+          1
+        ],
+        [
+          "Products & Solutions",
+          1
+        ],
+        [
+          "Support & Resources",
+          1
+        ],
+        [
+          "Other Sites",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fannie-self-employed",
+      "format": "html",
+      "raw": "assets/860e407228fe54158918360beba4aa6e7dff505bb098231d1cf7bd0039c1f8a8.html",
+      "regions": 140,
+      "kinds": {
+        "other": 15,
+        "heading": 23,
+        "list_item": 67,
+        "figure": 4,
+        "paragraph": 30,
+        "table": 1
+      },
+      "units": 17,
+      "heading_only_units": 0,
+      "heading_without_level": 0,
+      "body_words": {
+        "n": 17,
+        "min": 8,
+        "p10": 9,
+        "median": 57,
+        "p90": 197,
+        "max": 486,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "chunk_body_words": {
+        "n": 18,
+        "min": 11,
+        "p10": 12,
+        "median": 90.5,
+        "p90": 203,
+        "max": 490,
+        "under_20": 6,
+        "under_50": 6,
+        "over_2000": 0
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fannie-self-employed/u000001",
+          "title": "DOC:lending:fannie-self-employed",
+          "body": "Skip to main content\nSearch the Guide:\nPrint\nShare",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-self-employed/u000013",
+          "title": "Have questions?",
+          "body": "Get answers to your policy and guide questions, straight from the source.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fannie-self-employed/u000014",
+          "title": "Work with Fannie Mae",
+          "body": "Customer Login\nPassword Reset\nNot a customer? Get Started",
+          "regions": 4
+        },
+        {
+          "id": "DOC:lending:fannie-self-employed/u000015",
+          "title": "Products & Solutions",
+          "body": "Mortgage Products & Options\nTechnology Apps & Solutions",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fannie-self-employed/u000016",
+          "title": "Support & Resources",
+          "body": "Customer Service\nNews & Events\nLearning Center\nGuide Forms",
+          "regions": 5
+        },
+        {
+          "id": "DOC:lending:fannie-self-employed/u000017",
+          "title": "Other Sites",
+          "body": "The Marketing Center\nFannie Mae's Consumer Website\nDuty to Serve\nHomepath",
+          "regions": 5
+        }
+      ],
+      "units_without_parent": 2,
+      "repeated_titles": [
+        [
+          "DOC:lending:fannie-self-employed",
+          1
+        ],
+        [
+          "B3-3.5-01, Underwriting Factors and Documentation for a Self-Employed Borrower (12/13/2023)",
+          1
+        ],
+        [
+          "Overview",
+          1
+        ],
+        [
+          "Factors to Consider for a Self-Employed Borrower",
+          1
+        ],
+        [
+          "Length of Self-Employment",
+          1
+        ],
+        [
+          "Verification of Income",
+          1
+        ],
+        [
+          "Analysis of Borrower’s Personal Income",
+          1
+        ],
+        [
+          "Analysis of Borrower’s Business Income",
+          1
+        ]
+      ]
+    },
+    {
+      "document": "DOC:lending:fha-handbook-u18",
+      "format": "pdf",
+      "raw": "assets/e1bca3432cf19e097b7f466dddb2837d8a3393d7fb1f6a711f0eaf818b313e02.pdf",
+      "regions": 26376,
+      "kinds": {
+        "paragraph": 12417,
+        "heading": 10436,
+        "footer": 1917,
+        "header": 889,
+        "list_item": 717
+      },
+      "units": 10437,
+      "heading_only_units": 2241,
+      "heading_without_level": 10436,
+      "body_words": {
+        "n": 10437,
+        "min": 0,
+        "p10": 0,
+        "median": 34,
+        "p90": 119,
+        "max": 8059,
+        "under_20": 3510,
+        "under_50": 6623,
+        "over_2000": 1
+      },
+      "chunk_body_words": {
+        "n": 10438,
+        "min": 2,
+        "p10": 6,
+        "median": 40.0,
+        "p90": 126,
+        "max": 70524,
+        "under_20": 2619,
+        "under_50": 6117,
+        "over_2000": 2
+      },
+      "examples": [
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000002",
+          "title": "1. This Transmits:",
+          "body": "The incorporation of previously published updates to Handbook 4000.1, FHA Single Family Housing Policy Handbook.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000014",
+          "title": "Section IV – Claims and Disposition",
+          "body": "no bid is accepted during the exclusive listing period.",
+          "regions": 2
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000015",
+          "title": "Section V – Quality Control, Oversight, and Compliance",
+          "body": "quality control, per ML 2026-09.\nrequirements to allow greater flexibility and alternatives to appraisal field reviews, per ML 2026-10.",
+          "regions": 3
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000023",
+          "title": "HUD Handbook 4000.1 FHA Single Family Housing Policy Handbook",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000025",
+          "title": "I. DOING BUSINESS WITH FHA .................................................................1",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000028",
+          "title": "II. ORIGINATION THROUGH POST-CLOSING/ENDORSEMENT ...126",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000035",
+          "title": "III. SERVICING AND LOSS MITIGATION .............................................1146",
+          "body": "",
+          "regions": 1
+        },
+        {
+          "id": "DOC:lending:fha-handbook-u18/u000039",
+          "title": "IV. CLAIMS AND DISPOSITION ..............................................................1557",
+          "body": "",
+          "regions": 1
+        }
+      ],
+      "units_without_parent": 10437,
+      "repeated_titles": [
+        [
+          "(1) Definition",
+          243
+        ],
+        [
+          "(2) Standard",
+          211
+        ],
+        [
+          "(a) Definition",
+          184
+        ],
+        [
+          "(3) Required Documentation",
+          159
+        ],
+        [
+          "(b) Standard",
+          153
+        ],
+        [
+          "(B) Standard",
+          140
+        ],
+        [
+          "(b) Required Documentation",
+          137
+        ],
+        [
+          "(A) Definition",
+          126
+        ]
+      ]
+    }
+  ],
+  "document_artifacts": {
+    "corpus\\research\\arxiv-1308-0850v1.document.json": "d8b00f49cf50e455dad1da3fab541221baadcc9771e69ee78c976756dec6b527",
+    "corpus\\research\\arxiv-1508-04025v1.document.json": "f2b81dcd3febdc53987b4d7c30784ba734a88e0a3a9e4ba5aefa1793c88cd555",
+    "corpus\\research\\arxiv-1508-07909v1.document.json": "7b1f80d645f27dd12ba5ba7b3d5851f4dcba8835bcdf68400bfb478d9f0e6a13",
+    "corpus\\research\\arxiv-1511-06114v1.document.json": "6edc7c6a127de2c9c545ca899be30b6dadaef99523408f0a53a08c536aadfc17",
+    "corpus\\research\\arxiv-1601-06733v1.document.json": "fee9376c9946b2fd753513369f495acd8fc1b2c6e48254acda19036815988b69",
+    "corpus\\research\\arxiv-1602-02410v1.document.json": "1c5ca00b3b4839a0d64e52dfc4e7f949983e48ad8a8578c72c277c97cea67823",
+    "corpus\\research\\arxiv-1607-06450v1.document.json": "cece33ca00183c3328fd23c49b55a4baa82214b738056f1d608bb7ccc5a76dea",
+    "corpus\\research\\arxiv-1608-05859v1.document.json": "a8a382ee53875b24495a2873fee9c57eadb73c70304cba8af69686da694d4574",
+    "corpus\\research\\arxiv-1609-08144v1.document.json": "9d361bfea6bdb30fdc86a214753ba14ffe4ab63751b1caa2c1848f6ed43aa390",
+    "corpus\\research\\attention-v7.document.json": "7797ecb2d71253851fa166bdf3367b6a1056d6a7f1c13f0eb1e2f716f70bec62",
+    "corpus\\research\\pmc10538420.document.json": "7edf7a09c4732b615f99c4a082a428e24ff647e23943428d308020c1dfac7c45",
+    "corpus\\research\\pmc11093778.document.json": "12cdf073b8cb7b185e6f4a5b5829367627190b2a2539871dace745b6082b59ff",
+    "corpus\\research\\pmc11156570.document.json": "b084d056f8c7fab32bdc6aa757d030d1ec8e2a936d9cd6844c8bc4035e19684c",
+    "corpus\\research\\pmc11558476.document.json": "da8f9f6a23143fb8fa9d821ca5c823084f759fde135f015a8dd93e31a9df6443",
+    "corpus\\research\\pmc3424340.document.json": "f006e469fb79b9ebf42d046d0378a817c73e99fddd2453bc11d8084793bee47c",
+    "corpus\\research\\pmc6498183.document.json": "df75671762454cb508a3d254294cebf3cc7ca61a7c08a9d3c536a0dca25c5fc1",
+    "corpus\\research\\pmc7268329.document.json": "4dca4a9d01c765aedb34d1cb81961ee2d2db74d5a606c0ecc1b602d0b510167b",
+    "corpus\\research\\pmc8363345.document.json": "a355ee387c2cfecd2ad4618b7264d22cbe778f0b7be0318fd2cbe039cc079599",
+    "corpus\\research\\pmc8665835.document.json": "da5df6c7cbecfcdab93ff79089f9ac68128d2781f4eed85ca3edb319144b7074",
+    "corpus\\research\\pmc9153910.document.json": "eb294df3074a1386b465e67c800daf264958bdc83b6bdcd773f4a560a301b33e",
+    "corpus\\lending\\fannie-b3-3-1-01.document.json": "2c2bf912d92ff3159f0c46352ac14db7d3ae4a3868eddd59d83f5534dccb5345",
+    "corpus\\lending\\fannie-b3-3-1-02.document.json": "c90cf0fca88a4c63e441c41a202becb849a4200d66082de20fcad4b4c8033946",
+    "corpus\\lending\\fannie-b3-3-1-03.document.json": "8becb8249bfce4031a3f186ebcd9f883c8d399e70df0161d1627a40998639070",
+    "corpus\\lending\\fannie-b3-3-1-04.document.json": "20aa4f9c1851e462db90a7a1b14db53daad6e8840b6e4e7b99bc91a5a6bf7c75",
+    "corpus\\lending\\fannie-b3-3-1.document.json": "542b1ab979f8b42eacff4dbed64052b4efd38d458f6d90964de377e875545b01",
+    "corpus\\lending\\fannie-b3-3-2-01.document.json": "291cb3ba656c43b87b8704aae095e98da337e68e3bbd7abf2a669c9118da5896",
+    "corpus\\lending\\fannie-b3-3-2-02.document.json": "f436d761c15275a74c4e5fefba642962aee94ada04e683b69dc09e592c990571",
+    "corpus\\lending\\fannie-b3-3-2.document.json": "ccf138b3709fe7db308fddf5405b8075f593a93fc58ffd96c913e9eb7f54b70e",
+    "corpus\\lending\\fannie-b3-3-3-01.document.json": "9502bbbe1d24771542ba1bc1835d6b5a4a65fde3592d2d9647cea53fbd04eaa0",
+    "corpus\\lending\\fannie-b3-3-3-02.document.json": "1eb688167b89b07c98817b83541b4a752fb87de5023a46e289c12f878609a5b8",
+    "corpus\\lending\\fannie-b3-3-3-03.document.json": "213c83b7fd15e694de77078a075cdadd6d6eb0c34f651bf5f36931dc5342fbd4",
+    "corpus\\lending\\fannie-self-employed.document.json": "e1e59719578d61023e2b66ebd5d1cd8cff20723092d2e0d150ec74d84ac94b8b",
+    "corpus\\lending\\fha-handbook-u18.document.json": "04045858afc1234e0fdd98d263fd641ecbd80cc2ee86af775efa8aea0fb0b741"
+  },
+  "root_chunks": [
+    {
+      "id": "DOC:lending:fannie-b3-3-1-01",
+      "body_words": 73
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-1-02",
+      "body_words": 63
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-1-03",
+      "body_words": 46
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-1-04",
+      "body_words": 30
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-1",
+      "body_words": 36
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-2-01",
+      "body_words": 58
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-2-02",
+      "body_words": 30
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-2",
+      "body_words": 38
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-3-01",
+      "body_words": 38
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-3-02",
+      "body_words": 32
+    },
+    {
+      "id": "DOC:lending:fannie-b3-3-3-03",
+      "body_words": 30
+    },
+    {
+      "id": "DOC:lending:fannie-self-employed",
+      "body_words": 85
+    },
+    {
+      "id": "DOC:lending:fha-handbook-u18",
+      "body_words": 70524
+    },
+    {
+      "id": "DOC:research:arxiv-1308-0850v1",
+      "body_words": 80
+    },
+    {
+      "id": "DOC:research:arxiv-1508-04025v1",
+      "body_words": 130
+    },
+    {
+      "id": "DOC:research:arxiv-1508-07909v1",
+      "body_words": 79
+    },
+    {
+      "id": "DOC:research:arxiv-1511-06114v1",
+      "body_words": 72
+    },
+    {
+      "id": "DOC:research:arxiv-1601-06733v1",
+      "body_words": 4
+    },
+    {
+      "id": "DOC:research:arxiv-1602-02410v1",
+      "body_words": 39
+    },
+    {
+      "id": "DOC:research:arxiv-1607-06450v1",
+      "body_words": 34
+    },
+    {
+      "id": "DOC:research:arxiv-1608-05859v1",
+      "body_words": 44
+    },
+    {
+      "id": "DOC:research:arxiv-1609-08144v1",
+      "body_words": 206
+    },
+    {
+      "id": "DOC:research:attention-v7",
+      "body_words": 59
+    },
+    {
+      "id": "DOC:research:pmc10538420",
+      "body_words": 73
+    },
+    {
+      "id": "DOC:research:pmc11093778",
+      "body_words": 118
+    },
+    {
+      "id": "DOC:research:pmc11156570",
+      "body_words": 194
+    },
+    {
+      "id": "DOC:research:pmc11558476",
+      "body_words": 136
+    },
+    {
+      "id": "DOC:research:pmc3424340",
+      "body_words": 62
+    },
+    {
+      "id": "DOC:research:pmc6498183",
+      "body_words": 73
+    },
+    {
+      "id": "DOC:research:pmc7268329",
+      "body_words": 244
+    },
+    {
+      "id": "DOC:research:pmc8363345",
+      "body_words": 174
+    },
+    {
+      "id": "DOC:research:pmc8665835",
+      "body_words": 153
+    },
+    {
+      "id": "DOC:research:pmc9153910",
+      "body_words": 134
+    }
+  ]
+}

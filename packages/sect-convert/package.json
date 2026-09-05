@@ -3,11 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "sect-convert: deterministic preprocessing of raw documents into the sect corpus contract (spec Part C). Milestone C1 (partial): the eCFR bulk XML native parser.",
+  "description": "Native document extraction, source mapping and corpus validation for sectgrep",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
+    "./document": { "types": "./dist/document.d.ts", "default": "./dist/document.js" },
+    "./ingest-file": { "types": "./dist/ingest-file.d.ts", "default": "./dist/ingest-file.js" },
+    "./render": { "types": "./dist/ocr/render.d.ts", "default": "./dist/ocr/render.js" },
+    "./knowledge": {
+      "types": "./dist/knowledge.d.ts",
+      "default": "./dist/knowledge.js"
+    },
+    "./actions": {
+      "types": "./dist/actions.d.ts",
+      "default": "./dist/actions.js"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
@@ -26,17 +37,20 @@
     "@mozilla/readability": "0.6.0",
     "@napi-rs/canvas": "^1.0.8",
     "@xmldom/xmldom": "^0.9.8",
+    "ajv": "8.17.1",
     "fastest-levenshtein": "1.0.16",
     "jsdom": "30.0.1",
+    "jszip": "3.10.1",
     "mammoth": "1.12.2",
     "pdfjs-dist": "6.3.289",
-    "xlsx": "0.18.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/jsdom": "^30.0.0",
     "@types/node": "^22.15.0",
     "docx": "9.7.1",
+    "json-schema-to-typescript": "15.0.4",
     "pdf-lib": "1.17.1",
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",

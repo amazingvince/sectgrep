@@ -37,12 +37,37 @@ struct Stdio_ {
 
 impl Stdio_ {
     fn start(corpus: &Path, extra: &[&str]) -> Stdio_ {
-        let mut child = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(corpus).arg("serve").args(extra).stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap();
+        Self::start_with_watch(corpus, extra, false)
+    }
+    fn start_with_watch(corpus: &Path, extra: &[&str], watch: bool) -> Stdio_ {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_sect"))
+            .arg("--corpus")
+            .arg(corpus)
+            .args(if watch {
+                vec!["--freshness", "no"]
+            } else {
+                vec![]
+            })
+            .env("SECT_FRESHNESS_WATCH", if watch { "1" } else { "0" })
+            .arg("serve")
+            .args(extra)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
         let reader = BufReader::new(child.stdout.take().unwrap());
-        let mut s = Stdio_ { child, reader, next_id: 1 };
+        let mut s = Stdio_ {
+            child,
+            reader,
+            next_id: 1,
+        };
         let r = s.request("initialize", json!({"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "test", "version": "0"}}));
         assert_eq!(r["result"]["serverInfo"]["name"], "sect", "{r}");
-        assert!(r["result"]["instructions"].as_str().unwrap().contains("freshness line"));
+        assert!(r["result"]["instructions"]
+            .as_str()
+            .unwrap()
+            .contains("freshness line"));
         s.notify("notifications/initialized");
         s
     }
@@ -62,7 +87,8 @@ impl Stdio_ {
             let mut line = String::new();
             let n = self.reader.read_line(&mut line).unwrap();
             assert!(n > 0, "server closed stdout while waiting for {method}");
-            let v: Value = serde_json::from_str(line.trim()).unwrap_or_else(|_| panic!("not json-rpc: {line}"));
+            let v: Value = serde_json::from_str(line.trim())
+                .unwrap_or_else(|_| panic!("not json-rpc: {line}"));
             if v["id"] == json!(id) {
                 return v;
             }
@@ -74,8 +100,46 @@ impl Stdio_ {
         r["result"].clone()
     }
     fn text(result: &Value) -> String {
-        result["content"][0]["text"].as_str().unwrap_or("").to_string()
+        result["content"][0]["text"]
+            .as_str()
+            .unwrap_or("")
+            .to_string()
     }
+}
+
+#[cfg(windows)]
+#[test]
+fn native_watch_revalidates_edits_renames_additions_and_generation_changes() {
+    let tmp = tempfile::tempdir().unwrap();
+    copy_dir(&fixture(), tmp.path());
+    let options = sect_index::BuildOptions {
+        embedding: Some("none".into()),
+        ngram: Some("off".into()),
+        ..Default::default()
+    };
+    assert_eq!(sect_index::build(tmp.path(), &options).unwrap().errors(), 0);
+    let mut server = Stdio_::start_with_watch(tmp.path(), &[], true);
+    let state = |s: &mut Stdio_| {
+        s.call("sect_status", json!({}))["structuredContent"]["freshness"]["state"]
+            .as_str()
+            .unwrap()
+            .to_owned()
+    };
+    let memo = tmp.path().join("watch-check.txt");
+    for round in 0..12 {
+        assert_eq!(state(&mut server), "fresh");
+        assert_eq!(state(&mut server), "fresh");
+        match round % 4 {
+            0 => fs::write(&memo, "first payload").unwrap(),
+            1 => fs::write(&memo, "other payload").unwrap(), // same byte count
+            2 => fs::rename(&memo, tmp.path().join("renamed-check.txt")).unwrap(),
+            _ => fs::remove_file(tmp.path().join("renamed-check.txt")).unwrap(),
+        }
+        // No sleeps or debounce grace period: the next request must see the completed write.
+        assert_eq!(state(&mut server), "possibly_stale", "mutation {round}");
+        assert_eq!(sect_index::build(tmp.path(), &options).unwrap().errors(), 0);
+    }
+    assert_eq!(state(&mut server), "fresh");
 }
 
 impl Drop for Stdio_ {
@@ -94,40 +158,84 @@ fn seven_verbs_over_stdio_and_admin_only_with_full_toolset() {
     copy_dir(&fixture(), tmp.path());
     let mut s = Stdio_::start(tmp.path(), &[]);
     let tools = s.request("tools/list", json!({}));
-    let mut names: Vec<String> = tools["result"]["tools"].as_array().unwrap().iter().map(|t| t["name"].as_str().unwrap().to_string()).collect();
+    let mut names: Vec<String> = tools["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| t["name"].as_str().unwrap().to_string())
+        .collect();
     names.sort();
-    assert_eq!(names, ["sect_define", "sect_grep", "sect_map", "sect_read", "sect_refs", "sect_search", "sect_status"]);
-    let search = tools["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == "sect_search").unwrap();
+    assert_eq!(
+        names,
+        [
+            "sect_define",
+            "sect_grep",
+            "sect_map",
+            "sect_read",
+            "sect_refs",
+            "sect_search",
+            "sect_status"
+        ]
+    );
+    let search = tools["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|t| t["name"] == "sect_search")
+        .unwrap();
     assert_eq!(search["inputSchema"]["required"], json!(["query"]));
-    assert!(search["inputSchema"]["properties"]["as_of"]["description"].as_str().unwrap().contains("YYYY-MM-DD"));
+    assert!(search["inputSchema"]["properties"]["as_of"]["description"]
+        .as_str()
+        .unwrap()
+        .contains("YYYY-MM-DD"));
 
     let r = s.call("sect_status", json!({}));
     let t = Stdio_::text(&r);
     assert!(t.starts_with("freshness: fresh"), "{t}");
     assert_eq!(r["structuredContent"]["freshness"]["state"], "fresh");
-    let t = Stdio_::text(&s.call("sect_read", json!({"id": "CFR:99-2.7", "as_of": "2025-06-01"})));
+    let t = Stdio_::text(&s.call(
+        "sect_read",
+        json!({"id": "CFR:99-2.7", "as_of": "2025-06-01"}),
+    ));
     assert!(t.contains("§ 2.7") && t.contains("2024-01-01"), "{t}");
     let t = Stdio_::text(&s.call("sect_search", json!({"query": "99 CFR 2.8", "limit": 3})));
     assert!(t.contains("CFR:99-2.8"), "{t}");
-    let t = Stdio_::text(&s.call("sect_grep", json!({"pattern": "cage", "ignore_case": true, "count_only": true})));
+    let t = Stdio_::text(&s.call(
+        "sect_grep",
+        json!({"pattern": "cage", "ignore_case": true, "count_only": true}),
+    ));
     assert!(t.starts_with("freshness:") && t.contains("count"), "{t}");
     let t = Stdio_::text(&s.call("sect_refs", json!({"id": "CFR:99-2.8", "direction": "in"})));
     assert!(t.contains("CFR:99-2.4"), "{t}");
     let t = Stdio_::text(&s.call("sect_define", json!({"term": "qualified person"})));
     assert!(t.contains("CFR:99-1.2"), "{t}");
-    let t = Stdio_::text(&s.call("sect_map", json!({"scope": "CFR:99-2.13#c", "complete": true})));
+    let t = Stdio_::text(&s.call(
+        "sect_map",
+        json!({"scope": "CFR:99-2.13#c", "complete": true}),
+    ));
     assert!(t.contains("c-1"), "{t}");
     // A verb error is a tool error, not a protocol error.
     let r = s.call("sect_read", json!({"id": "CFR:99-9.99"}));
     assert_eq!(r["isError"], true, "{r}");
     // Unknown fields are rejected by the shared definitions.
-    let r = s.request("tools/call", json!({"name": "sect_search", "arguments": {"query": "x", "bogus": 1}}));
-    assert!(r.get("error").is_some() || r["result"]["isError"] == true, "{r}");
+    let r = s.request(
+        "tools/call",
+        json!({"name": "sect_search", "arguments": {"query": "x", "bogus": 1}}),
+    );
+    assert!(
+        r.get("error").is_some() || r["result"]["isError"] == true,
+        "{r}"
+    );
     drop(s);
 
     let mut full = Stdio_::start(tmp.path(), &["--toolset", "full"]);
     let tools = full.request("tools/list", json!({}));
-    let names: Vec<&str> = tools["result"]["tools"].as_array().unwrap().iter().map(|t| t["name"].as_str().unwrap()).collect();
+    let names: Vec<&str> = tools["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| t["name"].as_str().unwrap())
+        .collect();
     assert_eq!(names.len(), 9);
     assert!(names.contains(&"sect_index") && names.contains(&"sect_rebuild"));
     let t = Stdio_::text(&full.call("sect_index", json!({})));
@@ -136,7 +244,12 @@ fn seven_verbs_over_stdio_and_admin_only_with_full_toolset() {
 
 #[test]
 fn http_is_loopback_only() {
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(fixture()).args(["serve", "--http", "0.0.0.0:7999"]).output().unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(fixture())
+        .args(["serve", "--http", "0.0.0.0:7999"])
+        .output()
+        .unwrap();
     assert!(!out.status.success());
     assert!(String::from_utf8_lossy(&out.stderr).contains("loopback"));
 }
@@ -146,28 +259,73 @@ fn install_places_the_binary_and_merges_the_client_config() {
     let tmp = tempfile::tempdir().unwrap();
     let bin = tmp.path().join("bin");
     let cfg = tmp.path().join("claude_desktop_config.json");
-    fs::write(&cfg, r#"{"mcpServers": {"other": {"command": "x"}}, "theme": "dark"}"#).unwrap();
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(fixture()).args(["install", "--to"]).arg(&bin).args(["--client", "claude-desktop", "--config"]).arg(&cfg).arg("--json").output().unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    fs::write(
+        &cfg,
+        r#"{"mcpServers": {"other": {"command": "x"}}, "theme": "dark"}"#,
+    )
+    .unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(fixture())
+        .args(["install", "--to"])
+        .arg(&bin)
+        .args(["--client", "claude-desktop", "--config"])
+        .arg(&cfg)
+        .arg("--json")
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
     let r: Value = serde_json::from_slice(&out.stdout).unwrap();
     assert_eq!(r["copied"], true);
     let exe = bin.join(if cfg!(windows) { "sect.exe" } else { "sect" });
     assert!(exe.is_file());
     let written: Value = serde_json::from_str(&fs::read_to_string(&cfg).unwrap()).unwrap();
     assert_eq!(written["theme"], "dark", "other keys survive");
-    assert_eq!(written["mcpServers"]["other"]["command"], "x", "other servers survive");
-    assert_eq!(written["mcpServers"]["sect"]["command"].as_str().unwrap(), exe.to_string_lossy().as_ref());
-    let args: Vec<String> = written["mcpServers"]["sect"]["args"].as_array().unwrap().iter().map(|a| a.as_str().unwrap().to_string()).collect();
+    assert_eq!(
+        written["mcpServers"]["other"]["command"], "x",
+        "other servers survive"
+    );
+    assert_eq!(
+        written["mcpServers"]["sect"]["command"].as_str().unwrap(),
+        exe.to_string_lossy().as_ref()
+    );
+    let args: Vec<String> = written["mcpServers"]["sect"]["args"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|a| a.as_str().unwrap().to_string())
+        .collect();
     assert_eq!(args[0], "serve");
     assert!(args.contains(&"--corpus".to_string()));
     // The installed binary works and serves.
-    let out = Command::new(&exe).arg("--corpus").arg(fixture()).args(["--version"]).output().unwrap();
+    let out = Command::new(&exe)
+        .arg("--corpus")
+        .arg(fixture())
+        .args(["--version"])
+        .output()
+        .unwrap();
     assert!(String::from_utf8_lossy(&out.stdout).starts_with("sect "));
     // Dry run writes nothing and shows the plan.
     let cfg2 = tmp.path().join("cursor.json");
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(fixture()).args(["install", "--to"]).arg(&bin).args(["--client", "cursor", "--config"]).arg(&cfg2).args(["--dry-run", "--full"]).output().unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(fixture())
+        .args(["install", "--to"])
+        .arg(&bin)
+        .args(["--client", "cursor", "--config"])
+        .arg(&cfg2)
+        .args(["--dry-run", "--full"])
+        .output()
+        .unwrap();
     assert!(out.status.success());
     let text = String::from_utf8_lossy(&out.stdout);
-    assert!(text.contains("--toolset") && text.contains("dry run"), "{text}");
+    assert!(
+        text.contains("--toolset") && text.contains("dry run"),
+        "{text}"
+    );
     assert!(!cfg2.exists());
 }

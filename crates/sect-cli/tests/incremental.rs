@@ -27,7 +27,12 @@ fn copy_dir(src: &Path, dst: &Path) {
 }
 
 fn sect(corpus: &Path, args: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(corpus).args(args).output().unwrap()
+    Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(corpus)
+        .args(args)
+        .output()
+        .unwrap()
 }
 
 fn stdout(o: &Output) -> String {
@@ -35,12 +40,23 @@ fn stdout(o: &Output) -> String {
 }
 
 fn json(o: &Output) -> Value {
-    serde_json::from_str(&stdout(o)).unwrap_or_else(|_| panic!("not json: {}{}", stdout(o), String::from_utf8_lossy(&o.stderr)))
+    serde_json::from_str(&stdout(o)).unwrap_or_else(|_| {
+        panic!(
+            "not json: {}{}",
+            stdout(o),
+            String::from_utf8_lossy(&o.stderr)
+        )
+    })
 }
 
 fn index_json(corpus: &Path, extra: &[&str]) -> Value {
     let out = sect(corpus, &[&["index"], extra, &["--json"]].concat());
-    assert!(out.status.success(), "{}{}", stdout(&out), String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "{}{}",
+        stdout(&out),
+        String::from_utf8_lossy(&out.stderr)
+    );
     json(&out)
 }
 
@@ -53,8 +69,10 @@ fn incremental_rebuilds_touch_only_what_changed_and_noop_otherwise() {
     copy_dir(&fixture(), tmp.path());
     let first = index_json(tmp.path(), &[]);
     assert_eq!(first["mode"], "full");
-    assert_eq!(first["added"], 44);
-    assert!(tmp.path().join(".sect/docs.jsonl").is_file());
+    assert_eq!(first["added"], 48);
+    assert!(sect_index::index_dir(tmp.path())
+        .join("docs.jsonl")
+        .is_file());
 
     // Unchanged input: no work.
     let again = index_json(tmp.path(), &[]);
@@ -62,7 +80,10 @@ fn incremental_rebuilds_touch_only_what_changed_and_noop_otherwise() {
     assert_eq!(again["written"], false);
     assert_eq!(again["changed"], 0);
     let text = stdout(&sect(tmp.path(), &["index"]));
-    assert!(text.starts_with("freshness: fresh (nothing changed"), "{text}");
+    assert!(
+        text.starts_with("freshness: fresh (nothing changed"),
+        "{text}"
+    );
 
     // One file edited: one parse, one Expression replaced in tantivy and vectors.bin.
     let file = tmp.path().join("cfr-title-99/I/A/1/1.1/99-1.1.md");
@@ -74,24 +95,58 @@ fn incremental_rebuilds_touch_only_what_changed_and_noop_otherwise() {
     assert_eq!(inc["changed"], 1);
     assert_eq!(inc["added"], 0);
     assert_eq!(inc["written"], true);
-    let v = json(&sect(tmp.path(), &["search", "zebrafish", "--fts", "--json"]));
+    let v = json(&sect(
+        tmp.path(),
+        &["search", "zebrafish", "--fts", "--json"],
+    ));
     assert_eq!(v["result"]["hits"][0]["id"], "CFR:99-1.1", "{v}");
-    let v = json(&sect(tmp.path(), &["search", "the zebrafish paragraph added for the incremental test", "--vector", "--limit", "5", "--json"]));
-    assert!(v["result"]["hits"].as_array().unwrap().iter().any(|h| h["id"] == "CFR:99-1.1"), "vector row replaced: {v}");
-    assert!(fs::read_to_string(tmp.path().join(".sect/log.jsonl")).unwrap().contains("\"action\":\"incremental\""));
+    let v = json(&sect(
+        tmp.path(),
+        &[
+            "search",
+            "the zebrafish paragraph added for the incremental test",
+            "--vector",
+            "--limit",
+            "5",
+            "--json",
+        ],
+    ));
+    assert!(
+        v["result"]["hits"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|h| h["id"] == "CFR:99-1.1"),
+        "vector row replaced: {v}"
+    );
+    assert!(
+        fs::read_to_string(sect_index::index_dir(tmp.path()).join("log.jsonl"))
+            .unwrap()
+            .contains("\"action\":\"incremental\"")
+    );
 
     // A new file: added, then found; removed: gone.
     let new_file = tmp.path().join("cfr-title-99/I/A/1/1.11/99-1.11.md");
     fs::create_dir_all(new_file.parent().unwrap()).unwrap();
-    let template = fs::read_to_string(tmp.path().join("cfr-title-99/I/A/1/1.10/99-1.10.md")).unwrap();
-    let new_text = template.replace("CFR:99-1.10", "CFR:99-1.11").replace("id: CFR:99-1.11", "id: CFR:99-1.11").replace("title: Civil penalties", "title: Quokka provisions").replace("order: 10", "order: 11").replace("99:1.1.1.1.10", "99:1.1.1.1.11").replace("# § 1.10 Civil penalties", "# § 1.11 Quokka provisions");
+    let template =
+        fs::read_to_string(tmp.path().join("cfr-title-99/I/A/1/1.10/99-1.10.md")).unwrap();
+    let new_text = template
+        .replace("CFR:99-1.10", "CFR:99-1.11")
+        .replace("title: Civil penalties", "title: Quokka provisions")
+        .replace("order: 10", "order: 11")
+        .replace("99:1.1.1.1.10", "99:1.1.1.1.11")
+        .replace("# § 1.10 Civil penalties", "# § 1.11 Quokka provisions");
     fs::write(&new_file, new_text).unwrap();
     let inc = index_json(tmp.path(), &[]);
     assert_eq!(inc["mode"], "incremental", "{inc}");
     assert_eq!(inc["added"], 1, "{inc}");
     assert_eq!(inc["files"], 45);
     let out = sect(tmp.path(), &["read", "CFR:99-1.11"]);
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
     assert!(stdout(&out).contains("Quokka provisions"));
     fs::remove_file(&new_file).unwrap();
     fs::remove_dir(new_file.parent().unwrap()).unwrap();
@@ -100,7 +155,10 @@ fn incremental_rebuilds_touch_only_what_changed_and_noop_otherwise() {
     assert_eq!(inc["files"], 44);
     assert!(!sect(tmp.path(), &["read", "CFR:99-1.11"]).status.success());
     let v = json(&sect(tmp.path(), &["search", "quokka", "--fts", "--json"]));
-    assert!(v["result"]["hits"].as_array().unwrap().is_empty(), "removed Expression left the lexical layer: {v}");
+    assert!(
+        v["result"]["hits"].as_array().unwrap().is_empty(),
+        "removed Expression left the lexical layer: {v}"
+    );
 }
 
 #[test]
@@ -128,25 +186,40 @@ fn freshness_policies_small_sync_large_background_wait_and_no() {
     // Small change set: a query refreshes synchronously.
     assert_eq!(touch(2), 2);
     let text = stdout(&sect(tmp.path(), &["status"]));
-    assert!(text.starts_with("freshness: fresh (rebuilt after 2 changed file(s)"), "{text}");
+    assert!(
+        text.starts_with("freshness: fresh (rebuilt after 2 changed file(s)"),
+        "{text}"
+    );
     let text = stdout(&sect(tmp.path(), &["status"]));
-    assert!(text.starts_with("freshness: fresh (44 files indexed; stat"), "{text}");
+    assert!(
+        text.starts_with("freshness: fresh (48 files indexed; stat"),
+        "{text}"
+    );
 
     // --freshness no answers as-is.
     assert_eq!(touch(3), 3);
     let text = stdout(&sect(tmp.path(), &["status", "--freshness", "no"]));
-    assert!(text.starts_with("freshness: possibly_stale (3 of 44 files changed"), "{text}");
+    assert!(
+        text.starts_with("freshness: possibly_stale (3 of 48 files changed"),
+        "{text}"
+    );
     let text = stdout(&sect(tmp.path(), &["status", "--no-refresh"]));
     assert!(text.starts_with("freshness: possibly_stale"), "{text}");
 
     // --freshness wait rebuilds first, whatever the size.
     let text = stdout(&sect(tmp.path(), &["status", "--freshness", "wait"]));
-    assert!(text.starts_with("freshness: fresh (rebuilt after 3 changed file(s)"), "{text}");
+    assert!(
+        text.starts_with("freshness: fresh (rebuilt after 3 changed file(s)"),
+        "{text}"
+    );
 
     // Large change set: possibly_stale now, rebuilt in the background, fresh soon after.
     assert_eq!(touch(30), 30);
     let text = stdout(&sect(tmp.path(), &["status"]));
-    assert!(text.starts_with("freshness: possibly_stale (30 of 44 files changed"), "{text}");
+    assert!(
+        text.starts_with("freshness: possibly_stale (30 of 48 files changed"),
+        "{text}"
+    );
     assert!(text.contains("rebuilding in background"), "{text}");
     let mut fresh = false;
     for _ in 0..120 {
@@ -158,8 +231,11 @@ fn freshness_policies_small_sync_large_background_wait_and_no() {
         }
     }
     assert!(fresh, "background rebuild did not finish");
-    let log = fs::read_to_string(tmp.path().join(".sect/log.jsonl")).unwrap();
-    assert!(log.matches("\"action\":\"incremental\"").count() >= 3, "{log}");
+    let log = fs::read_to_string(sect_index::index_dir(tmp.path()).join("log.jsonl")).unwrap();
+    assert!(
+        log.matches("\"action\":\"incremental\"").count() >= 3,
+        "{log}"
+    );
 }
 
 fn walkdir(root: &Path) -> Vec<PathBuf> {
@@ -167,7 +243,11 @@ fn walkdir(root: &Path) -> Vec<PathBuf> {
     fn rec(p: &Path, out: &mut Vec<PathBuf>) {
         for e in fs::read_dir(p).unwrap().flatten() {
             let path = e.path();
-            if path.file_name().map(|n| n.to_string_lossy().starts_with('.')).unwrap_or(false) {
+            if path
+                .file_name()
+                .map(|n| n.to_string_lossy().starts_with('.'))
+                .unwrap_or(false)
+            {
                 continue;
             }
             if path.is_dir() {

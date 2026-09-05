@@ -1,9 +1,17 @@
 // Spec C.3 element schema: what every extractor produces, whatever the input format.
 // `{doc_sha, page, seq, type, text, bbox, font_size, bold, table_grid?, flags[], confidence}`
 
-export type ElementType = "heading" | "paragraph" | "list_item" | "table" | "caption" | "header" | "footer" | "figure" | "other";
+export type ElementType = "heading" | "paragraph" | "list_item" | "table" | "caption" | "header" | "footer" | "figure" | "equation" | "other";
 
 export interface Element {
+  native_id?: string;
+  heading_level?: number;
+  parent_seq?: number;
+  caption_of?: number;
+  footnote_of?: number[];
+  cells?: import("../document.generated.js").TableCell[];
+  exclusion?: string;
+  locator?: import("../knowledge.generated.js").Locator;
   doc_sha: string;
   /** 1-based page; 1 for formats without pages. */
   page: number;
@@ -35,9 +43,11 @@ export interface PageInfo {
 }
 
 export interface ExtractReport {
+  artifact_sha256?: Record<string, string>;
   input: string;
   doc_sha: string;
-  format: "pdf" | "docx" | "html" | "xlsx";
+  format: "pdf" | "docx" | "html" | "xlsx" | "text" | "markdown" | "csv" | "tsv" | "json" | "xml" | "pptx";
+  recipe_sha256?: string;
   pages: PageInfo[];
   elements: number;
   tables: number;

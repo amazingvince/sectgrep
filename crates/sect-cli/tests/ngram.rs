@@ -32,7 +32,10 @@ fn copy_dir(src: &Path, dst: &Path) {
 fn md_files(root: &Path, out: &mut Vec<PathBuf>) {
     for e in fs::read_dir(root).unwrap().flatten() {
         let p = e.path();
-        if p.file_name().map(|n| n.to_string_lossy().starts_with('.')).unwrap_or(false) {
+        if p.file_name()
+            .map(|n| n.to_string_lossy().starts_with('.'))
+            .unwrap_or(false)
+        {
             continue;
         }
         if p.is_dir() {
@@ -57,8 +60,19 @@ impl Rng {
 }
 
 fn grep_json(corpus: &Path, args: &[&str]) -> Value {
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(corpus).args(["grep", "--json", "--max-hits", "5000"]).args(args).output().unwrap();
-    assert!(out.status.success(), "{:?}: {}", args, String::from_utf8_lossy(&out.stderr));
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(corpus)
+        .args(["grep", "--json", "--max-hits", "5000"])
+        .args(args)
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{:?}: {}",
+        args,
+        String::from_utf8_lossy(&out.stderr)
+    );
     serde_json::from_slice(&out.stdout).unwrap()
 }
 
@@ -82,14 +96,38 @@ fn property(corpus: &Path, samples: usize, seed: u64) -> (usize, usize) {
     let mut narrowed = 0usize;
     let mut checked = 0usize;
     let fixed: Vec<Vec<&str>> = vec![
-        vec!["§ 1926"], vec!["1926\\.501"], vec!["\\bcage\\b"], vec!["(?i)GUARDRAIL"], vec!["toe ?board"], vec!["employ(er|ee)s?"], vec!["\\d+ inches"], vec!["^\\(a\\)"],
-        vec!["[A-Z]{3}:"], vec!["respirator|ladder|scaffold"], vec!["-i", "federal register"], vec!["-w", "rail"], vec!["-F", "1.5(a)(2)"], vec!["shall\\s+not"], vec!["-e", "cage", "-e", "toeboard"],
-        vec!["-i", "Élan"], vec!["a.b"], vec!["\\w+ing\\b"], vec!["-g", "*1.*", "the"], vec!["(guard|hand)rail"], vec!["[0-9]{4}\\.[0-9]+\\([a-z]\\)"],
+        vec!["§ 1926"],
+        vec!["1926\\.501"],
+        vec!["\\bcage\\b"],
+        vec!["(?i)GUARDRAIL"],
+        vec!["toe ?board"],
+        vec!["employ(er|ee)s?"],
+        vec!["\\d+ inches"],
+        vec!["^\\(a\\)"],
+        vec!["[A-Z]{3}:"],
+        vec!["respirator|ladder|scaffold"],
+        vec!["-i", "federal register"],
+        vec!["-w", "rail"],
+        vec!["-F", "1.5(a)(2)"],
+        vec!["shall\\s+not"],
+        vec!["-e", "cage", "-e", "toeboard"],
+        vec!["-i", "Élan"],
+        vec!["a.b"],
+        vec!["\\w+ing\\b"],
+        vec!["-g", "*1.*", "the"],
+        vec!["(guard|hand)rail"],
+        vec!["[0-9]{4}\\.[0-9]+\\([a-z]\\)"],
     ];
-    let mut cases: Vec<Vec<String>> = fixed.into_iter().map(|c| c.into_iter().map(String::from).collect()).collect();
+    let mut cases: Vec<Vec<String>> = fixed
+        .into_iter()
+        .map(|c| c.into_iter().map(String::from).collect())
+        .collect();
     for i in 0..samples {
         let text = fs::read_to_string(&files[rng.below(files.len())]).unwrap();
-        let lines: Vec<&str> = text.lines().filter(|l| l.len() >= 8 && !l.starts_with("---")).collect();
+        let lines: Vec<&str> = text
+            .lines()
+            .filter(|l| l.len() >= 8 && !l.starts_with("---"))
+            .collect();
         if lines.is_empty() {
             continue;
         }
@@ -108,7 +146,10 @@ fn property(corpus: &Path, samples: usize, seed: u64) -> (usize, usize) {
             1 => vec!["-i".to_string(), "-F".to_string(), flip_case(&lit)],
             2 => vec!["-w".to_string(), esc.clone()],
             3 => {
-                let other = chars[rng.below(chars.len().saturating_sub(4).max(1))..].iter().take(5).collect::<String>();
+                let other = chars[rng.below(chars.len().saturating_sub(4).max(1))..]
+                    .iter()
+                    .take(5)
+                    .collect::<String>();
                 vec![format!("{esc}|{}", regex_escape(other.trim()))]
             }
             4 => vec![esc.replace("\\ ", "\\s+").replace(' ', "\\s+")],
@@ -118,11 +159,24 @@ fn property(corpus: &Path, samples: usize, seed: u64) -> (usize, usize) {
                 let b: String = lit.chars().skip(mid).collect();
                 vec![format!("{}.*{}", regex_escape(&a), regex_escape(&b))]
             }
-            6 => vec![esc.chars().map(|c| if c.is_ascii_digit() { "[0-9]".to_string() } else { c.to_string() }).collect::<String>()],
+            6 => vec![esc
+                .chars()
+                .map(|c| {
+                    if c.is_ascii_digit() {
+                        "[0-9]".to_string()
+                    } else {
+                        c.to_string()
+                    }
+                })
+                .collect::<String>()],
             _ => {
                 let mut cs: Vec<char> = lit.chars().collect();
                 let last = cs.pop().unwrap();
-                vec![format!("{}{}?", regex_escape(&cs.iter().collect::<String>()), regex_escape(&last.to_string()))]
+                vec![format!(
+                    "{}{}?",
+                    regex_escape(&cs.iter().collect::<String>()),
+                    regex_escape(&last.to_string())
+                )]
             }
         };
         cases.push(case);
@@ -133,11 +187,21 @@ fn property(corpus: &Path, samples: usize, seed: u64) -> (usize, usize) {
         let mut noindex = args.clone();
         noindex.push("--no-index");
         let without = grep_json(corpus, &noindex);
-        assert_eq!(comparable(&with), comparable(&without), "prefiltered grep differs from brute force for {case:?}\nwith: {}\nwithout: {}", with["result"]["prefilter"], without["counts"]);
-        assert!(without["result"]["prefilter"].is_null(), "--no-index must skip the prefilter");
+        assert_eq!(
+            comparable(&with),
+            comparable(&without),
+            "prefiltered grep differs from brute force for {case:?}\nwith: {}\nwithout: {}",
+            with["result"]["prefilter"],
+            without["counts"]
+        );
+        assert!(
+            without["result"]["prefilter"].is_null(),
+            "--no-index must skip the prefilter"
+        );
         checked += 1;
         if let Some(n) = with["result"]["prefilter"]["candidate_count"].as_u64() {
-            if (n as usize) < with["result"]["prefilter"]["files_total"].as_u64().unwrap() as usize {
+            if (n as usize) < with["result"]["prefilter"]["files_total"].as_u64().unwrap() as usize
+            {
                 narrowed += 1;
             }
         }
@@ -157,15 +221,34 @@ fn regex_escape(s: &str) -> String {
 }
 
 fn flip_case(s: &str) -> String {
-    s.chars().map(|c| if c.is_ascii_lowercase() { c.to_ascii_uppercase() } else { c.to_ascii_lowercase() }).collect()
+    s.chars()
+        .map(|c| {
+            if c.is_ascii_lowercase() {
+                c.to_ascii_uppercase()
+            } else {
+                c.to_ascii_lowercase()
+            }
+        })
+        .collect()
 }
 
 fn indexed_copy(src: &Path) -> tempfile::TempDir {
     let tmp = tempfile::tempdir().unwrap();
     copy_dir(src, tmp.path());
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(tmp.path()).args(["index", "--ngram", "on", "--embedding", "none"]).output().unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
-    assert!(tmp.path().join(".sect/ngram/table.bin").is_file());
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(tmp.path())
+        .args(["index", "--ngram", "on", "--embedding", "none"])
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(sect_index::index_dir(tmp.path())
+        .join("ngram/table.bin")
+        .is_file());
     tmp
 }
 
@@ -175,11 +258,19 @@ fn prefilter_never_excludes_a_true_match_on_the_fixture() {
     let (checked, narrowed) = property(tmp.path(), 120, 0x9e3779b97f4a7c15);
     eprintln!("fixture: {checked} cases, {narrowed} narrowed by the prefilter");
     assert!(checked >= 120);
-    assert!(narrowed > checked / 3, "the prefilter narrowed only {narrowed} of {checked} cases");
+    assert!(
+        narrowed > checked / 3,
+        "the prefilter narrowed only {narrowed} of {checked} cases"
+    );
     // --ngram off removes the layer and grep runs without it.
-    let out = Command::new(env!("CARGO_BIN_EXE_sect")).arg("--corpus").arg(tmp.path()).args(["index", "--ngram", "off"]).output().unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_sect"))
+        .arg("--corpus")
+        .arg(tmp.path())
+        .args(["index", "--ngram", "off"])
+        .output()
+        .unwrap();
     assert!(out.status.success());
-    assert!(!tmp.path().join(".sect/ngram").exists());
+    assert!(!sect_index::index_dir(tmp.path()).join("ngram").exists());
     let v = grep_json(tmp.path(), &["cage"]);
     assert!(v["result"]["prefilter"].is_null());
 }
@@ -194,5 +285,8 @@ fn prefilter_never_excludes_a_true_match_on_the_real_corpus() {
     let tmp = indexed_copy(&src);
     let (checked, narrowed) = property(tmp.path(), 120, 0x2545f4914f6cdd1d);
     eprintln!("ecfr: {checked} cases, {narrowed} narrowed by the prefilter");
-    assert!(narrowed > checked / 3, "the prefilter narrowed only {narrowed} of {checked} cases");
+    assert!(
+        narrowed > checked / 3,
+        "the prefilter narrowed only {narrowed} of {checked} cases"
+    );
 }

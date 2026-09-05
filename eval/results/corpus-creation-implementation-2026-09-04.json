@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "milestone": "corpus creation and review",
+  "manifest": "eval/corpora/creation.review-pilot.json",
+  "review_run": "C:\\Users\\amazi\\code\\sect\\review\\corpus-creation\\review-pilot",
+  "corpus": "C:/Users/amazi/code/sect/corpora/corpus-creation-pilot-v2",
+  "generation": "01788574854563721700",
+  "documents": 33,
+  "regions": 32209,
+  "addressable_units": 11057,
+  "searchable_works": 11090,
+  "prepared": 33,
+  "failures": [],
+  "published_documents": 33,
+  "pending_review": {
+    "extraction": 60,
+    "profiles": 2,
+    "tuning": 100,
+    "heldout": 200
+  },
+  "budget": {
+    "committed": 0.03261829686,
+    "charged": 0.01291562186,
+    "calls": 15,
+    "unresolved": 3,
+    "cap": 100,
+    "remaining": 99.96738170314
+  },
+  "tests": {
+    "windows_rust_passed": 57,
+    "linux_rust_passed": 57,
+    "windows_typescript_passed": 126,
+    "linux_typescript_passed": 126,
+    "python_passed": 8,
+    "real_corpus_ngram": "previously validated; intentionally excluded",
+    "cli_mcp_smoke_cases": 15,
+    "mobile_visual": "viewport override did not apply; unqualified"
+  },
+  "parser_comparison": {
+    "sample_regions": 60,
+    "docling_compared": 45,
+    "unsupported_xml": 15,
+    "normalized_text_agreement": 27,
+    "cases_with_missing_protected_tokens": 1,
+    "human_selection": "pending"
+  },
+  "mechanism_pilot": {
+    "langextract_exact_source_slice_matches": 7,
+    "exact_cases": 20,
+    "negative_controls_rejected": 20,
+    "template_syntax_valid": true,
+    "semantic_accuracy_measured": false
+  },
+  "qualified": false,
+  "limitations": [
+    "independent human judgments pending",
+    "hosted semantic pilot withheld after malformed/truncated output and timeouts",
+    "scanned and broader format qualification incomplete",
+    "known scale latency/RSS gates remain blocked",
+    "rejected review does not retract a previously published generation"
+  ]
+}

@@ -10,15 +10,15 @@ export function plain(markdown: string): string {
   return markdown
     .replace(/\[((?:[^\[\]]|\[[^\]]*\])*)\]\([^)]*\)/g, "$1")
     .replace(/<!--[\s\S]*?-->/g, " ")
-    .replace(/<[^>]+>/g, " ")
+    .replace(/<\/?[a-z][^>]*>/gi, " ")
     .replace(/^\s*#{1,6}\s+/gm, "")
     .replace(/^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/gm, " ")
-    .replace(/[|*_`>]/g, " ");
+    .replace(/[|*_`]/g, " ");
 }
 
 /** Lowercased word tokens; numbers keep their internal separators ("16,131", "2.8", "7.3"). */
 export function tokens(text: string): string[] {
-  const out = plain(text).normalize("NFKC").toLowerCase().match(/[a-z0-9]+(?:[.,][a-z0-9]+)*/g);
+  const out = plain(text).normalize("NFKC").replace(/[−–]/g, "-").toLowerCase().match(/[+-]?\d+(?:[.,]\d+)*|[\p{L}\p{N}]+(?:[.,][\p{L}\p{N}]+)*|[<>≤≥=%]/gu);
   return out ?? [];
 }
 

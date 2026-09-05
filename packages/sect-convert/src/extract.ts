@@ -4,7 +4,7 @@
 // secondary transcribers over the transcriber boundary (a local vLLM server now, a hosted API
 // in production; the code path is the same).
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, openSync, closeSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { docxElements, htmlElements, xlsxElements, xlsxGrids } from "./elements/office.js";
 import { pdfElements, readPdfPages } from "./elements/pdf.js";
@@ -16,6 +16,7 @@ import { modelConfig, providerExtras } from "./env.js";
 import { renderPage } from "./ocr/render.js";
 import { OpenAICompatibleTranscriber, type Transcriber } from "./ocr/transcriber.js";
 import { runPasses, type SourcePattern } from "./passes.js";
+import { jsonElements, pptxElements, textElements, xmlElements } from "./elements/generic.js";
 
 export interface ExtractOptions {
   input: string;
@@ -47,7 +48,10 @@ export function formatOf(file: string): ExtractReport["format"] {
   if (ext === ".docx") return "docx";
   if (ext === ".xlsx" || ext === ".xlsm") return "xlsx";
   if (ext === ".html" || ext === ".htm") return "html";
-  throw new Error(`unsupported input ${file}: pdf, docx, html, xlsx`);
+  if (ext === ".txt") return "text";
+  if (ext === ".md" || ext === ".markdown") return "markdown";
+  if ([".csv", ".tsv", ".json", ".xml", ".pptx"].includes(ext)) return ext.slice(1) as ExtractReport["format"];
+  throw new Error(`unsupported input ${file}: pdf, docx, html, xlsx, text, markdown, csv, tsv, json, xml, pptx`);
 }
 
 export function readSourcePattern(sourceYaml: string): SourcePattern | null {
@@ -70,9 +74,15 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
   const t0 = Date.now();
   const data = readFileSync(o.input);
   const sha = sha256(data);
+  const implementation = (dir: URL): string[] => readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => entry.isDirectory() ? implementation(new URL(`${entry.name}/`, dir)) : /\.(js|ts|json)$/.test(entry.name) ? [sha256(readFileSync(new URL(entry.name, dir)))] : []);
+  const recipe = sha256(JSON.stringify({ version: 3, implementation: implementation(new URL("./", import.meta.url)), dependencies: sha256(readFileSync(new URL("../../../pnpm-lock.yaml", import.meta.url))), format: formatOf(o.input), pattern: o.pattern, homeTitle: o.homeTitle, images: o.images ?? false, primary: o.ocrPrimary ?? "allenai/olmOCR-2-7B-1025", secondary: o.ocrSecondary ?? "zai-org/GLM-OCR", server: o.ocrServer, secondaryServer: o.ocrSecondaryServer, extraBody: o.extraBody, hostedSecondary: o.ocrSecondaryServer === modelConfig().baseUrl ? modelConfig().model : null, transcribers: o.transcribers ? [o.transcribers.primary.name, o.transcribers.secondary.name] : null }));
   const dir = workDir(o.work, sha);
+  const lock = path.join(dir, ".extract.lock");
+  let descriptor: number;
+  try { descriptor = openSync(lock, "wx"); } catch { throw new Error(`extraction already running or interrupted: ${lock}; inspect the owner before removing a stale lock`); }
+  try {
   const prior = o.force ? null : cached(o.work, sha);
-  if (prior) return { report: prior, dir, fromCache: true };
+  if (prior?.recipe_sha256 === recipe && prior.artifact_sha256 && Object.entries(prior.artifact_sha256).every(([file, hash]) => existsSync(path.join(dir, file)) && sha256(readFileSync(path.join(dir, file))) === hash) && !o.transcribers) return { report: prior, dir, fromCache: true };
   const format = formatOf(o.input);
   const notes: string[] = [];
   let elements: Element[] = [];
@@ -139,6 +149,14 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
     const r = htmlElements(data.toString("utf-8"), sha);
     elements = r.elements;
     if (r.title) notes.push(`title: ${r.title}`);
+  } else if (format === "text" || format === "markdown") {
+    elements = textElements(data.toString("utf8"), sha);
+  } else if (format === "json") {
+    elements = jsonElements(data.toString("utf8"), sha);
+  } else if (format === "xml") {
+    elements = xmlElements(data.toString("utf8"), sha);
+  } else if (format === "pptx") {
+    elements = await pptxElements(data, sha);
   } else {
     const grids = xlsxGrids(data);
     writeJsonl(path.join(dir, "grids.jsonl"), grids);
@@ -154,11 +172,15 @@ export async function extract(o: ExtractOptions): Promise<{ report: ExtractRepor
   writeFileSync(path.join(dir, "terms_candidates.json"), JSON.stringify(passes.terms, null, 2) + "\n");
   writeFileSync(path.join(dir, "structure.json"), JSON.stringify(passes.structure, null, 2) + "\n");
   const report: ExtractReport = {
-    input: o.input, doc_sha: sha, format, pages, elements: passes.elements.length, tables: passes.elements.filter((e) => e.type === "table").length,
+    input: o.input, doc_sha: sha, recipe_sha256: recipe, format, pages, elements: passes.elements.length, tables: passes.elements.filter((e) => e.type === "table").length,
     scanned_pages: scanned, ocr, elapsed_ms: Date.now() - t0, notes,
   };
   writeElements(dir, passes.elements, report);
+  const outputFiles = (root: string): string[] => readdirSync(root, { withFileTypes: true }).flatMap(e => e.isDirectory() ? outputFiles(path.join(root, e.name)) : e.name !== "report.json" && e.name !== ".extract.lock" ? [path.join(root, e.name)] : []);
+  report.artifact_sha256 = Object.fromEntries(outputFiles(dir).sort().map(file => [path.relative(dir, file).replaceAll("\\", "/"), sha256(readFileSync(file))]));
+  writeFileSync(path.join(dir, "report.json"), JSON.stringify(report, null, 2) + "\n");
   return { report, dir, fromCache: false };
+  } finally { closeSync(descriptor); unlinkSync(lock); }
 }
 
 function transcribers(o: ExtractOptions): { primary: Transcriber; secondary: Transcriber } {
@@ -166,10 +188,9 @@ function transcribers(o: ExtractOptions): { primary: Transcriber; secondary: Tra
     const preset = presetFor(model);
     return new OpenAICompatibleTranscriber({ baseUrl, model, prompts: preset.prompts, maxTokens: preset.maxTokens, apiKey, extraBody: { ...(preset.requestExtras ?? {}), ...(extraBody ?? {}) }, kind: /^https?:\/\/(127\.|localhost|0\.0\.0\.0|\[::1\])/.test(baseUrl) ? "local" : "api" });
   };
-  // The second reader defaults to the hosted model (GLM 5.3 flash through the gateway, decision
-  // #44) whenever a key is configured; without one it is GLM-OCR on the local server.
+  // A hosted second reader requires an explicitly selected endpoint.
   const hosted = modelConfig();
-  const useHosted = !o.ocrSecondary && !o.ocrSecondaryServer && !!hosted.apiKey;
+  const useHosted = !!o.ocrSecondaryServer && o.ocrSecondaryServer === hosted.baseUrl;
   const secondary = useHosted
     ? make(hosted.model, hosted.baseUrl, o.apiKey ?? hosted.apiKey, o.extraBody ?? providerExtras(hosted))
     : make(o.ocrSecondary ?? "zai-org/GLM-OCR", o.ocrSecondaryServer ?? o.ocrServer!, o.apiKey, o.extraBody);

@@ -26,7 +26,10 @@ pub enum SectError {
 
 impl SectError {
     pub fn io(path: impl Into<PathBuf>, source: std::io::Error) -> Self {
-        SectError::Io { path: path.into(), source }
+        SectError::Io {
+            path: path.into(),
+            source,
+        }
     }
 }
 

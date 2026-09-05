@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "purpose": "failed-build diagnostic, not query or relevance qualification",
+  "generation": "01788602763140911400",
+  "published": false,
+  "run": {
+    "started": "2026-09-05T10:00:49.083740+00:00",
+    "command": [
+      "C:\\Users\\amazi\\code\\sect\\target\\release\\sect.exe",
+      "index",
+      "C:\\Users\\amazi\\code\\sect\\corpora\\needle-scale-real-v3",
+      "--passage-target",
+      "512",
+      "--passage-max",
+      "800",
+      "--json"
+    ],
+    "returncode": 1,
+    "elapsed_ms": 346430.1795999927,
+    "sampled_peak_rss_bytes": 5248147456,
+    "binary_sha256": "6037879c54d53168f19afd0d4abc1d6670cb14a7782863a4bf64d374b1330cf7",
+    "environment": {
+      "SECT_TIMING": "1"
+    }
+  },
+  "passages": {
+    "navigation": 5984,
+    "content": 111082,
+    "content_below_20_words": 5397,
+    "distinct_content_bodies": 108311
+  },
+  "content_by_source": {
+    "cfr-title-21": 12616,
+    "cfr-title-26": 34154,
+    "cfr-title-40": 64312
+  },
+  "max_recorded_tokens": 800,
+  "recipes": {
+    "coherent-passages-v4:model_tokens:512:800": 117066
+  },
+  "chunks_sha256": "47824e2ce2de909fe90883dddcb01bd7a6202d977ba6aab0f5d7aba011859822",
+  "utf8_field_value_bytes": {
+    "body": 185600509,
+    "text": 221798277,
+    "context": 289305206,
+    "breadcrumb": 34683999,
+    "citations": 13199532,
+    "terms_defined": 3916536
+  },
+  "artifact_bytes": {
+    "actions.jsonl": 0,
+    "chunks.jsonl": 909391410,
+    "knowledge.json": 2,
+    "regions.json": 46,
+    "sections.bin": 0,
+    "sections.json": 2,
+    "sources.json": 2081,
+    "tables.jsonl": 36833393,
+    "terms.json": 756196789,
+    "tree.json": 199245056,
+    "xrefs.jsonl": 38999713
+  },
+  "limits": [
+    "Counts and token counts are recorded compiler output, not independent source/token verification.",
+    "An unpublished partial generation cannot support query latency or freshness qualification."
+  ]
+}

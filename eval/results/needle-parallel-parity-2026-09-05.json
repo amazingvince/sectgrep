@@ -1,0 +1,31 @@
+{
+  "purpose": "serial versus parallel compilation, identical pilot source bytes",
+  "generations": [
+    "01788598888453603200",
+    "01788600747109328800"
+  ],
+  "hashes": {
+    "chunks.jsonl": [
+      "f8f2c9582d5a35e88dca8c6a88c9b073e3981c15bec286094b92b23f59bb40a3",
+      "f8f2c9582d5a35e88dca8c6a88c9b073e3981c15bec286094b92b23f59bb40a3"
+    ],
+    "vectors.bin": [
+      "9fdf13d043b60687f1d120e1bd91d0cc9d569c09f495b2e479e6d5be035dec81",
+      "9fdf13d043b60687f1d120e1bd91d0cc9d569c09f495b2e479e6d5be035dec81"
+    ],
+    "regions.json": [
+      "168515e31d3b900c17605c41d24bff285f4506a79b669d7c71575ba73c033272",
+      "168515e31d3b900c17605c41d24bff285f4506a79b669d7c71575ba73c033272"
+    ],
+    "sections.bin": [
+      "e3b522675ff814495be4170adf80013fdd3c4525cd84000e9b6e36cb5749f547",
+      "e3b522675ff814495be4170adf80013fdd3c4525cd84000e9b6e36cb5749f547"
+    ]
+  },
+  "byte_identical": {
+    "chunks.jsonl": true,
+    "vectors.bin": true,
+    "regions.json": true,
+    "sections.bin": true
+  }
+}

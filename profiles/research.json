@@ -1,0 +1,85 @@
+{
+  "name": "research",
+  "version": "1",
+  "unit_types": [
+    "document",
+    "section",
+    "paragraph",
+    "table",
+    "figure",
+    "caption"
+  ],
+  "concept_types": [
+    "method",
+    "dataset",
+    "population",
+    "measurement",
+    "topic"
+  ],
+  "metadata_fields": [
+    "publisher",
+    "title",
+    "published",
+    "effective",
+    "license",
+    "source_url"
+  ],
+  "relation_types": [
+    {
+      "name": "references",
+      "description": "A source explicitly refers to another unit.",
+      "direction": "out",
+      "weight": 0.7,
+      "required_context": false
+    },
+    {
+      "name": "defines",
+      "description": "A unit supplies a scoped definition.",
+      "direction": "out",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "exception_to",
+      "description": "A source explicitly limits another statement.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "condition_of",
+      "description": "A condition applies to another unit.",
+      "direction": "both",
+      "weight": 0.9,
+      "required_context": true
+    },
+    {
+      "name": "cites",
+      "description": "An explicit bibliographic citation; does not imply support.",
+      "direction": "out",
+      "weight": 0.5,
+      "required_context": false
+    },
+    {
+      "name": "uses_method",
+      "description": "A paper reports using a method.",
+      "direction": "out",
+      "weight": 0.8,
+      "required_context": false
+    },
+    {
+      "name": "uses_dataset",
+      "description": "A paper reports using a dataset.",
+      "direction": "out",
+      "weight": 0.8,
+      "required_context": false
+    },
+    {
+      "name": "reports_measurement",
+      "description": "A paper reports a measurement for a stated population or experiment.",
+      "direction": "out",
+      "weight": 0.7,
+      "required_context": true
+    }
+  ]
+}

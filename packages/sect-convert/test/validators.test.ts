@@ -86,12 +86,12 @@ function staging(mutate: (f: Files) => void = () => {}): { dir: string; run: (sk
 const errorsOf = (r: { issues: Issue[] }, n: number) => r.issues.filter((i) => i.level === "error" && i.validator === n).map((i) => i.message);
 
 describe("C.5 validators on a passing staging", () => {
-  it("reports no errors; raw sources that are absent are warnings, not errors", () => {
+  it("blocks missing raw evidence and text invented by an earlier fixture", () => {
     const r = staging().run();
-    expect(r.issues.filter((i) => i.level === "error")).toEqual([]);
+    expect(r.issues.filter((i) => i.level === "error").map((i) => i.path)).toEqual(["cfr-title-77/1/1.2/77-1.2.md", "city/AM-1.md", "fr/2026/2026-00009.md"]);
     expect(r.validators.map((v) => v.n)).toEqual([1, 2, 3, 4, 5, 6, 7]);
     // The overlay's PDF and the notice's XML are not in this staging: round-trip and hash are unchecked there.
-    expect(r.issues.some((i) => i.validator === 2 && i.level === "warning" && i.path.includes("AM-1"))).toBe(true);
+    expect(r.issues.some((i) => i.validator === 2 && i.level === "error" && i.path.includes("AM-1"))).toBe(true);
     expect(r.issues.some((i) => i.validator === 5 && i.level === "warning" && i.path.includes("2026-00009"))).toBe(true);
   });
 
@@ -106,12 +106,20 @@ describe("C.5 validators on a passing staging", () => {
 });
 
 describe("each validator has a failing case", () => {
+  it("rejects deletion of a single negation and swapped values with unchanged cell membership", () => {
+    const result = staging((f) => {
+      f["staging/cfr-title-77/1/1.2/77-1.2.md"] = f["staging/cfr-title-77/1/1.2/77-1.2.md"].replace("A cage is not fall protection", "A cage is fall protection");
+      f["staging/cfr-title-77/1/1.1/77-1.1.md"] = f["staging/cfr-title-77/1/1.1/77-1.1.md"].replace("| Serious | $1,190 | $16,131 |", "| Serious | $16,131 | $1,190 |");
+    }).run();
+    expect(errorsOf(result, 2).some((m) => m.includes("ordered"))).toBe(true);
+    expect(errorsOf(result, 3).some((m) => m.includes("row/header association"))).toBe(true);
+  });
   it("2: a body that is not the source, and a context that paraphrases the body", () => {
     const r = staging((f) => {
       f["staging/cfr-title-77/1/1.1/77-1.1.md"] = f["staging/cfr-title-77/1/1.1/77-1.1.md"].replace("(a) This part sets the minimum requirements for walking surfaces in covered workplaces.", "(a) Employers must keep every floor clean, dry, and free of nails and splinters at all times.");
       f["staging/cfr-title-77/1/1.2/77-1.2.md"] = f["staging/cfr-title-77/1/1.2/77-1.2.md"].replace(/context: .*\n/, "context: Each fixed ladder must be inspected before use. The employer shall ensure that each fixed ladder taller than 24 feet is equipped with a ladder safety system. A cage is not fall protection.\n");
     }).run();
-    expect(errorsOf(r, 2).some((m) => m.includes("77-1.1") || m.includes("matches its xml source"))).toBe(true);
+    expect(errorsOf(r, 2).some((m) => m.includes("ordered copy of its xml source"))).toBe(true);
     expect(errorsOf(r, 2).some((m) => m.includes("paraphrases"))).toBe(true);
   });
 
@@ -119,7 +127,7 @@ describe("each validator has a failing case", () => {
     const r = staging((f) => {
       f["staging/cfr-title-77/1/1.1/77-1.1.md"] = f["staging/cfr-title-77/1/1.1/77-1.1.md"].replace("| Willful | $11,524 | $161,323 |", "| Willful | $11,524 | $161,332 |");
     }).run();
-    expect(errorsOf(r, 3)).toEqual([expect.stringContaining('"$161,332"')]);
+    expect(errorsOf(r, 3)).toEqual(expect.arrayContaining([expect.stringContaining('"$161,332"'), expect.stringContaining("row/header association")]));
   });
 
   it("4: a link to a missing section, a target not active at the date, and a missing anchor", () => {

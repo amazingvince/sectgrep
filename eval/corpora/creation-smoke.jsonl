@@ -1,0 +1,3 @@
+{"id":"creation-smoke-lending","split":"smoke","domain":"lending","kind":"locate","query":"self-employed borrower income documentation","relevant":[],"supporting":[],"no_answer":false,"timing_only":true}
+{"id":"creation-smoke-ml","split":"smoke","domain":"research","discipline":"ml","kind":"locate","query":"scaled dot-product attention","relevant":[],"supporting":[],"no_answer":false,"timing_only":true}
+{"id":"creation-smoke-biomedical","split":"smoke","domain":"research","discipline":"biomedical","kind":"locate","query":"clinical prediction model validation","relevant":[],"supporting":[],"no_answer":false,"timing_only":true}

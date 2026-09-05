@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "purpose": "matched diagnostic storage comparison",
+  "binary_sha256": "899a31995c9ff4f695831589240cf86a2801979cb73b289413789566fb78102e",
+  "before": {
+    "generation": "01788588036204584800",
+    "logical_sections": 9576,
+    "chunks": 5799,
+    "tracked_inputs": 9669,
+    "tracked_directories": 33,
+    "generation_files": 9696,
+    "generation_logical_bytes": 341785356,
+    "snapshot_markdown_files": 9576,
+    "canonical_store_bytes": null,
+    "passages_sha256": "6f2b6899cf130fa1175e930aa57f8582da4141a1571b316b9741ce8164ba3cf4",
+    "regions_sha256": "168515e31d3b900c17605c41d24bff285f4506a79b669d7c71575ba73c033272",
+    "manifest": {
+      "embedding_spec": "minishlab/potion-retrieval-32M",
+      "passage_recipe": "coherent-passages-v3",
+      "passage_policy": {
+        "target": 512,
+        "max": 800
+      }
+    }
+  },
+  "after": {
+    "generation": "01788591462672109700",
+    "logical_sections": 9576,
+    "chunks": 5799,
+    "tracked_inputs": 102,
+    "tracked_directories": 33,
+    "generation_files": 131,
+    "generation_logical_bytes": 361353320,
+    "snapshot_markdown_files": 0,
+    "canonical_store_bytes": 19131225,
+    "passages_sha256": "6f2b6899cf130fa1175e930aa57f8582da4141a1571b316b9741ce8164ba3cf4",
+    "regions_sha256": "168515e31d3b900c17605c41d24bff285f4506a79b669d7c71575ba73c033272",
+    "manifest": {
+      "embedding_spec": "minishlab/potion-retrieval-32M",
+      "passage_recipe": "coherent-passages-v3",
+      "passage_policy": {
+        "target": 512,
+        "max": 800
+      }
+    }
+  },
+  "canonical_projections_checked": 9576,
+  "checks": [
+    {
+      "query": "FHA self employment income decline greater than 20 percent TOTAL manual underwriting",
+      "source": "lending",
+      "search_evidence_identical": true
+    },
+    {
+      "query": "FHA self employed minimum two years related occupation",
+      "source": "lending",
+      "search_evidence_identical": true
+    },
+    {
+      "query": "self-employed borrower income documentation",
+      "source": "lending",
+      "search_evidence_identical": true
+    },
+    {
+      "query": "scaled dot product attention square root dimension",
+      "source": "research",
+      "search_evidence_identical": true
+    },
+    {
+      "pattern": "greater than 20 percent",
+      "source": "lending",
+      "exact_evidence_identical": true
+    },
+    {
+      "pattern": "minimum of 12 months",
+      "source": "lending",
+      "exact_evidence_identical": true
+    },
+    {
+      "pattern": "Attention",
+      "source": "research",
+      "exact_evidence_identical": true
+    },
+    {
+      "pattern": "sample-79|nova-079",
+      "source": "fixtures",
+      "exact_evidence_identical": true
+    }
+  ],
+  "latency": {
+    "before": {
+      "freshness": "default",
+      "warm_mcp": {
+        "samples": 20,
+        "p50_ms": 50.98924999765586,
+        "p95_ms": 53.162099997280166,
+        "max_ms": 57.18129999877419
+      },
+      "process_cold_cli": {
+        "samples": 12,
+        "p50_ms": 355.1587500041933,
+        "p95_ms": 381.5455000003567,
+        "max_ms": 381.5455000003567
+      },
+      "peak_mcp_rss_bytes": 490598400,
+      "notice": "Small diagnostic corpus, process-cold with OS cache uncontrolled; not 100k qualification."
+    },
+    "after": {
+      "freshness": "default",
+      "warm_mcp": {
+        "samples": 20,
+        "p50_ms": 15.640000005078036,
+        "p95_ms": 16.635499996482395,
+        "max_ms": 16.878099995665252
+      },
+      "process_cold_cli": {
+        "samples": 12,
+        "p50_ms": 310.2065000057337,
+        "p95_ms": 333.58040000894107,
+        "max_ms": 333.58040000894107
+      },
+      "peak_mcp_rss_bytes": 484646912,
+      "notice": "Small diagnostic corpus, process-cold with OS cache uncontrolled; not 100k qualification."
+    }
+  },
+  "limits": [
+    "Nine documents; six real and three generated fixtures. No 100k real corpus qualification.",
+    "Same binary, model and canonical text; this measures storage/freshness, not relevance improvement.",
+    "Process-cold timing has an uncontrolled OS cache. Logical bytes count hard links repeatedly across generations.",
+    "Canonical projection text is packed; source evidence and derived chunks/parse caches still repeat text."
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "purpose": "source-navigation integrity",
+  "independently_judged": false,
+  "capture_sha256": "2b112320b802228ba9de9ddac3e27ba14b6d065e43583e48f833098800018c74",
+  "cases": [
+    {
+      "corpus": "needle-native-office-v1",
+      "generation": "01788596139656455300",
+      "raw_sha256": "c6cffc920cfd0f660575f7f175af3bdc984e52695d7182b3ae609f0b226f521f",
+      "document_artifact_sha256": "8c77f8474967093e6e1dff2eaa5894100d41738956f8387ee5104748aa2c618d",
+      "checked_regions": [
+        "r-bb553530149aa1ff58d37d8c",
+        "r-9553fdec5a12934532f3aa57",
+        "r-df674dccaac31ffab594ea9b",
+        "r-6df89412991bf702e7bcf4fc",
+        "r-a776c36b913b5c7540cdd289",
+        "r-bf4c6f29c03c6ab5e084e965"
+      ],
+      "native_locations": 6,
+      "canonical_reads": 3,
+      "passage_expansion": true
+    },
+    {
+      "corpus": "needle-docling-attention-v3",
+      "generation": "01788596137021186700",
+      "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "document_artifact_sha256": "3d46fbf1450764e9dafe01a352f7e2a2a0035fb80326cb944c2ce4278a40447e",
+      "checked_regions": [
+        "r-ab0070720180a8169567ba30",
+        "r-86bd5bee2603a43e7d530a28",
+        "r-b37401bcccbcb52ae22cbfba",
+        "r-bdb3dfab9c2618f1e1bbc3b3",
+        "r-c593ac3e5af6edaa649c307b",
+        "r-ee8e9cd8cdad0220ee8f4426"
+      ],
+      "native_locations": 16,
+      "canonical_reads": 5,
+      "passage_expansion": true
+    }
+  ],
+  "limitations": [
+    "Word fixture covers unique plain-text paragraphs; ambiguous and complex Office constructs remain flagged.",
+    "Docling grouped boxes preserve their union without asserting per-box character alignment.",
+    "No extraction accuracy or relevance qualification is implied."
+  ]
+}

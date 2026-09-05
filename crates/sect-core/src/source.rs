@@ -2,10 +2,20 @@
 
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum InputMode {
+    #[default]
+    Markdown,
+    Document,
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(default)]
 pub struct SourceConfig {
     pub name: String,
+    /// Markdown files are authoritative by default. Document mode reads *.sections.json.
+    pub input_mode: InputMode,
     /// base | overlay | notice | internal | note
     pub kind: String,
     pub title: Option<String>,

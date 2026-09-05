@@ -1,0 +1,59 @@
+{
+  "purpose": "parser completion contract regression",
+  "independently_judged": false,
+  "adapter_sha256": "f5b809a1ac1d71fefd50c2bc151262443f96098181665297cc715ce2ba6d9bac",
+  "capture_sha256": "2b112320b802228ba9de9ddac3e27ba14b6d065e43583e48f833098800018c74",
+  "capture": {
+    "version": "2",
+    "packages": {
+      "docling": "2.126.0"
+    },
+    "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "page_range": null,
+    "conversion_status": "success",
+    "input_pages": 15,
+    "converted_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "coverage": "complete",
+    "text_fidelity": "unverified",
+    "ocr_enabled": false,
+    "errors": []
+  },
+  "integrity": {
+    "generation": "01788592913574458100",
+    "mechanical_integrity_passed": true,
+    "independent_relevance_judgments": false,
+    "raw_documents": 1,
+    "raw_bytes": 2215244,
+    "source_regions": 470,
+    "canonical_expressions": 32,
+    "stored_passages": 42,
+    "content_passages": 40,
+    "navigation_entries": 2,
+    "source_spans_checked": 42,
+    "support_spans_checked": 14,
+    "merged_passages": 0,
+    "fallback_boundaries": 0,
+    "model_tokenizer_recounted": true,
+    "max_input_count": 797,
+    "median_content_words": 158,
+    "content_under_50_words": 7,
+    "failures": []
+  },
+  "notice": "Completion covers conversion status and page enumeration. Native text fidelity and mathematical layout remain unverified."
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-05T13:47:23.770612+00:00",
+  "purpose": "Final executable/query parity against the original real-scale baseline; no relevance judgment",
+  "inputs": {
+    "needle-scale-windows-2026-09-05.json": "da6d1848c36c2d070826f3ccdf0d455971c2c9729cc877b7c3a669178aa4cd3f",
+    "needle-scale-final-windows-2026-09-05.json": "3380ea9566225bf379c8b591f7f0c5d7c51f895d6d92c497ce291656e47db642",
+    "needle-scale-final-linux-2026-09-05.json": "c6200ccd6d0fdbb84ae3f42eac4ed5fc7c056839ca23d46fc0ce4b4581112fe6"
+  },
+  "checks": [
+    {
+      "report": "needle-scale-final-windows-2026-09-05.json",
+      "binary_sha256": "f6ada177e41ecb1c8d88394ce584216f3ef2d55f1aec8fa81970f63149694e2d",
+      "generation": "01788614805361510100",
+      "all_12_complete_results_equal_baseline": true,
+      "artifacts_equal_baseline": {
+        "chunks.jsonl": true,
+        "vectors.bin": true,
+        "sources.json": true
+      },
+      "performance_gates": {
+        "warm_p95_500ms": true,
+        "cold_p95_2000ms": true,
+        "rss_under_2gib": true
+      }
+    },
+    {
+      "report": "needle-scale-final-linux-2026-09-05.json",
+      "binary_sha256": "5ba57206092f8dbd2c32e15be6748a8994f06f2228b1d3463a78d9b276ce4fac",
+      "generation": "01788613647491640704",
+      "all_12_complete_results_equal_baseline": true,
+      "artifacts_equal_baseline": {
+        "chunks.jsonl": true,
+        "vectors.bin": true,
+        "sources.json": true
+      },
+      "performance_gates": {
+        "warm_p95_500ms": true,
+        "cold_p95_2000ms": true,
+        "rss_under_2gib": true
+      }
+    }
+  ],
+  "baseline_hashes": {
+    "chunks.jsonl": "5a5112dcf29c59a0744a332f078dd0b3f599a25f0c3cc4c8edf097c5ea5b43a7",
+    "vectors.bin": "2d899421fbbd5f7cc2fa3d3e3b5d26a1b4091b89875ff4a3d47a89ed5eabeea6",
+    "sources.json": "f3149a388f74f51e8e298573b7a458678e7c221fb34c48ead4a91cf385966eee"
+  },
+  "passed": true,
+  "limits": [
+    "Twelve fixed diagnostic queries, not held-out evidence-relevance labels.",
+    "Separate build/mutation reports use the recorded earlier executable versions.",
+    "The large workload is legacy regulatory XML, not a qualification of every parser or document-bundle mode."
+  ]
+}

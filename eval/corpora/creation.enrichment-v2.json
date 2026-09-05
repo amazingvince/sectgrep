@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "Corpus enrichment pilot",
+  "root": "../..",
+  "run": "review/corpus-creation/enrichment-v2",
+  "corpus": "corpora/corpus-creation-pilot-v2",
+  "campaign": "review/corpus-creation",
+  "seed": "sect-public-corpus-creation-2026-09-04-v1",
+  "enrichment": "propose",
+  "discover_profiles": false,
+  "extraction_sample": {
+    "lending": 30,
+    "ml": 15,
+    "biomedical": 15
+  },
+  "sect_bin": "target/debug/sect.exe",
+  "sources": [
+    {
+      "id": "fannie-self-employed",
+      "source": "lending",
+      "input": "raw/qualification/fannie-self-employed.html",
+      "sha256": "860e407228fe54158918360beba4aa6e7dff505bb098231d1cf7bd0039c1f8a8",
+      "effective": "2026-09-04",
+      "profile": "profiles/lending.json",
+      "domain": "lending",
+      "license": "Fannie Mae copyrighted material; acquisition for local evaluation, redistribution not authorized by this manifest",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-3.5-01/underwriting-factors-and-documentation-self-employed-borrower"
+    }
+  ]
+}

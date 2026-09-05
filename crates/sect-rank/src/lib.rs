@@ -53,11 +53,18 @@ pub fn fuse(lex: &[String], vec: &[String], weights: (f64, f64), k: usize) -> Ve
     let lists: Vec<Vec<String>> = vec![lex.to_vec(), vec.to_vec()];
     let fused = rrf::fuse_weighted(&lists, &[weights.0, weights.1], k);
     let norm = (weights.0 + weights.1) / (k as f64 + 1.0);
-    let lex_rank: HashMap<&String, usize> = lex.iter().enumerate().map(|(i, c)| (c, i + 1)).collect();
-    let vec_rank: HashMap<&String, usize> = vec.iter().enumerate().map(|(i, c)| (c, i + 1)).collect();
+    let lex_rank: HashMap<&String, usize> =
+        lex.iter().enumerate().map(|(i, c)| (c, i + 1)).collect();
+    let vec_rank: HashMap<&String, usize> =
+        vec.iter().enumerate().map(|(i, c)| (c, i + 1)).collect();
     fused
         .into_iter()
-        .map(|(chunk_id, score)| Fused { lex_rank: lex_rank.get(&chunk_id).copied(), vec_rank: vec_rank.get(&chunk_id).copied(), score: if norm > 0.0 { score / norm } else { score }, chunk_id })
+        .map(|(chunk_id, score)| Fused {
+            lex_rank: lex_rank.get(&chunk_id).copied(),
+            vec_rank: vec_rank.get(&chunk_id).copied(),
+            score: if norm > 0.0 { score / norm } else { score },
+            chunk_id,
+        })
         .collect()
 }
 
@@ -130,7 +137,12 @@ pub fn collapse<F: Fn(&str) -> String>(fused: Vec<Fused>, key: F) -> Vec<Fused> 
             }
         }
     }
-    out.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal).then(a.chunk_id.cmp(&b.chunk_id)));
+    out.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then(a.chunk_id.cmp(&b.chunk_id))
+    });
     out
 }
 
@@ -158,7 +170,10 @@ mod tests {
         let only_lex = fuse(&lex, &[], (1.0, 1.0), RRF_K);
         assert!((only_lex[0].score - 0.5).abs() < 1e-9);
         let weighted = fuse(&lex, &vec, weights(true, false), RRF_K);
-        assert_eq!(weighted[0].chunk_id, "a", "doubling the lexical weight promotes the lexical rank-1");
+        assert_eq!(
+            weighted[0].chunk_id, "a",
+            "doubling the lexical weight promotes the lexical rank-1"
+        );
     }
 
     #[test]
@@ -167,11 +182,61 @@ mod tests {
         assert!((hub_boost(12) - (13f64).ln() * 0.02).abs() < 1e-12);
         assert!((hub_boost(1_000_000) - 0.10).abs() < 1e-12, "capped");
         let base = 0.8;
-        assert!((apply_signals(base, &Signals { title_path_fraction: 0.5, ..Default::default() }) - 0.85).abs() < 1e-12);
-        assert!((apply_signals(base, &Signals { is_note: true, ..Default::default() }) - 0.6).abs() < 1e-12);
-        assert!((apply_signals(base, &Signals { superseded: true, ..Default::default() }) - 0.3).abs() < 1e-12);
-        assert!((apply_signals(base, &Signals { chunks_in_section: 3, ..Default::default() }) - 0.9).abs() < 1e-12);
-        assert!((apply_signals(base, &Signals { chunks_in_section: 2, ..Default::default() }) - 0.8).abs() < 1e-12);
+        assert!(
+            (apply_signals(
+                base,
+                &Signals {
+                    title_path_fraction: 0.5,
+                    ..Default::default()
+                }
+            ) - 0.85)
+                .abs()
+                < 1e-12
+        );
+        assert!(
+            (apply_signals(
+                base,
+                &Signals {
+                    is_note: true,
+                    ..Default::default()
+                }
+            ) - 0.6)
+                .abs()
+                < 1e-12
+        );
+        assert!(
+            (apply_signals(
+                base,
+                &Signals {
+                    superseded: true,
+                    ..Default::default()
+                }
+            ) - 0.3)
+                .abs()
+                < 1e-12
+        );
+        assert!(
+            (apply_signals(
+                base,
+                &Signals {
+                    chunks_in_section: 3,
+                    ..Default::default()
+                }
+            ) - 0.9)
+                .abs()
+                < 1e-12
+        );
+        assert!(
+            (apply_signals(
+                base,
+                &Signals {
+                    chunks_in_section: 2,
+                    ..Default::default()
+                }
+            ) - 0.8)
+                .abs()
+                < 1e-12
+        );
     }
 
     #[test]
@@ -184,7 +249,10 @@ mod tests {
         assert_eq!(weights(true, false), (2.0, 1.0));
         assert_eq!(weights(false, true), (3.0, 1.0));
         assert!(should_abstain(0.2, Some(0.29)));
-        assert!(!should_abstain(0.5, Some(0.29)), "lexical overlap rescues a cosine above the hard floor");
+        assert!(
+            !should_abstain(0.5, Some(0.29)),
+            "lexical overlap rescues a cosine above the hard floor"
+        );
         assert!(should_abstain(0.9, Some(0.25)), "hard cosine floor");
         assert!(!should_abstain(0.2, Some(0.6)));
         assert!(should_abstain(0.1, None));
@@ -193,9 +261,24 @@ mod tests {
     #[test]
     fn collapse_keeps_the_best_chunk_per_section() {
         let fused = vec![
-            Fused { chunk_id: "s1#c0".into(), score: 0.9, lex_rank: Some(1), vec_rank: None },
-            Fused { chunk_id: "s2#c0".into(), score: 0.8, lex_rank: Some(2), vec_rank: None },
-            Fused { chunk_id: "s1#c1".into(), score: 0.7, lex_rank: Some(3), vec_rank: None },
+            Fused {
+                chunk_id: "s1#c0".into(),
+                score: 0.9,
+                lex_rank: Some(1),
+                vec_rank: None,
+            },
+            Fused {
+                chunk_id: "s2#c0".into(),
+                score: 0.8,
+                lex_rank: Some(2),
+                vec_rank: None,
+            },
+            Fused {
+                chunk_id: "s1#c1".into(),
+                score: 0.7,
+                lex_rank: Some(3),
+                vec_rank: None,
+            },
         ];
         let out = collapse(fused, |c| c.split('#').next().unwrap().to_string());
         assert_eq!(out.len(), 2);

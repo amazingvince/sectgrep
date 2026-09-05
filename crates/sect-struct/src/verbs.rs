@@ -40,13 +40,28 @@ fn work_of(id: &str) -> &str {
     split_expr(id).0
 }
 
-/// Cross-reference / amendment traversal, breadth-first up to `depth` (capped at 5).
+/// Cross-reference / amendment traversal, breadth-first up to the requested depth.
 /// With `as_of`, only edges whose far endpoint (and the Expression the edge lives in) are
 /// active at that date are followed.
-pub fn refs(tree: &Tree, graph: &Graph, id: &str, direction: Direction, kind: Option<&str>, depth: usize, as_of: Option<NaiveDate>, include_superseded: bool) -> Vec<RefHit> {
-    let depth = depth.clamp(1, 5);
+// Preserve the shared verb's established library interface.
+#[allow(clippy::too_many_arguments)]
+pub fn refs(
+    tree: &Tree,
+    graph: &Graph,
+    id: &str,
+    direction: Direction,
+    kind: Option<&str>,
+    depth: usize,
+    as_of: Option<NaiveDate>,
+    include_superseded: bool,
+) -> Vec<RefHit> {
+    let depth = depth.max(1);
     let start = id.trim().to_string();
-    let notice_actions: Vec<String> = graph.actions_of(&start).iter().map(|a| a.action_id.clone()).collect();
+    let notice_actions: Vec<String> = graph
+        .actions_of(&start)
+        .iter()
+        .map(|a| a.action_id.clone())
+        .collect();
     let mut frontier: Vec<String> = vec![start.clone()];
     frontier.extend(notice_actions);
     let mut seen: std::collections::HashSet<String> = frontier.iter().cloned().collect();
@@ -73,22 +88,46 @@ pub fn refs(tree: &Tree, graph: &Graph, id: &str, direction: Direction, kind: Op
                         continue;
                     }
                 }
-                let outgoing = matches!(direction, Direction::Out | Direction::Both) && (e.from == *cur || e.from_expr == *cur);
-                let incoming = matches!(direction, Direction::In | Direction::Both) && (e.to == *cur || work_of(&e.to) == cur);
+                let outgoing = matches!(direction, Direction::Out | Direction::Both)
+                    && (e.from == *cur || e.from_expr == *cur);
+                let incoming = matches!(direction, Direction::In | Direction::Both)
+                    && (e.to == *cur || work_of(&e.to) == cur);
                 if !outgoing && !incoming {
                     continue;
                 }
-                let other = if outgoing { e.to.clone() } else { e.from.clone() };
-                if outgoing && e.from == *cur && e.from_expr != *cur && as_of.is_some() && !active(&e.from_expr) {
+                let other = if outgoing {
+                    e.to.clone()
+                } else {
+                    e.from.clone()
+                };
+                if outgoing
+                    && e.from == *cur
+                    && e.from_expr != *cur
+                    && as_of.is_some()
+                    && !active(&e.from_expr)
+                {
                     continue; // edge lives in an Expression not active at the date
                 }
                 if !outgoing && as_of.is_some() && !active(&e.from_expr) {
                     continue;
                 }
-                if !active(&other) {
+                let historical_target = e.kind == "supersedes"
+                    && tree
+                        .resolve(&other)
+                        .map(|(_, r)| {
+                            as_of
+                                .map(|d| r.effective.map(|e| e <= d).unwrap_or(true))
+                                .unwrap_or(true)
+                        })
+                        .unwrap_or(false);
+                if !active(&other) && !historical_target {
                     continue;
                 }
-                out.push(RefHit { depth: d, edge: e.clone(), other: other.clone() });
+                out.push(RefHit {
+                    depth: d,
+                    edge: e.clone(),
+                    other: other.clone(),
+                });
                 let next_id = work_of(&other).to_string();
                 if !next_id.starts_with("term:") && seen.insert(next_id.clone()) {
                     next.push(next_id);
@@ -100,7 +139,22 @@ pub fn refs(tree: &Tree, graph: &Graph, id: &str, direction: Direction, kind: Op
             break;
         }
     }
-    out.sort_by(|a, b| (a.depth, &a.edge.from_expr, &a.edge.kind, &a.edge.to, &a.edge.line).cmp(&(b.depth, &b.edge.from_expr, &b.edge.kind, &b.edge.to, &b.edge.line)));
+    out.sort_by(|a, b| {
+        (
+            a.depth,
+            &a.edge.from_expr,
+            &a.edge.kind,
+            &a.edge.to,
+            &a.edge.line,
+        )
+            .cmp(&(
+                b.depth,
+                &b.edge.from_expr,
+                &b.edge.kind,
+                &b.edge.to,
+                &b.edge.line,
+            ))
+    });
     out.dedup_by(|a, b| a.edge == b.edge);
     out
 }
@@ -108,8 +162,22 @@ pub fn refs(tree: &Tree, graph: &Graph, id: &str, direction: Direction, kind: Op
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "lowercase")]
 pub enum HistoryEntry {
-    Expression { id: String, effective: Option<NaiveDate>, path: String, supersedes: Option<String>, superseded_by: Option<String>, citation: Option<String> },
-    Action { id: String, notice: String, effective: Option<NaiveDate>, action: String, target_anchor: Option<String>, text: Option<String> },
+    Expression {
+        id: String,
+        effective: Option<NaiveDate>,
+        path: String,
+        supersedes: Option<String>,
+        superseded_by: Option<String>,
+        citation: Option<String>,
+    },
+    Action {
+        id: String,
+        notice: String,
+        effective: Option<NaiveDate>,
+        action: String,
+        target_anchor: Option<String>,
+        text: Option<String>,
+    },
 }
 
 impl HistoryEntry {
@@ -123,18 +191,41 @@ impl HistoryEntry {
 /// Every Expression of a Work in effective order, with the Actions that produced each later one
 /// listed before it (spec B.4 `read --history`).
 pub fn history(tree: &Tree, graph: &Graph, work: &str) -> Vec<HistoryEntry> {
-    let Some(node) = tree.get(work_of(work)) else { return vec![] };
+    let Some(node) = tree.get(work_of(work)) else {
+        return vec![];
+    };
     let mut out = Vec::new();
     for (i, e) in node.expressions.iter().enumerate() {
         if i > 0 {
             for a in &e.amended_by {
                 out.push(match graph.action(a) {
-                    Some(rec) => HistoryEntry::Action { id: rec.action_id.clone(), notice: rec.notice.clone(), effective: rec.effective, action: rec.kind.clone(), target_anchor: rec.target_anchor.clone(), text: rec.text.clone() },
-                    None => HistoryEntry::Action { id: a.clone(), notice: String::new(), effective: None, action: "unknown".into(), target_anchor: None, text: None },
+                    Some(rec) => HistoryEntry::Action {
+                        id: rec.action_id.clone(),
+                        notice: rec.notice.clone(),
+                        effective: rec.effective,
+                        action: rec.kind.clone(),
+                        target_anchor: rec.target_anchor.clone(),
+                        text: rec.text.clone(),
+                    },
+                    None => HistoryEntry::Action {
+                        id: a.clone(),
+                        notice: String::new(),
+                        effective: None,
+                        action: "unknown".into(),
+                        target_anchor: None,
+                        text: None,
+                    },
                 });
             }
         }
-        out.push(HistoryEntry::Expression { id: e.expr.clone(), effective: e.effective, path: e.path.clone(), supersedes: e.supersedes.clone(), superseded_by: e.superseded_by.clone(), citation: e.citation.clone() });
+        out.push(HistoryEntry::Expression {
+            id: e.expr.clone(),
+            effective: e.effective,
+            path: e.path.clone(),
+            supersedes: e.supersedes.clone(),
+            superseded_by: e.superseded_by.clone(),
+            citation: e.citation.clone(),
+        });
     }
     out
 }
@@ -142,8 +233,19 @@ pub fn history(tree: &Tree, graph: &Graph, work: &str) -> Vec<HistoryEntry> {
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(tag = "kind", rename_all = "lowercase")]
 pub enum MapItem {
-    Section { id: String, label: String, title: String, level: String, depth: usize, children: usize },
-    Anchor { id: String, anchor: String, depth: usize },
+    Section {
+        id: String,
+        label: String,
+        title: String,
+        level: String,
+        depth: usize,
+        children: usize,
+    },
+    Anchor {
+        id: String,
+        anchor: String,
+        depth: usize,
+    },
 }
 
 impl MapItem {
@@ -163,21 +265,47 @@ pub fn map_complete(tree: &Tree, scope: &str) -> Vec<MapItem> {
         Some((w, a)) => (w, Some(a)),
         None => (scope, None),
     };
-    let Some(node) = tree.get(work) else { return vec![] };
+    let Some(node) = tree.get(work) else {
+        return vec![];
+    };
     if let Some(a) = anchor {
         let prefix = format!("{a}-");
-        return node.anchors.iter().filter(|x| x.starts_with(&prefix)).map(|x| MapItem::Anchor { id: node.id.clone(), anchor: x.clone(), depth: 1 }).collect();
+        return node
+            .anchors
+            .iter()
+            .filter(|x| x.starts_with(&prefix))
+            .map(|x| MapItem::Anchor {
+                id: node.id.clone(),
+                anchor: x.clone(),
+                depth: 1,
+            })
+            .collect();
     }
     if !node.children.is_empty() {
         let mut out = Vec::new();
         fn rec(tree: &Tree, id: &str, depth: usize, out: &mut Vec<MapItem>) {
             for c in tree.children(id) {
-                out.push(MapItem::Section { id: c.id.clone(), label: c.label.clone(), title: c.title.clone(), level: c.level.clone(), depth, children: c.children.len() });
+                out.push(MapItem::Section {
+                    id: c.id.clone(),
+                    label: c.label.clone(),
+                    title: c.title.clone(),
+                    level: c.level.clone(),
+                    depth,
+                    children: c.children.len(),
+                });
                 rec(tree, &c.id, depth + 1, out);
             }
         }
         rec(tree, &node.id, 1, &mut out);
         return out;
     }
-    node.anchors.iter().filter(|x| !x.contains('-') && !node.defines.iter().any(|t| sect_corpus::slug(t) == **x)).map(|x| MapItem::Anchor { id: node.id.clone(), anchor: x.clone(), depth: 1 }).collect()
+    node.anchors
+        .iter()
+        .filter(|x| !x.contains('-') && !node.defines.iter().any(|t| sect_corpus::slug(t) == **x))
+        .map(|x| MapItem::Anchor {
+            id: node.id.clone(),
+            anchor: x.clone(),
+            depth: 1,
+        })
+        .collect()
 }

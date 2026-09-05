@@ -3,3 +3,9 @@
 *.png binary
 *.pdf binary
 *.bin binary
+*.json.gz binary
+# Historical reports and evaluation bindings are byte-addressed evidence.
+# Keep their original line endings on checkout and when staging.
+eval/results/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+eval/corpora/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+eval/corpora/*.jsonl -text whitespace=trailing-space,space-before-tab,cr-at-eol

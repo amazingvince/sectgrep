@@ -4,10 +4,12 @@
 
 import { splitFrontMatter } from "@sectgrep/convert";
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync, unlinkSync } from "node:fs";
+import { assertBinding, bindVerification, within } from "./binding.js";
 import path from "node:path";
 import YAML from "yaml";
 import type { VerifyReport } from "./verifier.js";
+import { publishFilesSync } from "./pipeline/publication.js";
 
 export interface MergeOptions {
   runDir: string;
@@ -82,7 +84,23 @@ export function mergeRun(o: MergeOptions): MergeResult {
   if (!existsSync(verifyFile)) throw new Error(`${o.runDir} has no verify.json; verify first`);
   if (!existsSync(path.join(runDir, "submit.json"))) throw new Error(`${o.runDir} was not submitted`);
   const report = JSON.parse(readFileSync(verifyFile, "utf-8")) as VerifyReport;
+  assertBinding(runDir, report.binding);
   const corpus = path.resolve(o.corpus);
+  const bin = o.sectBin ?? process.env.SECT_BIN ?? "sect";
+  const executable = bin.includes("/") || bin.includes("\\") ? path.resolve(bin) : bin;
+  const probe = spawnSync(executable, ["--version"], { encoding: "utf-8" });
+  if (probe.status !== 0) throw new Error("merge requires a working sect binary; set SECT_BIN");
+  const before = new Map<string, Buffer | null>();
+  const pending = new Map<string, string | Buffer>();
+  const put = (file: string, data: string | Buffer) => {
+    within(corpus, path.relative(corpus, file));
+    if (!before.has(file)) before.set(file, existsSync(file) ? readFileSync(file) : null);
+    mkdirSync(path.dirname(file), { recursive: true });
+    pending.set(path.relative(corpus,file).replaceAll("\\","/"), data);
+  };
+  mkdirSync(path.join(corpus, ".sect"), { recursive: true });
+  let published = false;
+  try {
   // A run may hold several source directories: the notice's own and the base sources whose
   // Expressions it amended. Each travels with its registry entry.
   const sourceDirs = readdirSync(runDir).filter((n) => !n.startsWith(".") && existsSync(path.join(runDir, n, "_source.yaml")));
@@ -90,7 +108,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
   for (const n of sourceDirs) {
     const y = path.join(runDir, n, "_source.yaml");
     mkdirSync(path.join(corpus, n), { recursive: true });
-    if (existsSync(y) && !existsSync(path.join(corpus, n, "_source.yaml"))) writeFileSync(path.join(corpus, n, "_source.yaml"), readFileSync(y), "utf-8");
+    if (existsSync(y) && !existsSync(path.join(corpus, n, "_source.yaml"))) put(path.join(corpus, n, "_source.yaml"), readFileSync(y));
   }
   const dstDir = path.join(corpus, o.source);
   // A section that links to a held section of this run would leave a dangling link in the
@@ -104,7 +122,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
   // A node other nodes name as their parent is structural: its listing is derived.
   const parents = new Set<string>();
   for (const s of report.sections) {
-    const from = path.join(runDir, s.path);
+    const from = within(runDir, s.path);
     if (!existsSync(from)) continue;
     const split = splitFrontMatter(readFileSync(from, "utf-8"));
     bodies.set(s.id, split?.body ?? "");
@@ -138,7 +156,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
   const mergedPaths = new Set<string>();
   for (const s of report.sections) {
     if (held.has(s.id)) continue;
-    const from = path.join(runDir, s.path);
+    const from = within(runDir, s.path);
     if (!existsSync(from)) continue;
     const text = readFileSync(from, "utf-8");
     const split = splitFrontMatter(text);
@@ -149,7 +167,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
     for (const tag of [`ingest:${runId}`, `verifier:${runId}`]) if (!verified.includes(tag)) verified.push(tag);
     prov.verified_by = verified;
     front.provenance = prov;
-    const to = path.join(corpus, s.path);
+    const to = within(corpus, s.path);
     mkdirSync(path.dirname(to), { recursive: true });
     const { body, delinked } = delinkHeld(split.body, held);
     if (delinked.length) log(`${s.id}: ${delinked.length} listing entr${delinked.length === 1 ? "y" : "ies"} de-linked (held: ${delinked.join(", ")})`);
@@ -158,7 +176,7 @@ export function mergeRun(o: MergeOptions): MergeResult {
       unchanged++;
       continue;
     }
-    writeFileSync(to, out, "utf-8");
+    put(to, out);
     merged++;
     mergedPaths.add(s.path.replace(/\\/g, "/"));
   }
@@ -177,25 +195,25 @@ export function mergeRun(o: MergeOptions): MergeResult {
         const text = readFileSync(p, "utf-8");
         if (existsSync(to) && readFileSync(to, "utf-8") === text) continue;
         mkdirSync(path.dirname(to), { recursive: true });
-        writeFileSync(to, text, "utf-8");
+        put(to, text);
         priors++;
       }
     }
   };
   for (const n of sourceDirs) walkPriors(path.join(runDir, n));
   let indexed = false;
-  const bin = o.sectBin ?? process.env.SECT_BIN;
   if (bin) {
-    const r = spawnSync(bin.includes("/") || bin.includes("\\") ? path.resolve(bin) : bin, ["index", corpus], { encoding: "utf-8" });
-    indexed = r.status === 0;
-    if (!indexed) log(`sect index failed: ${(r.stderr || r.stdout).slice(0, 200)}`);
+    publishFilesSync(corpus, Object.fromEntries(pending), executable, phase => assertBinding(runDir, phase==="before"?report.binding:{...report.binding!,dependencies:report.binding!.dependencies.filter(d=>path.resolve(d.root)!==corpus)}));
+    indexed = true;
   } else log("no sect binary (SECT_BIN); the corpus index is not refreshed");
+  published = true;
   let commit: string | null = null;
   if (o.commit) {
     const top = git(corpus, ["rev-parse", "--show-toplevel"]);
     if (!top.ok) throw new Error(`${corpus} is not inside a git repository: ${top.out}`);
     const root = top.out.replace(/\\/g, "/");
-    const rels = sourceDirs.map((n) => path.relative(root, path.join(corpus, n)).replace(/\\/g, "/"));
+    const rels = [...before.keys()].map((file) => path.relative(root, file).replace(/\\/g, "/"));
+    if (!rels.length) return { run_id: runId, merged, held: held.size, blocked: blocked.length, commit: null, indexed, corpus, unchanged };
     git(root, ["add", "--", ...rels]);
     const msg = `merge ${runId}: ${merged} section(s) of ${o.source}${priors ? ` and ${priors} superseded prior Expression(s)` : ""}${held.size ? ` (${held.size} held for review, ${blocked.length} of them blocked by links to held sections)` : ""}\n\nVerifier ${report.verifier.provider} ${report.verifier.model}; agreement ${(100 * report.agreement_rate).toFixed(1)}% on ${report.counts.judgments} judgment fields.`;
     const c = git(root, ["commit", "-q", "-m", msg, "--", ...rels]);
@@ -211,7 +229,16 @@ export function mergeRun(o: MergeOptions): MergeResult {
   }
   appendFileSync(path.join(review, "merges.jsonl"), JSON.stringify({ run_id: runId, source: o.source, merged, unchanged, held: held.size, blocked: blocked.length, commit, indexed, date: new Date().toISOString() }) + "\n", "utf-8");
   void dstDir;
+  report.binding = bindVerification(runDir, report.binding!.dependencies.map((d) => d.root));
+  writeFileSync(verifyFile, JSON.stringify(report, null, 2) + "\n");
   return { run_id: runId, merged, held: held.size, blocked: blocked.length, commit, indexed, corpus, unchanged };
+  } catch (error) {
+    if (!published) for (const [file, bytes] of [...before].reverse()) {
+      if (bytes === null) { if (existsSync(file)) unlinkSync(file); }
+      else writeFileSync(file, bytes);
+    }
+    throw error;
+  }
 }
 
 /** Rollback: `git revert` of a merge commit, then the index. */

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "purpose": "Public-source smoke acquisition; not the independent qualification corpus",
+  "sources": [
+    {
+      "id": "fannie-self-employed", "domain": "lending", "format": "html",
+      "url": "https://selling-guide.fanniemae.com/sel/b3-3.5-01/underwriting-factors-and-documentation-self-employed-borrower",
+      "version": "B3-3.5-01; acquisition snapshot", "effective": "2026-09-04",
+      "license": "Fannie Mae copyrighted material; acquisition for local evaluation, redistribution not authorized by this manifest",
+      "license_url": "https://www.fanniemae.com/terms-and-conditions"
+    },
+    {
+      "id": "fha-handbook-u18", "domain": "lending", "format": "pdf",
+      "url": "https://www.hud.gov/sites/default/files/Housing/documents/40001-hsgh-Update-18.pdf",
+      "version": "HUD 4000.1 Update 18, published 2026-08-12; sections have their own effective dates", "effective": "2026-09-04",
+      "license": "US HUD publication; inspect third-party notices before redistribution",
+      "license_url": "https://www.hud.gov/hud-partners/single-family-handbook-4000-1"
+    },
+    {
+      "id": "attention-v7", "domain": "research", "discipline": "ml", "format": "pdf",
+      "url": "https://arxiv.org/pdf/1706.03762v7",
+      "version": "arXiv:1706.03762v7", "effective": "2023-08-02",
+      "license": "arXiv distribution license; no general redistribution license inferred",
+      "license_url": "https://arxiv.org/abs/1706.03762v7"
+    },
+    {
+      "id": "pmc11558476", "domain": "research", "discipline": "biomedical", "format": "xml",
+      "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:11558476&metadataPrefix=pmc",
+      "version": "PMC11558476; OAI response datestamp recorded at acquisition", "effective": "2024-11-12",
+      "license": "CC BY; exact license and exceptions retained in JATS permissions metadata",
+      "license_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11558476/"
+    }
+  ]
+}

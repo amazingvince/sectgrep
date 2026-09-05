@@ -11,16 +11,16 @@ freshness: fresh (44 files indexed; stat 2 ms; built 2026-09-03T16:29:01Z)
 counts: 3 shown of 3 matched; 43 works, 44 expressions (1 superseded), 4 sources
 ```
 
-- `fresh` means the index matches the files on disk. `possibly_stale (N changed)` means files changed and the answer came from the old index; say so if it matters, or ask again with `--freshness wait` on the CLI.
+- `fresh` means the metadata scan detected no outstanding changes. Same-size edits with restored timestamps can evade this scan; after such imports, run `sect index --full`. `possibly_stale (N changed)` means files changed and the answer came from the old index; say so if it matters, or ask again with `--freshness wait` on the CLI.
 - `shown of matched` tells you whether the answer was bounded. If `matched` is larger than `shown`, narrow the question or use a complete verb (below) rather than assuming you saw everything.
 
 ## The seven verbs
 
 | Need | Verb | Notes |
 |---|---|---|
-| A question in prose ("what height must a guardrail be") | `sect_search` | Hybrid ranking, one hit per section. A citation (`99 CFR 2.8`, `§ 1.5(a)(2)`) or a definition question (`what is a hole`) is answered structurally and marked `pinned`. `expand: "refs"` appends the sections each hit cites. |
+| A question in prose ("what height must a guardrail be") | `sect_search` | Hybrid ranking over distinct passages; legacy Markdown retains section-level result collapse. A citation (`99 CFR 2.8`, `§ 1.5(a)(2)`) or a definition question (`what is a hole`) is answered structurally and marked `pinned`. `expand: "refs"` appends the sections each hit cites. |
 | An exact string or regex | `sect_grep` | Exhaustive and bounded: past `max_hits` (200) you get per-file counts and must narrow. ripgrep flags: `ignore_case`, `word`, `fixed_strings`, `glob`, `context`. `annotate: true` names the section and paragraph of each line. |
-| The text of a section | `sect_read` | Work id (`CFR:99-2.8`), Expression id (`CFR:99-2.8@2024-01-01`), or `id#anchor` for one paragraph. `as_of: "2025-06-01"` gives the text in force on that date; `history: true` lists every version and the notices between them; `ancestors: true` adds the chain above. Overlay markers (`> overridden-by`, `> narrowed-by`) appear inline: an overlay changes the rule locally, so read the overlay too. |
+| The text of a section or passage | `sect_read` | Work id (`CFR:99-2.8`), Expression id (`CFR:99-2.8@2024-01-01`), `id#anchor` for one paragraph, or the passage address returned by search. Passage reads expand to complete canonical sections and include source locations. `as_of: "2025-06-01"` gives the text in force on that date; `history: true` lists every version and the notices between them; `ancestors: true` adds the chain above. Overlay markers (`> overridden-by`, `> narrowed-by`) appear inline: an overlay changes the rule locally, so read the overlay too. |
 | What cites a section, or what it cites | `sect_refs` | `direction: "in"` for citers, `"out"` for citations, `type` to keep one edge kind (`references`, `overrides`, `narrows`, `supersedes`, `amends`, `defines`). Depth is capped at 5. This is a complete traversal, not a ranking. |
 | A defined term | `sect_define` | The defining section and paragraph by structural resolution, with `usages: true` for the sections that use the term. If the term is not defined the answer says so; do not invent a definition. |
 | The table of contents | `sect_map` | `scope` narrows to a Work or `id#anchor`; `complete: true` returns the whole subtree by traversal (every section under a part, every paragraph under a section). Use it when the question is "list all". |
@@ -28,7 +28,7 @@ counts: 3 shown of 3 matched; 43 works, 44 expressions (1 superseded), 4 sources
 
 ## Ranking versus guarantees
 
-`sect_search` ranks; it never promises completeness. When the question asks for *all* of something (every section that mentions X, every requirement under part Y, every citer of Z) use `sect_grep`, `sect_map` with `complete: true`, or `sect_refs`, which traverse and are complete within their bound. When a search answer says `not found: nothing above the confidence floor`, the corpus probably does not cover the topic: say so, and name the nearest scope the answer gives.
+`sect_search` ranks; it never promises completeness. When the question asks for *all* of something (every section that mentions X, every requirement under part Y, every citer of Z) use `sect_grep`, `sect_map` with `complete: true`, or `sect_refs`, which traverse and are complete within their bound. When search reports nothing above its confidence floor, say that it did not find a confident answer and name the nearest scope. That result alone does not establish that the corpus lacks an answer; inspect candidate sections or try exact terms when appropriate.
 
 ## Citing
 

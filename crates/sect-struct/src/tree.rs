@@ -7,7 +7,7 @@ use sect_corpus::Document;
 use serde::{Deserialize, Serialize};
 
 /// One Expression (effective-dated text) of a Work.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ExprInfo {
     pub expr: String,
     pub path: String,
@@ -16,6 +16,9 @@ pub struct ExprInfo {
     pub superseded_by: Option<String>,
     pub amended_by: Vec<String>,
     pub citation: Option<String>,
+    pub front: sect_core::FrontMatter,
+    pub anchors: Vec<String>,
+    pub word_count: usize,
 }
 
 /// One Work (a section, a container node, an overlay, a notice, or a note).
@@ -69,7 +72,9 @@ fn level_word(level: &str) -> String {
 }
 
 fn label_for(id: &str, level: &str, src: &SourceConfig) -> String {
-    let tail = id.strip_prefix(&src.id_prefix).unwrap_or_else(|| id.split_once(':').map(|(_, t)| t).unwrap_or(id));
+    let tail = id
+        .strip_prefix(&src.id_prefix)
+        .unwrap_or_else(|| id.split_once(':').map(|(_, t)| t).unwrap_or(id));
     if src.is_base() {
         let num = tail.rsplit('-').next().unwrap_or(tail);
         if level == "section" {
@@ -94,7 +99,12 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
     let mut nodes: BTreeMap<String, Node> = BTreeMap::new();
     for (id, mut exprs) in groups {
         exprs.sort_by_key(|d| d.front.effective);
-        let cur = exprs.iter().rev().find(|d| d.front.superseded_by.is_none()).copied().unwrap_or(*exprs.last().unwrap());
+        let cur = exprs
+            .iter()
+            .rev()
+            .find(|d| d.front.superseded_by.is_none())
+            .copied()
+            .unwrap_or(*exprs.last().unwrap());
         let src = sources.get(&cur.source).cloned().unwrap_or_default();
         let level = cur.front.level.clone().unwrap_or_else(|| "section".into());
         let expressions = exprs
@@ -107,6 +117,9 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
                 superseded_by: d.front.superseded_by.clone(),
                 amended_by: d.front.amended_by.clone(),
                 citation: d.front.citation.clone(),
+                front: d.front.clone(),
+                anchors: d.anchors(),
+                word_count: d.word_count,
             })
             .collect();
         nodes.insert(
@@ -131,19 +144,31 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
                 anchors: cur.anchors(),
                 context: cur.front.context_text(),
                 word_count: cur.word_count,
-                legal_status: cur.front.provenance.as_ref().and_then(|p| p.legal_status.clone()).unwrap_or_else(|| src.legal_status.clone()),
+                legal_status: cur
+                    .front
+                    .provenance
+                    .as_ref()
+                    .and_then(|p| p.legal_status.clone())
+                    .unwrap_or_else(|| src.legal_status.clone()),
             },
         );
     }
     // children, overrides, narrows (one map from Expression to document; a scan per node was
     // quadratic and cost 13 s at 10k sections)
-    let by_expr: std::collections::HashMap<String, &Document> = docs.iter().filter_map(|d| d.expr().map(|e| (e, d))).collect();
+    let by_expr: std::collections::HashMap<String, &Document> = docs
+        .iter()
+        .filter_map(|d| d.expr().map(|e| (e, d)))
+        .collect();
     let ids: Vec<String> = nodes.keys().cloned().collect();
     for id in &ids {
         let (parent, overrides, narrows) = {
             let n = &nodes[id];
             let d = by_expr.get(n.current.as_str()).copied();
-            (n.parent.clone(), d.map(|d| d.front.overrides.clone()).unwrap_or_default(), d.map(|d| d.front.narrows.clone()).unwrap_or_default())
+            (
+                n.parent.clone(),
+                d.map(|d| d.front.overrides.clone()).unwrap_or_default(),
+                d.map(|d| d.front.narrows.clone()).unwrap_or_default(),
+            )
         };
         if let Some(p) = parent {
             if let Some(pn) = nodes.get_mut(&p) {
@@ -157,7 +182,10 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
         }
         for n in narrows {
             if let Some(tn) = nodes.get_mut(&n.id) {
-                tn.narrowed_by.push(Narrow { id: id.clone(), anchor: n.anchor });
+                tn.narrowed_by.push(Narrow {
+                    id: id.clone(),
+                    anchor: n.anchor,
+                });
             }
         }
     }
@@ -167,44 +195,172 @@ pub fn build_tree(docs: &[Document], sources: &BTreeMap<String, SourceConfig>) -
         kids.sort_by_key(|k| order_key(&nodes, k));
         nodes.get_mut(id).unwrap().children = kids;
     }
-    let mut roots: Vec<String> = ids.iter().filter(|id| nodes[*id].parent.is_none()).cloned().collect();
+    let mut roots: Vec<String> = ids
+        .iter()
+        .filter(|id| nodes[*id].parent.is_none())
+        .cloned()
+        .collect();
     roots.sort_by_key(|id| {
         let n = &nodes[id];
         let prec = sources.get(&n.source).map(|s| -s.precedence).unwrap_or(0);
-        (if n.kind == "base" { 0 } else { 1 }, prec, n.order, id.clone())
+        (
+            if n.kind == "base" { 0 } else { 1 },
+            prec,
+            n.order,
+            id.clone(),
+        )
     });
     // breadcrumbs
     for id in &ids {
         let crumb = breadcrumb(&nodes, id, sources);
         nodes.get_mut(id).unwrap().breadcrumb = crumb;
     }
-    Tree { schema_version: SCHEMA_VERSION, nodes, roots }
+    Tree {
+        schema_version: SCHEMA_VERSION,
+        nodes,
+        roots,
+    }
 }
 
-fn breadcrumb(nodes: &BTreeMap<String, Node>, id: &str, sources: &BTreeMap<String, SourceConfig>) -> String {
+fn breadcrumb(
+    nodes: &BTreeMap<String, Node>,
+    id: &str,
+    sources: &BTreeMap<String, SourceConfig>,
+) -> String {
     let n = &nodes[id];
     let src = sources.get(&n.source).cloned().unwrap_or_default();
     if src.is_base() {
         let mut chain = vec![id.to_string()];
         let mut cur = n;
-        let mut guard = 0;
+        let mut seen = std::collections::HashSet::from([id.to_string()]);
         while let Some(p) = &cur.parent {
-            guard += 1;
             match nodes.get(p) {
-                Some(pn) if guard < 32 => {
+                Some(pn) if seen.insert(p.clone()) => {
                     chain.push(p.clone());
                     cur = pn;
                 }
                 _ => break,
             }
         }
-        chain.iter().rev().map(|i| format!("{} {}", nodes[i].label, nodes[i].title).trim().to_string()).collect::<Vec<_>>().join(" > ")
+        chain
+            .iter()
+            .rev()
+            .map(|i| {
+                format!("{} {}", nodes[i].label, nodes[i].title)
+                    .trim()
+                    .to_string()
+            })
+            .collect::<Vec<_>>()
+            .join(" > ")
     } else {
-        format!("{} > {} {}", src.display_title(), n.label, n.title).trim().to_string()
+        format!("{} > {} {}", src.display_title(), n.label, n.title)
+            .trim()
+            .to_string()
     }
 }
 
 impl Tree {
+    /// Project mutable structural metadata to one date while retaining history.
+    pub fn at(&self, date: NaiveDate, sources: &BTreeMap<String, SourceConfig>) -> Tree {
+        let mut tree = self.clone();
+        for n in tree.nodes.values_mut() {
+            n.children.clear();
+            n.overridden_by.clear();
+            n.narrowed_by.clear();
+            let selected = n
+                .expressions
+                .iter()
+                .rfind(|e| e.effective.map(|d| d <= date).unwrap_or(true))
+                .filter(|e| e.front.retired.map(|d| date < d).unwrap_or(true))
+                .cloned();
+            let Some(e) = selected else {
+                n.current.clear();
+                continue;
+            };
+            let f = &e.front;
+            n.current = e.expr.clone();
+            n.effective = e.effective;
+            n.title = f.title.clone().unwrap_or_default();
+            n.parent = f.parent.clone();
+            n.order = f.order.unwrap_or(0);
+            n.level = f.level.clone().unwrap_or_else(|| "section".into());
+            n.kind = f.kind.clone().unwrap_or_else(|| {
+                sources
+                    .get(&n.source)
+                    .map(|s| s.kind.clone())
+                    .unwrap_or_default()
+            });
+            n.context = f.context_text();
+            n.anchors = e.anchors;
+            n.defines = f.defines.clone();
+            n.word_count = e.word_count;
+            n.label = label_for(
+                &n.id,
+                &n.level,
+                &sources.get(&n.source).cloned().unwrap_or_default(),
+            );
+            n.legal_status = f
+                .provenance
+                .as_ref()
+                .and_then(|p| p.legal_status.clone())
+                .unwrap_or_default();
+        }
+        let active: Vec<String> = tree
+            .nodes
+            .values()
+            .filter(|n| !n.current.is_empty())
+            .map(|n| n.id.clone())
+            .collect();
+        for id in &active {
+            let n = &tree.nodes[id];
+            let parent = n.parent.clone();
+            let front = n
+                .expressions
+                .iter()
+                .find(|e| e.expr == n.current)
+                .unwrap()
+                .front
+                .clone();
+            if let Some(parent) = parent.and_then(|p| tree.nodes.get_mut(&p)) {
+                if !parent.current.is_empty() {
+                    parent.children.push(id.clone());
+                }
+            }
+            for target in front.overrides {
+                if let Some(n) = tree.nodes.get_mut(&target) {
+                    n.overridden_by.push(id.clone());
+                }
+            }
+            for target in front.narrows {
+                if let Some(n) = tree.nodes.get_mut(&target.id) {
+                    n.narrowed_by.push(Narrow {
+                        id: id.clone(),
+                        anchor: target.anchor,
+                    });
+                }
+            }
+        }
+        for id in &active {
+            let mut children = std::mem::take(&mut tree.nodes.get_mut(id).unwrap().children);
+            children.sort_by_key(|id| (tree.nodes[id].order, id.clone()));
+            tree.nodes.get_mut(id).unwrap().children = children;
+            let crumb = breadcrumb(&tree.nodes, id, sources);
+            tree.nodes.get_mut(id).unwrap().breadcrumb = crumb;
+        }
+        tree.roots = active
+            .into_iter()
+            .filter(|id| {
+                tree.nodes[id]
+                    .parent
+                    .as_ref()
+                    .and_then(|p| tree.nodes.get(p))
+                    .map(|p| p.current.is_empty())
+                    .unwrap_or(true)
+            })
+            .collect();
+        tree
+    }
+
     pub fn get(&self, id: &str) -> Option<&Node> {
         self.nodes.get(id)
     }
@@ -223,7 +379,10 @@ impl Tree {
     /// Snap to the nearest published Expression on or before `date` (spec B.4 `--as-of`).
     pub fn as_of(&self, work: &str, date: NaiveDate) -> Option<&ExprInfo> {
         let node = self.nodes.get(work)?;
-        node.expressions.iter().filter(|e| e.effective.map(|d| d <= date).unwrap_or(false)).last()
+        node.expressions
+            .iter()
+            .rfind(|e| e.effective.map(|d| d <= date).unwrap_or(true))
+            .filter(|e| e.front.retired.map(|d| date < d).unwrap_or(true))
     }
 
     /// Is this Expression the active text of its Work at `date`? With `include_superseded`,
@@ -232,11 +391,13 @@ impl Tree {
         let (work, _) = sect_core::split_expr(expr);
         match self.resolve(expr) {
             Some((_, e)) => {
-                let published = e.effective.map(|d| d <= date).unwrap_or(false);
+                let published = e.effective.map(|d| d <= date).unwrap_or(true);
                 if include_superseded {
                     published
                 } else {
-                    self.as_of(work, date).map(|s| s.expr == e.expr).unwrap_or(false)
+                    self.as_of(work, date)
+                        .map(|s| s.expr == e.expr)
+                        .unwrap_or(false)
                 }
             }
             None => false,
@@ -255,10 +416,12 @@ impl Tree {
 
     pub fn ancestors(&self, id: &str) -> Vec<&Node> {
         let mut out = Vec::new();
+        let mut seen = std::collections::HashSet::new();
+        seen.insert(id.to_string());
         let mut cur = self.nodes.get(id);
         while let Some(n) = cur {
             match n.parent.as_deref().and_then(|p| self.nodes.get(p)) {
-                Some(p) if out.len() < 32 => {
+                Some(p) if !p.current.is_empty() && seen.insert(p.id.clone()) => {
                     out.push(p);
                     cur = Some(p);
                 }
@@ -269,7 +432,15 @@ impl Tree {
     }
 
     pub fn children(&self, id: &str) -> Vec<&Node> {
-        self.nodes.get(id).map(|n| n.children.iter().filter_map(|c| self.nodes.get(c)).collect()).unwrap_or_default()
+        self.nodes
+            .get(id)
+            .map(|n| {
+                n.children
+                    .iter()
+                    .filter_map(|c| self.nodes.get(c))
+                    .collect()
+            })
+            .unwrap_or_default()
     }
 
     /// Depth-first walk under `scope` (or all roots), yielding (depth, node), depth-limited.
@@ -277,9 +448,19 @@ impl Tree {
         let mut out = Vec::new();
         let starts: Vec<&Node> = match scope {
             Some(s) => self.nodes.get(s).into_iter().collect(),
-            None => self.roots.iter().filter_map(|r| self.nodes.get(r)).collect(),
+            None => self
+                .roots
+                .iter()
+                .filter_map(|r| self.nodes.get(r))
+                .collect(),
         };
-        fn rec<'a>(t: &'a Tree, n: &'a Node, depth: usize, max: usize, out: &mut Vec<(usize, &'a Node)>) {
+        fn rec<'a>(
+            t: &'a Tree,
+            n: &'a Node,
+            depth: usize,
+            max: usize,
+            out: &mut Vec<(usize, &'a Node)>,
+        ) {
             out.push((depth, n));
             if depth >= max {
                 return;
@@ -299,7 +480,16 @@ impl Tree {
     pub fn counts(&self) -> (usize, usize, usize) {
         let works = self.nodes.len();
         let expressions: usize = self.nodes.values().map(|n| n.expressions.len()).sum();
-        let superseded: usize = self.nodes.values().map(|n| n.expressions.iter().filter(|e| e.superseded_by.is_some()).count()).sum();
+        let superseded: usize = self
+            .nodes
+            .values()
+            .map(|n| {
+                n.expressions
+                    .iter()
+                    .filter(|e| e.superseded_by.is_some())
+                    .count()
+            })
+            .sum();
         (works, expressions, superseded)
     }
 

@@ -19,18 +19,67 @@ pub struct Fingerprint {
 #[cfg(windows)]
 fn stat_fast(path: &Path) -> Option<(u64, u64)> {
     use std::os::windows::ffi::OsStrExt;
-    use windows_sys::Win32::Storage::FileSystem::{GetFileAttributesExW, GetFileExInfoStandard, WIN32_FILE_ATTRIBUTE_DATA};
-    let wide: Vec<u16> = path.as_os_str().encode_wide().chain(std::iter::once(0)).collect();
+    let wide: Vec<u16> = path
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+    stat_wide(&wide)
+}
+
+#[cfg(windows)]
+fn stat_wide(wide: &[u16]) -> Option<(u64, u64)> {
+    use windows_sys::Win32::Storage::FileSystem::{
+        GetFileAttributesExW, GetFileExInfoStandard, WIN32_FILE_ATTRIBUTE_DATA,
+    };
     let mut data: WIN32_FILE_ATTRIBUTE_DATA = unsafe { std::mem::zeroed() };
     // SAFETY: `wide` is null-terminated and `data` is a valid out-pointer of the requested class.
-    let ok = unsafe { GetFileAttributesExW(wide.as_ptr(), GetFileExInfoStandard, &mut data as *mut _ as *mut core::ffi::c_void) };
+    let ok = unsafe {
+        GetFileAttributesExW(
+            wide.as_ptr(),
+            GetFileExInfoStandard,
+            &mut data as *mut _ as *mut core::ffi::c_void,
+        )
+    };
     if ok == 0 {
         return None;
     }
     const EPOCH_DIFF: u64 = 116_444_736_000_000_000; // 100-ns intervals from 1601-01-01 to 1970-01-01
-    let ft = ((data.ftLastWriteTime.dwHighDateTime as u64) << 32) | data.ftLastWriteTime.dwLowDateTime as u64;
+    let ft = ((data.ftLastWriteTime.dwHighDateTime as u64) << 32)
+        | data.ftLastWriteTime.dwLowDateTime as u64;
     let size = ((data.nFileSizeHigh as u64) << 32) | data.nFileSizeLow as u64;
     Some((size, ft.saturating_sub(EPOCH_DIFF) * 100))
+}
+
+/// Reuse a native path buffer while still asking the filesystem for fresh metadata each time.
+pub struct StatPath {
+    path: std::path::PathBuf,
+    #[cfg(windows)]
+    wide: Vec<u16>,
+}
+impl StatPath {
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+    pub fn new(path: std::path::PathBuf) -> Self {
+        #[cfg(windows)]
+        let wide = {
+            use std::os::windows::ffi::OsStrExt;
+            path.as_os_str().encode_wide().chain(Some(0)).collect()
+        };
+        Self {
+            path,
+            #[cfg(windows)]
+            wide,
+        }
+    }
+    pub fn stat(&self) -> Result<(u64, u64)> {
+        #[cfg(windows)]
+        if let Some(value) = stat_wide(&self.wide) {
+            return Ok(value);
+        }
+        stat_file(&self.path)
+    }
 }
 
 pub fn stat_file(path: &Path) -> Result<(u64, u64)> {
@@ -51,11 +100,16 @@ pub fn stat_file(path: &Path) -> Result<(u64, u64)> {
 pub fn fingerprint_file(path: &Path) -> Result<Fingerprint> {
     let (size, mtime_ns) = stat_file(path)?;
     let bytes = std::fs::read(path).map_err(|e| SectError::io(path, e))?;
-    Ok(Fingerprint { size, mtime_ns, blake3: blake3::hash(&bytes).to_hex().to_string() })
+    Ok(Fingerprint {
+        size,
+        mtime_ns,
+        blake3: blake3::hash(&bytes).to_hex().to_string(),
+    })
 }
 
 impl Fingerprint {
-    /// True when size and mtime match, which is enough to skip re-hashing.
+    /// Metadata fast path: ordinary writes must advance size or mtime. Restored
+    /// timestamps can hide content edits; `index --full` bypasses this assumption.
     pub fn stat_matches(&self, size: u64, mtime_ns: u64) -> bool {
         self.size == size && self.mtime_ns == mtime_ns
     }
@@ -73,7 +127,14 @@ mod tests {
         let (size, mtime) = stat_file(&f).unwrap();
         let md = std::fs::metadata(&f).unwrap();
         assert_eq!(size, md.len());
-        assert_eq!(mtime, md.modified().unwrap().duration_since(UNIX_EPOCH).unwrap().as_nanos() as u64);
+        assert_eq!(
+            mtime,
+            md.modified()
+                .unwrap()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos() as u64
+        );
         assert!(stat_file(tmp.path()).is_ok(), "directories stat too");
         assert!(stat_file(&tmp.path().join("missing")).is_err());
     }

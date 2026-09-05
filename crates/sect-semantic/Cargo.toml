@@ -7,10 +7,12 @@ license.workspace = true
 description = "Semantic layer: an embedding-provider trait, model2vec-rs (potion-retrieval-32M) behind it, and brute-force cosine over vectors.bin"
 
 [dependencies]
+memmap2.workspace = true
 model2vec-rs.workspace = true
 sect-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+tokenizers = { version = "0.21.4", default-features = false, features = ["fancy-regex"] }
 
 [dev-dependencies]
 tempfile.workspace = true

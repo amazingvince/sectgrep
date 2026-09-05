@@ -5,7 +5,10 @@
 pub mod error;
 pub mod front;
 pub mod ids;
+pub mod knowledge;
+pub mod regions;
 pub mod response;
+pub mod sections;
 pub mod source;
 
 pub use error::{Result, SectError};
@@ -15,7 +18,7 @@ pub use response::{Counts, Freshness, Header, Refresh, Response};
 pub use source::SourceConfig;
 
 /// Version of the on-disk index layout under `.sect/`.
-pub const SCHEMA_VERSION: u32 = 1;
+pub const SCHEMA_VERSION: u32 = 4;
 /// Index directory name inside the corpus root (spec B.5).
 pub const INDEX_DIR: &str = ".sect";
 /// Per-source configuration file name (spec B.2).

@@ -79,7 +79,7 @@ export function markHeadersFooters(elements: Element[], pageHeights: Record<numb
     if (!e.bbox) continue;
     const pages = counts.get(keyOf(e));
     const h = pageHeights[e.page];
-    if (pages && pages.size >= 2 && h) {
+    if (pages && pages.size >= 2 && h && !e.heading_level && (e.bbox[1] < h * 0.08 || e.bbox[3] > h * 0.92)) {
       e.type = e.bbox[1] < h * 0.08 ? "header" : "footer";
       n++;
     }
@@ -109,7 +109,7 @@ export function markHeadersFooters(elements: Element[], pageHeights: Record<numb
     const short = (row: Element[]) => row.every((e) => e.text.length < 120 && !e.text.includes("\n"));
     const mark = (row: Element[], type: "header" | "footer") => {
       for (const e of row) {
-        if (e.type !== type) {
+        if (e.type !== type && !e.heading_level) {
           e.type = type;
           n++;
         }

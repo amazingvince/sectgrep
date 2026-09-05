@@ -67,7 +67,8 @@ describe("elements from born-digital inputs", () => {
     expect(structure).toHaveLength(2);
     expect(structure[0].native_id).toBe("CFR:29-1910.27");
     const again = await extract({ input: file, work });
-    expect(again.fromCache).toBe(true);
+    expect(again.fromCache).toBe(false); // The recipe changed: identifiers must be recomputed.
+    expect((await extract({ input: file, work })).fromCache).toBe(true);
   });
 
   it("docx, html, xlsx", async () => {
@@ -85,7 +86,8 @@ describe("elements from born-digital inputs", () => {
     writeFileSync(html, "<html><head><title>Policy</title></head><body><nav>menu</nav><article><h1>Ladder policy</h1><p>Each ladder shall be inspected. See § 1910.23(b) and part 1926.</p><h2>Cages</h2><p>A cage is not fall protection.</p><ul><li>Inspect daily</li></ul></article></body></html>");
     const h = await extract({ input: html, work, homeTitle: "29" });
     const hEls: Element[] = readFileSync(path.join(h.dir, "elements.jsonl"), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
-    expect(hEls.map((e) => e.type)).toEqual(["heading", "paragraph", "heading", "paragraph", "list_item"]);
+    expect(hEls.filter(e=>!e.exclusion).map((e) => e.type)).toEqual(["heading", "paragraph", "heading", "paragraph", "list_item"]);
+    expect(hEls.find(e=>e.text==="menu")?.exclusion).toBe("document chrome or hidden content");
     expect(readFileSync(path.join(h.dir, "xrefs_candidates.jsonl"), "utf-8")).toContain('"anchor":"b"');
 
     const wb = XLSX.utils.book_new();

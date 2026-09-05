@@ -4,7 +4,7 @@ target/
 node_modules/
 packages/*/dist/
 # Converted real corpora (regenerable from raw/ with sect-convert)
-corpora/
+/corpora/
 # Python prototype (milestone 0, not shipped)
 proto/.venv/
 .uv-cache/
@@ -30,3 +30,13 @@ raw/
 # OS
 .DS_Store
 Thumbs.db
+
+# Original local captures retained byte-for-byte; Git stores verified .json.gz archives.
+/eval/results/needle-scale-batched-query-windows-2026-09-05.json
+/eval/results/needle-scale-final-linux-2026-09-05.json
+/eval/results/needle-scale-final-windows-2026-09-05.json
+/eval/results/needle-scale-parallel-query-linux-2026-09-05.json
+/eval/results/needle-scale-parallel-query-windows-2026-09-05.json
+/eval/results/needle-scale-query-projection-windows-2026-09-05.json
+/eval/results/needle-scale-shared-terms-windows-2026-09-05.json
+/eval/results/needle-scale-windows-2026-09-05.json

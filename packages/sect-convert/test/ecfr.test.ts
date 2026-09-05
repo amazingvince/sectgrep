@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { convertEcfr, parseAmdDate, titleCase } from "../src/ecfr.js";
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { caseSafePaths, convertEcfr, parseAmdDate, titleCase } from "../src/ecfr.js";
 
 const XML = `<?xml version="1.0" encoding="UTF-8" ?>
 <DLPSTEXTCLASS><TEXT><BODY><ECFRBRWS>
@@ -51,6 +54,47 @@ describe("eCFR converter", () => {
   const r = convertEcfr(XML, { title: 1, rawPath: "raw/cfr-title-1/2026-09-01/ECFR-title1.xml", ingestRun: "test" });
   const file = (p: string) => r.files.find((f) => f.path === p)?.text ?? "";
 
+  it("preserves case-distinct subparts and descendants on disk without changing their IDs", () => {
+    const labels = ["Cc", "CC", "AAa", "AAA"];
+    const subparts = labels.map((label, i) => `<DIV6 N="${label}" NODE="40:1.0.1.1.60.${i + 1}" TYPE="SUBPART"><HEAD>Subpart ${label}—Distinct rules</HEAD><P>Parent body ${label}.</P><DIV8 N="§ 60.${i + 1}" NODE="40:1.0.1.1.60.${i + 1}.1.1" TYPE="SECTION"><HEAD>§ 60.${i + 1} Scope.</HEAD><P>Child body ${label}.</P></DIV8></DIV6>`).join("");
+    const xml = `<ROOT><AMDDATE>Jan. 1, 2024</AMDDATE><DIV1 N="1" NODE="40:1" TYPE="TITLE"><HEAD>Title 40—Environment</HEAD><DIV5 N="60" NODE="40:1.0.1.1.60" TYPE="PART"><HEAD>Part 60—Standards</HEAD>${subparts}</DIV5></DIV1></ROOT>`;
+    const result = convertEcfr(xml, { title: 40, rawPath: "raw.xml" });
+    expect(result.nodes).toBe(10);
+    expect(new Set(result.files.map((f) => f.path.toLowerCase())).size).toBe(result.files.length);
+    const root = mkdtempSync(join(tmpdir(), "sect-case-paths-"));
+    try {
+      for (const f of result.files) {
+        mkdirSync(dirname(join(root, f.path)), { recursive: true });
+        writeFileSync(join(root, f.path), f.text, { flag: "wx" });
+      }
+      for (const f of result.files) expect(readFileSync(join(root, f.path), "utf8")).toBe(f.text);
+      labels.forEach((label, i) => {
+        const parent = result.records.find((n) => n.id === `CFR:40-60-${label}`)!;
+        const child = result.records.find((n) => n.id === `CFR:40-60.${i + 1}`)!;
+        expect(parent.parent).toBe("CFR:40-60");
+        expect(child.parent).toBe(parent.id);
+        expect(child.dir.startsWith(parent.dir + "/")).toBe(true);
+        expect(parent.dir).toContain(label + "~");
+        const parentText = readFileSync(join(root, "cfr-title-40", parent.dir, parent.file), "utf8");
+        expect(parentText).toContain(`Parent body ${label}.`);
+        expect(parentText).not.toContain("retrieval_role: navigation");
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("disambiguates file and directory case deterministically and rejects exact duplicates", () => {
+    const paths = ["root/Cc/rule.md", "root/CC/rule.md", "root/item.md", "root/ITEM.md", "root/unique.md"];
+    const mapped = caseSafePaths(paths);
+    expect(caseSafePaths([...paths].reverse()).reverse()).toEqual(mapped);
+    expect(new Set(mapped.map((p) => p.toLowerCase())).size).toBe(paths.length);
+    expect(mapped[4]).toBe(paths[4]);
+    expect(mapped[2]).toMatch(/item~[0-9a-f]{12}\.md$/);
+    expect(() => caseSafePaths(["same.md", "same.md"])).toThrow("duplicate output path");
+    expect(() => caseSafePaths(["a", "a/b.md"])).toThrow("both file and directory");
+  });
+
   it("parses dates and title-cases heads", () => {
     expect(parseAmdDate("Dec. 29, 2022(fm)")).toBe("2022-12-29");
     expect(titleCase("ADMINISTRATIVE COMMITTEE OF THE FEDERAL REGISTER")).toBe("Administrative Committee of the Federal Register");
@@ -75,6 +119,8 @@ describe("eCFR converter", () => {
     expect(s11).toContain('authority: "44 U.S.C. 1506; sec. 6, E.O. 10530."');
     expect(s11).toContain('citation: "37 FR 23603, Nov. 4, 1972"');
     expect(file("cfr-title-1/I/A/1/1-1.md")).toContain("- [§ 1.1 Definitions](CFR:1-1.1)");
+    expect(file("cfr-title-1/1.md")).toContain("retrieval_role: navigation");
+    expect(s11).not.toContain("retrieval_role: navigation");
   });
 
   it("extracts definitions and links explicit references that exist", () => {

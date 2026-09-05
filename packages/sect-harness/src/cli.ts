@@ -10,6 +10,13 @@ import { verifyRun, type VerifyReport } from "./verifier.js";
 import { loadDotEnv } from "@sectgrep/convert";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { proposeKnowledge, reviewKnowledge } from "./knowledge.js";
+import { runPipeline, loadManifest } from "./pipeline/pipeline.js";
+import { stageStatus } from "./pipeline/stages.js";
+import { ReviewStore } from "./pipeline/review.js";
+import { startReviewServer } from "./pipeline/server.js";
+import { Budget } from "./pipeline/budget.js";
+import { prepareBenchmark, freezeBenchmark, benchmarkJsonLines } from "./pipeline/benchmark.js";
 
 // The nearest .env supplies the keys and model choices for every command; the shell wins over it.
 loadDotEnv();
@@ -21,7 +28,42 @@ function arg(name: string, def?: string): string | undefined {
 
 const cmd = process.argv[2];
 const review = arg("review", "review")!;
-if (cmd === "verify") {
+if (cmd === "pipeline" || cmd === "review") {
+  try {
+    if (cmd === "review") {
+      const run=arg("run"); if(!run)throw new Error("usage: sect-harness review --run DIRECTORY [--import decisions.json | --export output.json | --port N]");
+      if(arg("import")||arg("export")||arg("profile-item")) {
+        const store=new ReviewStore(path.resolve(run));try {
+          if(arg("import"))console.log(JSON.stringify(store.import(JSON.parse(readFileSync(arg("import")!,"utf8"))),null,2));
+          if(arg("export"))writeFileSync(arg("export")!,JSON.stringify(store.export(),null,2)+"\n",{flag:"wx"});
+          if(arg("profile-item")){if(!arg("out"))throw new Error("profile export requires --out NEW_PROFILE.json");writeFileSync(arg("out")!,JSON.stringify(store.approvedProfile(arg("profile-item")!),null,2)+"\n",{flag:"wx"});}
+        }finally{store.close();}
+      }else{const server=await startReviewServer(run,Number(arg("port","0")));console.log(server.url);}
+    }else{
+      const action=process.argv[3];const file=arg("manifest");if(!file||!["run","resume","status","publish","benchmark","freeze","gold"].includes(action))throw new Error("usage: sect-harness pipeline run|resume|status|publish|benchmark|freeze|gold --manifest FILE");
+      if(action==="benchmark")console.log(JSON.stringify(prepareBenchmark(file)));
+      else if(action==="freeze"){if(!arg("recipes")||!arg("topic-review"))throw new Error("freeze requires --recipes FILE --topic-review FILE");console.log(JSON.stringify(freezeBenchmark(file,arg("recipes")!,arg("topic-review")!)));}
+      else if(action==="gold"){if(!arg("out"))throw new Error("gold requires --out NEW_FILE.jsonl");const m=loadManifest(file);writeFileSync(arg("out")!,benchmarkJsonLines(m.run,arg("split")==="heldout"?"heldout":"tuning"),{flag:"wx"});}
+      else if(action==="status"){
+        const m=loadManifest(file);const budget=new Budget(path.join(m.campaign,"budget.sqlite"));try{console.log(JSON.stringify({run:m.run,budget:budget.status(),stages:stageStatus(m.run,m.sources.map(s=>s.id))},null,2));}finally{budget.close();}
+      }else{
+        const result=await runPipeline(file,{publish:action==="publish",log:line=>console.error(line)});
+        console.log(JSON.stringify({...result,stages:undefined},null,2));
+      }
+    }
+  }catch(error){console.error(error instanceof Error?error.message:String(error));process.exitCode=1;}
+} else if (cmd === "knowledge-propose" || cmd === "knowledge-review") {
+  try {
+    if (cmd === "knowledge-propose") {
+      if (!arg("candidate") || !arg("corpus") || !arg("run")) throw new Error("usage: knowledge-propose --candidate artifact.json --corpus CORPUS --run NEW_DIRECTORY");
+      console.log(JSON.stringify(proposeKnowledge(arg("candidate")!, arg("corpus")!, arg("run")!), null, 2));
+    } else {
+      if (!arg("run") || !arg("decisions") || !arg("out")) throw new Error("usage: knowledge-review --run DIRECTORY --decisions REVIEW.json --out NEW.knowledge.json");
+      const artifact = reviewKnowledge(arg("run")!, arg("decisions")!, arg("out")!);
+      console.log(JSON.stringify({ output: arg("out"), concepts: artifact.concepts.length, relations: artifact.relations.length }));
+    }
+  } catch (error) { console.error(error instanceof Error ? error.message : String(error)); process.exit(1); }
+} else if (cmd === "verify") {
   // sect-harness verify --run DIR --input DIR --source NAME --corpus ROOT [--review DIR] [--concurrency N] [--limit N]
   if (!arg("run") || !arg("input") || !arg("source") || !arg("corpus")) {
     console.error("usage: sect-harness verify --run staging/<run_id> --input DIR --source NAME --corpus ROOT [--staging staging] [--review review] [--work work] [--concurrency 8] [--limit N] [--json]");

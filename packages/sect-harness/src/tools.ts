@@ -151,7 +151,7 @@ const tokenCount = (s: string) => (s.match(/[A-Za-z0-9]+(?:[.,][A-Za-z0-9]+)*/g)
 export function applyXrefs(body: string, xrefs: XrefResolution[]): { body: string; applied: number } {
   let out = body;
   let applied = 0;
-  for (const x of xrefs) {
+  for (const x of [...xrefs].sort((a, b) => b.text.length - a.text.length)) {
     if (!x.text || !x.id) continue;
     const target = `${x.id}${x.anchor ? "#" + x.anchor : ""}`;
     // Not already the text of a link, and not inside a link target.
@@ -164,6 +164,7 @@ export function applyXrefs(body: string, xrefs: XrefResolution[]): { body: strin
 }
 
 function findBare(body: string, needle: string): number {
+  const links = [...body.matchAll(/\[((?:[^\[\]]|\[[^\]]*\])*)\]\([^)]*\)/g)].map((m) => [m.index!, m.index! + m[0].length]);
   let from = 0;
   for (;;) {
     const i = body.indexOf(needle, from);
@@ -172,7 +173,7 @@ function findBare(body: string, needle: string): number {
     const after = body.slice(i + needle.length, i + needle.length + 2);
     const inLinkText = before === "[" && after.startsWith("](");
     const inTarget = body.lastIndexOf("](", i) > body.lastIndexOf(")", i);
-    if (!inLinkText && !inTarget) return i;
+    if (!inLinkText && !inTarget && !links.some(([a, b]) => i < b && i + needle.length > a)) return i;
     from = i + needle.length;
   }
 }

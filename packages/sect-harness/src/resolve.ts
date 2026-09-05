@@ -4,6 +4,7 @@
 // The harness still never decides a conflict itself: `--pick` is the person's.
 
 import { splitFrontMatter } from "@sectgrep/convert";
+import { assertBinding, bindVerification } from "./binding.js";
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
@@ -67,6 +68,7 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   const verifyFile = path.join(runDir, "verify.json");
   if (!existsSync(verifyFile)) throw new Error(`${o.runDir} has no verify.json; verify first`);
   const report = JSON.parse(readFileSync(verifyFile, "utf-8")) as VerifyReport;
+  assertBinding(runDir, report.binding);
   const idx = report.sections.findIndex((s) => s.id === o.id);
   if (idx < 0) throw new Error(`${o.id} is not in run ${runId}`);
   const section = report.sections[idx];
@@ -126,7 +128,9 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
       const chosen = pick === "ingest" ? j.ingest : pick === "verifier" ? j.verifier : pick;
       if (/^\(/.test(chosen)) throw new Error(`${j.text}: ${pick} offers no target`);
       const { id, anchor } = splitId(chosen);
-      actions = (actions ?? []).map((a) => (a.action_id === j.text ? { ...a, target_id: id, target_anchor: anchor } : a));
+      const kind = pick === "verifier" ? j.verifier_kind : j.ingest_kind;
+      if (!kind) throw new Error(`${j.text}: stored review has no Action kind; verify again`);
+      actions = (actions ?? []).map((a) => (a.action_id === j.text ? { ...a, target_id: id, target_anchor: anchor, kind } : a));
       value = chosen;
       resolutions.push(`${j.text} -> ${value} (${pick}, ${stamp})`);
     }
@@ -150,16 +154,16 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   const refs = [...new Set(section.judgments.filter((j) => j.field === "xref" && j.text).map((j) => j.text!))];
   const vOf = (field: Judgment["field"]) => section.judgments.find((j) => j.field === field)?.verifier;
   const answer: VerifierAnswer = {
-    xrefs: section.judgments.filter((j) => j.field === "xref" && j.text).map((j) => {
+    xrefs: section.judgments.filter((j) => j.field === "xref" && j.text && j.verifier !== "(not judged)").map((j) => {
       const v = /^\(/.test(j.verifier) ? null : splitId(j.verifier);
       return { text: j.text!, id: v?.id ?? null, anchor: v?.anchor ?? null, confidence: 1, reason: j.verifier_reason };
     }),
     defines: ids(vOf("defines") ?? "(none)"),
     overrides: ids(vOf("overrides") ?? "(none)"),
     narrows: ids(vOf("narrows") ?? "(none)").map((v) => splitId(v)),
-    actions: section.judgments.filter((j) => j.field === "action" && j.text).map((j) => {
+    actions: section.judgments.filter((j) => j.field === "action" && j.text && j.verifier !== "(not judged)").map((j) => {
       const v = /^\(/.test(j.verifier) ? null : splitId(j.verifier);
-      return { action_id: j.text!, target_id: v?.id ?? null, target_anchor: v?.anchor ?? null };
+      return { action_id: j.text!, target_id: v?.id ?? null, target_anchor: v?.anchor ?? null, kind: j.verifier_kind };
     }),
   };
   const candidates = new Map(refs.map((t) => [t, candidatesFor(t, o.id, known)]));
@@ -186,6 +190,7 @@ export function resolveConflict(o: ResolveOptions): ResolveResult {
   const entries: Resolution[] = applied.map((a) => ({ id: o.id, field: a.field, text: a.text, ingest: a.ingest, verifier: a.verifier, pick, value: a.resolved_value ?? "", why: o.why, date: stamp }));
   report.resolutions = [...(report.resolutions ?? []), ...entries];
   Object.assign(report, summarize(report.sections, report.counts.evidence_fails - section.evidence.filter((i) => i.level === "fail").length + evidence.filter((i) => i.level === "fail").length));
+  report.binding = bindVerification(runDir, report.binding!.dependencies.map((d) => d.root));
   writeFileSync(verifyFile, JSON.stringify(report, null, 2) + "\n", "utf-8");
   const review = path.resolve(o.review ?? "review");
   if (existsSync(review)) writeFileSync(path.join(review, `${runId}.md`), reviewMarkdown(report), "utf-8");

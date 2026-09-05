@@ -42,11 +42,15 @@ pub struct InstallReport {
 }
 
 fn home() -> Option<PathBuf> {
-    std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")).map(PathBuf::from)
+    std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .map(PathBuf::from)
 }
 
 fn default_bin_dir() -> Result<PathBuf> {
-    let home = home().ok_or_else(|| SectError::Other("cannot find the home directory (HOME or USERPROFILE)".into()))?;
+    let home = home().ok_or_else(|| {
+        SectError::Other("cannot find the home directory (HOME or USERPROFILE)".into())
+    })?;
     let cargo = home.join(".cargo").join("bin");
     if cargo.is_dir() {
         return Ok(cargo);
@@ -66,7 +70,11 @@ fn client_config_path(client: &str) -> Option<PathBuf> {
             if cfg!(target_os = "macos") {
                 Some(home.join("Library/Application Support/Claude/claude_desktop_config.json"))
             } else if cfg!(windows) {
-                std::env::var_os("APPDATA").map(|a| PathBuf::from(a).join("Claude").join("claude_desktop_config.json"))
+                std::env::var_os("APPDATA").map(|a| {
+                    PathBuf::from(a)
+                        .join("Claude")
+                        .join("claude_desktop_config.json")
+                })
             } else {
                 Some(home.join(".config/Claude/claude_desktop_config.json"))
             }
@@ -78,7 +86,11 @@ fn client_config_path(client: &str) -> Option<PathBuf> {
 
 /// The server entry every client understands: the installed binary, `serve`, the corpus.
 pub fn server_entry(binary: &Path, corpus: &Path, full: bool) -> Value {
-    let mut args = vec!["serve".to_string(), "--corpus".to_string(), corpus.to_string_lossy().to_string()];
+    let mut args = vec![
+        "serve".to_string(),
+        "--corpus".to_string(),
+        corpus.to_string_lossy().to_string(),
+    ];
     if full {
         args.push("--toolset".into());
         args.push("full".into());
@@ -89,17 +101,35 @@ pub fn server_entry(binary: &Path, corpus: &Path, full: bool) -> Value {
 /// Merge `mcpServers.sect` into a JSON config file, keeping everything else in it.
 pub fn merge_into(path: &Path, entry: &Value, dry_run: bool) -> Result<String> {
     let mut root: Value = match std::fs::read_to_string(path) {
-        Ok(t) if !t.trim().is_empty() => serde_json::from_str(&t).map_err(|e| SectError::Other(format!("{}: not JSON ({e}); fix it or pass --config", path.display())))?,
+        Ok(t) if !t.trim().is_empty() => serde_json::from_str(&t).map_err(|e| {
+            SectError::Other(format!(
+                "{}: not JSON ({e}); fix it or pass --config",
+                path.display()
+            ))
+        })?,
         _ => Value::Object(Map::new()),
     };
     if !root.is_object() {
-        return Err(SectError::Other(format!("{}: top level is not an object", path.display())));
+        return Err(SectError::Other(format!(
+            "{}: top level is not an object",
+            path.display()
+        )));
     }
-    let servers = root.as_object_mut().unwrap().entry("mcpServers").or_insert_with(|| Value::Object(Map::new()));
+    let servers = root
+        .as_object_mut()
+        .unwrap()
+        .entry("mcpServers")
+        .or_insert_with(|| Value::Object(Map::new()));
     if !servers.is_object() {
-        return Err(SectError::Other(format!("{}: mcpServers is not an object", path.display())));
+        return Err(SectError::Other(format!(
+            "{}: mcpServers is not an object",
+            path.display()
+        )));
     }
-    servers.as_object_mut().unwrap().insert("sect".into(), entry.clone());
+    servers
+        .as_object_mut()
+        .unwrap()
+        .insert("sect".into(), entry.clone());
     let text = serde_json::to_string_pretty(&root)? + "\n";
     if !dry_run {
         if let Some(parent) = path.parent() {
@@ -119,37 +149,77 @@ pub fn install(args: &InstallArgs, corpus: &Path) -> Result<InstallReport> {
     let exe = std::env::current_exe().map_err(|e| SectError::Other(format!("current_exe: {e}")))?;
     let name = if cfg!(windows) { "sect.exe" } else { "sect" };
     let binary = dir.join(name);
-    let same = std::fs::canonicalize(&exe).ok() == std::fs::canonicalize(&binary).ok() && binary.exists();
+    let same =
+        std::fs::canonicalize(&exe).ok() == std::fs::canonicalize(&binary).ok() && binary.exists();
     let mut notes = Vec::new();
     let mut copied = false;
     if same {
         notes.push(format!("binary already at {}", binary.display()));
     } else if args.dry_run {
-        notes.push(format!("would copy {} to {}", exe.display(), binary.display()));
+        notes.push(format!(
+            "would copy {} to {}",
+            exe.display(),
+            binary.display()
+        ));
     } else {
         std::fs::create_dir_all(&dir).map_err(|e| SectError::io(&dir, e))?;
         std::fs::copy(&exe, &binary).map_err(|e| SectError::io(&binary, e))?;
         copied = true;
     }
-    let on_path = std::env::var_os("PATH").map(|p| std::env::split_paths(&p).any(|d| d == dir)).unwrap_or(false);
+    let on_path = std::env::var_os("PATH")
+        .map(|p| std::env::split_paths(&p).any(|d| d == dir))
+        .unwrap_or(false);
     if !on_path {
-        notes.push(format!("{} is not on PATH; add it or call the binary by its full path", dir.display()));
+        notes.push(format!(
+            "{} is not on PATH; add it or call the binary by its full path",
+            dir.display()
+        ));
     }
     let entry = server_entry(&binary, &corpus, args.full);
     let mut registrations = Vec::new();
-    let clients: Vec<&str> = args.client.iter().map(|s| s.as_str()).filter(|c| *c != "none").collect();
+    let clients: Vec<&str> = args
+        .client
+        .iter()
+        .map(|s| s.as_str())
+        .filter(|c| *c != "none")
+        .collect();
     if args.config.is_some() && clients.len() > 1 {
-        return Err(SectError::Other("--config applies to one client; pass one --client".into()));
+        return Err(SectError::Other(
+            "--config applies to one client; pass one --client".into(),
+        ));
     }
     for client in clients {
         match client {
             "claude-code" if args.project || args.config.is_some() => {
-                let path = args.config.clone().unwrap_or_else(|| PathBuf::from(".mcp.json"));
+                let path = args
+                    .config
+                    .clone()
+                    .unwrap_or_else(|| PathBuf::from(".mcp.json"));
                 let text = merge_into(&path, &entry, args.dry_run)?;
-                registrations.push(format!("claude-code (project): {}{}", path.display(), if args.dry_run { format!("\n{text}") } else { String::new() }));
+                registrations.push(format!(
+                    "claude-code (project): {}{}",
+                    path.display(),
+                    if args.dry_run {
+                        format!("\n{text}")
+                    } else {
+                        String::new()
+                    }
+                ));
             }
             "claude-code" => {
-                let mut cmd = vec!["claude".to_string(), "mcp".into(), "add".into(), "--scope".into(), "user".into(), "sect".into(), "--".into(), binary.to_string_lossy().to_string(), "serve".into(), "--corpus".into(), corpus.to_string_lossy().to_string()];
+                let mut cmd = vec![
+                    "claude".to_string(),
+                    "mcp".into(),
+                    "add".into(),
+                    "--scope".into(),
+                    "user".into(),
+                    "sect".into(),
+                    "--".into(),
+                    binary.to_string_lossy().to_string(),
+                    "serve".into(),
+                    "--corpus".into(),
+                    corpus.to_string_lossy().to_string(),
+                ];
                 if args.full {
                     cmd.push("--toolset".into());
                     cmd.push("full".into());
@@ -158,8 +228,15 @@ pub fn install(args: &InstallArgs, corpus: &Path) -> Result<InstallReport> {
                 if args.dry_run {
                     registrations.push(format!("claude-code (user scope): would run `{shown}`"));
                 } else {
-                    let claude = if cfg!(windows) { "claude.cmd" } else { "claude" };
-                    let status = Command::new(claude).args(&cmd[1..]).status().or_else(|_| Command::new("claude").args(&cmd[1..]).status());
+                    let claude = if cfg!(windows) {
+                        "claude.cmd"
+                    } else {
+                        "claude"
+                    };
+                    let status = Command::new(claude)
+                        .args(&cmd[1..])
+                        .status()
+                        .or_else(|_| Command::new("claude").args(&cmd[1..]).status());
                     match status {
                         Ok(s) if s.success() => registrations.push(format!("claude-code (user scope): ran `{shown}`")),
                         Ok(s) => notes.push(format!("`{shown}` exited with {s}; run it by hand or use --project")),
@@ -170,19 +247,46 @@ pub fn install(args: &InstallArgs, corpus: &Path) -> Result<InstallReport> {
             other => {
                 let path = match &args.config {
                     Some(p) => p.clone(),
-                    None => client_config_path(other).ok_or_else(|| SectError::Other(format!("no default config location for {other}; pass --config")))?,
+                    None => client_config_path(other).ok_or_else(|| {
+                        SectError::Other(format!(
+                            "no default config location for {other}; pass --config"
+                        ))
+                    })?,
                 };
                 let text = merge_into(&path, &entry, args.dry_run)?;
-                registrations.push(format!("{other}: {}{}", path.display(), if args.dry_run { format!("\n{text}") } else { String::new() }));
+                registrations.push(format!(
+                    "{other}: {}{}",
+                    path.display(),
+                    if args.dry_run {
+                        format!("\n{text}")
+                    } else {
+                        String::new()
+                    }
+                ));
             }
         }
     }
-    Ok(InstallReport { binary, copied, registrations, notes })
+    Ok(InstallReport {
+        binary,
+        copied,
+        registrations,
+        notes,
+    })
 }
 
 pub fn report_text(r: &InstallReport, dry_run: bool) -> String {
     let mut s = String::new();
-    s.push_str(&format!("binary: {}{}\n", r.binary.display(), if r.copied { " (copied)" } else if dry_run { " (dry run)" } else { "" }));
+    s.push_str(&format!(
+        "binary: {}{}\n",
+        r.binary.display(),
+        if r.copied {
+            " (copied)"
+        } else if dry_run {
+            " (dry run)"
+        } else {
+            ""
+        }
+    ));
     for reg in &r.registrations {
         s.push_str(&format!("registered: {reg}\n"));
     }

@@ -51,7 +51,7 @@ describe("references are registry-driven: a municipal code that is nothing like 
     const candidates = new Map(refs.map((t) => [t, candidatesFor(t, "ORD:12-34", known)]));
     const answer: VerifierAnswer = { xrefs: refs.map((t) => ({ text: t, id: null, confidence: 0 })), defines: [] };
     const j = consensus(record, answer, refs, candidates, "normal", {});
-    expect(j.filter((x) => x.field === "xref").every((x) => x.agree && x.deterministic)).toBe(true);
+    expect(j.filter((x) => x.field === "xref").every((x) => !x.agree)).toBe(true); // An explicit contradictory judgment must hold even a deterministic citation.
   });
 });
 

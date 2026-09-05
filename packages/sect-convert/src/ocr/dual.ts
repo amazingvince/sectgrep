@@ -36,7 +36,10 @@ export function secondaryUsable(primary: Transcription, secondary: Transcription
   return q >= p * 0.5 && q <= p * 1.5;
 }
 
-const norm = (s: string) => s.normalize("NFKC").replace(/[*_`#>|.,;:!?"'()\[\]]/g, "").replace(/[‐-―−]/g, "-").replace(/\s+/g, " ").trim().toLowerCase();
+// Keep decimal/grouping punctuation, signs, comparators, and units. Removing a
+// period before comparing digits previously made 1.0 and 10 identical.
+const norm = (s: string) => s.normalize("NFKC").replace(/[‐-―−]/g, "-").replace(/[*_`#|"'()\[\]]/g, "").replace(/(?<!\d)[.,;:!?]|[.,;:!?](?!\d)/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+const protectedTokens = (s: string) => norm(s).match(/[+-]?\d+(?:[.,]\d+)*|[<>≤≥=]|\b(?:not|no|except|without)\b/g) ?? [];
 
 /** 1.0 for identical lines after normalization, 0 for unrelated. */
 export function similarity(a: string, b: string): number {
@@ -53,6 +56,7 @@ export function similarity(a: string, b: string): number {
  * digit in legal text is a divergence however long the line.
  */
 export function agrees(a: string, b: string): boolean {
+  if (JSON.stringify(protectedTokens(a)) !== JSON.stringify(protectedTokens(b))) return false;
   const x = norm(a);
   const y = norm(b);
   if (x === y) return true;
@@ -210,7 +214,7 @@ export function mergeTranscriptions(primary: string, secondary: string, docSha: 
       for (let w = matchedW[0]; w <= matchedW[matchedW.length - 1]; w++) if (!mset.has(w)) inserted.push(w);
     }
     for (const w of matchedW) covered[win[w].j][win[w].k] = true;
-    const substitution = removed.length === 1 && inserted.length === 1 && !/\d/.test(removed[0].word + wtok(inserted[0]).word) && distance(removed[0].key, wtok(inserted[0]).key) <= 1;
+    const substitution = removed.length === 1 && inserted.length === 1 && !/[\d<>≤≥=+-]/.test(removed[0].word + wtok(inserted[0]).word) && !/^(not|no|except|without)$/.test(removed[0].key) && distance(removed[0].key, wtok(inserted[0]).key) <= 1;
     if ((removed.length === 0 && inserted.length === 0) || substitution) {
       elements.push(element(docSha, page, seq++, a[i], [], 1));
       continue;

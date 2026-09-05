@@ -16,6 +16,8 @@ pub struct FrontMatter {
     pub parent: Option<String>,
     pub order: Option<i64>,
     pub effective: Option<NaiveDate>,
+    /// A reviewed identity retirement; earlier dated text remains readable.
+    pub retired: Option<NaiveDate>,
     pub published: Option<NaiveDate>,
     pub supersedes: Option<String>,
     pub superseded_by: Option<String>,
@@ -23,10 +25,15 @@ pub struct FrontMatter {
     pub overrides: Vec<String>,
     pub narrows: Vec<Narrow>,
     pub defines: Vec<String>,
+    pub definition_scope: Option<String>,
     pub authority: Option<String>,
     pub citation: Option<String>,
     pub tags: Vec<String>,
     pub context: Option<String>,
+    /// `navigation` copies structure; `summary` (the legacy default) is authored context.
+    pub context_kind: Option<String>,
+    /// Generated contents lists and heading containers remain addressable navigation.
+    pub retrieval_role: Option<String>,
     pub provenance: Option<Provenance>,
     pub actions: Vec<Action>,
     pub sources: Vec<NoteSource>,
@@ -36,7 +43,12 @@ pub struct FrontMatter {
 impl FrontMatter {
     /// The `context` prefix collapsed to single spaces.
     pub fn context_text(&self) -> String {
-        self.context.as_deref().unwrap_or("").split_whitespace().collect::<Vec<_>>().join(" ")
+        self.context
+            .as_deref()
+            .unwrap_or("")
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
     }
 }
 
@@ -51,6 +63,7 @@ pub struct Narrow {
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(default)]
 pub struct Provenance {
+    pub checks: std::collections::BTreeMap<String, crate::knowledge::CheckState>,
     pub raw: Option<String>,
     pub raw_sha256: Option<String>,
     pub locator: Option<serde_yaml_ng::Value>,
@@ -125,6 +138,9 @@ provenance:
         assert_eq!(fm.amended_by, vec!["FR:2026-00001#instr-1"]);
         assert_eq!(fm.narrows[0].anchor.as_deref(), Some("b"));
         assert_eq!(fm.context_text(), "Fixed ladder section.");
-        assert_eq!(fm.provenance.as_ref().unwrap().legal_status.as_deref(), Some("unofficial-xml"));
+        assert_eq!(
+            fm.provenance.as_ref().unwrap().legal_status.as_deref(),
+            Some("unofficial-xml")
+        );
     }
 }

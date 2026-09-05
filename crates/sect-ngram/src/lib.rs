@@ -43,7 +43,11 @@ const ENTRY: usize = 16;
 
 /// Threshold in bytes for `--ngram auto`; `SECT_NGRAM_THRESHOLD_MB` overrides the default.
 pub fn threshold_bytes() -> u64 {
-    std::env::var("SECT_NGRAM_THRESHOLD_MB").ok().and_then(|v| v.parse::<u64>().ok()).map(|mb| mb * 1024 * 1024).unwrap_or(DEFAULT_THRESHOLD_BYTES)
+    std::env::var("SECT_NGRAM_THRESHOLD_MB")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .map(|mb| mb * 1024 * 1024)
+        .unwrap_or(DEFAULT_THRESHOLD_BYTES)
 }
 
 /// Rarity rank of every byte pair in the corpus: 0 is the most common pair, 65535 the rarest.
@@ -77,9 +81,17 @@ impl Weights {
     fn load(path: &Path) -> Result<Weights> {
         let bytes = fs::read(path).map_err(|e| SectError::io(path, e))?;
         if bytes.len() != 65536 * 2 {
-            return Err(SectError::Other(format!("{}: not a weights table", path.display())));
+            return Err(SectError::Other(format!(
+                "{}: not a weights table",
+                path.display()
+            )));
         }
-        Ok(Weights(bytes.chunks_exact(2).map(|c| u16::from_le_bytes([c[0], c[1]])).collect()))
+        Ok(Weights(
+            bytes
+                .chunks_exact(2)
+                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .collect(),
+        ))
     }
 }
 
@@ -117,13 +129,25 @@ pub struct BuildStats {
 /// Build the layer for `files` (relative path, absolute path), in that order: the position in
 /// the list is the file id.
 pub fn build(files: &[(String, PathBuf)], out_dir: &Path) -> Result<BuildStats> {
+    let names: Vec<_> = files.iter().map(|(p, _)| p.clone()).collect();
+    build_with(&names, out_dir, |i| {
+        fs::read(&files[i].1).map_err(|e| SectError::io(&files[i].1, e))
+    })
+}
+
+/// Index the same logical files that exact search reads, including mapped section projections.
+pub fn build_with(
+    files: &[String],
+    out_dir: &Path,
+    read: impl Fn(usize) -> Result<Vec<u8>>,
+) -> Result<BuildStats> {
     let t0 = Instant::now();
     fs::create_dir_all(out_dir).map_err(|e| SectError::io(out_dir, e))?;
     let mut counts = vec![0u64; 65536];
     let mut texts: Vec<Vec<u8>> = Vec::with_capacity(files.len());
     let mut bytes = 0u64;
-    for (_, abs) in files {
-        let t = lower(&fs::read(abs).map_err(|e| SectError::io(abs, e))?);
+    for i in 0..files.len() {
+        let t = lower(&read(i)?);
         bytes += t.len() as u64;
         for win in t.windows(2) {
             counts[((win[0] as usize) << 8) | win[1] as usize] += 1;
@@ -151,7 +175,8 @@ pub fn build(files: &[(String, PathBuf)], out_dir: &Path) -> Result<BuildStats> 
     for k in &keys {
         let bm = &postings[k];
         let off = post.len() as u64;
-        bm.serialize_into(&mut post).map_err(|e| SectError::Other(format!("postings: {e}")))?;
+        bm.serialize_into(&mut post)
+            .map_err(|e| SectError::Other(format!("postings: {e}")))?;
         let len = (post.len() as u64 - off) as u32;
         table.extend_from_slice(&k.to_le_bytes());
         table.extend_from_slice(&off.to_le_bytes());
@@ -165,9 +190,21 @@ pub fn build(files: &[(String, PathBuf)], out_dir: &Path) -> Result<BuildStats> 
     };
     write(TABLE, &table)?;
     write(POSTINGS, &post)?;
-    let list: String = files.iter().map(|(rel, _)| rel.as_str()).collect::<Vec<_>>().join("\n") + "\n";
+    let list: String = files
+        .iter()
+        .map(|rel| rel.as_str())
+        .collect::<Vec<_>>()
+        .join("\n")
+        + "\n";
     write(FILES, list.as_bytes())?;
-    Ok(BuildStats { files: files.len(), bytes, grams: keys.len(), table_bytes: table.len() as u64, postings_bytes: post.len() as u64, elapsed_ms: t0.elapsed().as_millis() })
+    Ok(BuildStats {
+        files: files.len(),
+        bytes,
+        grams: keys.len(),
+        table_bytes: table.len() as u64,
+        postings_bytes: post.len() as u64,
+        elapsed_ms: t0.elapsed().as_millis(),
+    })
 }
 
 /// What the prefilter decided for one grep: the literals it used, the candidate files (None
@@ -193,7 +230,10 @@ pub struct Prefilter {
 
 impl Prefilter {
     pub fn exists(dir: &Path) -> bool {
-        dir.join(TABLE).is_file() && dir.join(POSTINGS).is_file() && dir.join(WEIGHTS).is_file() && dir.join(FILES).is_file()
+        dir.join(TABLE).is_file()
+            && dir.join(POSTINGS).is_file()
+            && dir.join(WEIGHTS).is_file()
+            && dir.join(FILES).is_file()
     }
 
     pub fn open(dir: &Path) -> Result<Prefilter> {
@@ -205,17 +245,33 @@ impl Prefilter {
         };
         let table = map(TABLE)?;
         if table.len() < 16 || &table[..8] != MAGIC {
-            return Err(SectError::Other(format!("{}: not an n-gram table", dir.join(TABLE).display())));
+            return Err(SectError::Other(format!(
+                "{}: not an n-gram table",
+                dir.join(TABLE).display()
+            )));
         }
         let count = u64::from_le_bytes(table[8..16].try_into().unwrap()) as usize;
         if table.len() < 16 + count * ENTRY {
-            return Err(SectError::Other(format!("{}: truncated table", dir.join(TABLE).display())));
+            return Err(SectError::Other(format!(
+                "{}: truncated table",
+                dir.join(TABLE).display()
+            )));
         }
         let postings = map(POSTINGS)?;
         let weights = Weights::load(&dir.join(WEIGHTS))?;
         let files_path = dir.join(FILES);
-        let files: Vec<String> = fs::read_to_string(&files_path).map_err(|e| SectError::io(&files_path, e))?.lines().map(str::to_string).collect();
-        Ok(Prefilter { files, weights, table, postings, count })
+        let files: Vec<String> = fs::read_to_string(&files_path)
+            .map_err(|e| SectError::io(&files_path, e))?
+            .lines()
+            .map(str::to_string)
+            .collect();
+        Ok(Prefilter {
+            files,
+            weights,
+            table,
+            postings,
+            count,
+        })
     }
 
     pub fn files(&self) -> &[String] {
@@ -225,7 +281,11 @@ impl Prefilter {
     #[inline]
     fn entry(&self, i: usize) -> (u32, u64, u32) {
         let b = &self.table[16 + i * ENTRY..16 + (i + 1) * ENTRY];
-        (u32::from_le_bytes(b[0..4].try_into().unwrap()), u64::from_le_bytes(b[4..12].try_into().unwrap()), u32::from_le_bytes(b[12..16].try_into().unwrap()))
+        (
+            u32::from_le_bytes(b[0..4].try_into().unwrap()),
+            u64::from_le_bytes(b[4..12].try_into().unwrap()),
+            u32::from_le_bytes(b[12..16].try_into().unwrap()),
+        )
     }
 
     /// The files containing a gram: binary search in the sorted table, then one bitmap decode.
@@ -280,22 +340,56 @@ impl Prefilter {
         let mut used: Vec<String> = Vec::new();
         for p in patterns {
             let Some(lits) = required_literals(p, fixed_strings) else {
-                return Plan { literals: used, candidates: None, candidate_count: None, files_total: total, reason: format!("no required literal in {p:?}; full scan"), elapsed_ms: ms(t0) };
+                return Plan {
+                    literals: used,
+                    candidates: None,
+                    candidate_count: None,
+                    files_total: total,
+                    reason: format!("no required literal in {p:?}; full scan"),
+                    elapsed_ms: ms(t0),
+                };
             };
             for lit in lits {
                 if ignore_case && !lit.is_ascii() {
-                    return Plan { literals: used, candidates: None, candidate_count: None, files_total: total, reason: "case-insensitive non-ASCII literal; full scan".into(), elapsed_ms: ms(t0) };
+                    return Plan {
+                        literals: used,
+                        candidates: None,
+                        candidate_count: None,
+                        files_total: total,
+                        reason: "case-insensitive non-ASCII literal; full scan".into(),
+                        elapsed_ms: ms(t0),
+                    };
                 }
                 let Some(bm) = self.candidates_for(&lit) else {
-                    return Plan { literals: used, candidates: None, candidate_count: None, files_total: total, reason: format!("literal {:?} produces no gram; full scan", String::from_utf8_lossy(&lit)), elapsed_ms: ms(t0) };
+                    return Plan {
+                        literals: used,
+                        candidates: None,
+                        candidate_count: None,
+                        files_total: total,
+                        reason: format!(
+                            "literal {:?} produces no gram; full scan",
+                            String::from_utf8_lossy(&lit)
+                        ),
+                        elapsed_ms: ms(t0),
+                    };
                 };
                 used.push(String::from_utf8_lossy(&lit).to_string());
                 all |= bm;
             }
         }
-        let files: Vec<String> = all.iter().filter_map(|i| self.files.get(i as usize).cloned()).collect();
+        let files: Vec<String> = all
+            .iter()
+            .filter_map(|i| self.files.get(i as usize).cloned())
+            .collect();
         let n = files.len();
-        Plan { literals: used, candidates: Some(files), candidate_count: Some(n), files_total: total, reason: format!("{n} of {total} files can contain a required literal"), elapsed_ms: ms(t0) }
+        Plan {
+            literals: used,
+            candidates: Some(files),
+            candidate_count: Some(n),
+            files_total: total,
+            reason: format!("{n} of {total} files can contain a required literal"),
+            elapsed_ms: ms(t0),
+        }
     }
 }
 
@@ -307,11 +401,24 @@ fn ms(t0: Instant) -> f64 {
 /// from `regex_syntax`'s extractor, whichever set has the longer shortest literal. None when the
 /// pattern has no finite set of required literals (`\d+`, `.*`, an empty alternative).
 pub fn required_literals(pattern: &str, fixed_strings: bool) -> Option<Vec<Vec<u8>>> {
-    let text = if fixed_strings { regex_syntax::escape(pattern) } else { pattern.to_string() };
-    let hir = regex_syntax::ParserBuilder::new().build().parse(&text).ok()?;
+    let text = if fixed_strings {
+        regex_syntax::escape(pattern)
+    } else {
+        pattern.to_string()
+    };
+    let hir = regex_syntax::ParserBuilder::new()
+        .build()
+        .parse(&text)
+        .ok()?;
     let mut best: Option<Vec<Vec<u8>>> = None;
     for kind in [ExtractKind::Prefix, ExtractKind::Suffix] {
-        let seq = Extractor::new().kind(kind).limit_class(16).limit_repeat(16).limit_literal_len(64).limit_total(64).extract(&hir);
+        let seq = Extractor::new()
+            .kind(kind)
+            .limit_class(16)
+            .limit_repeat(16)
+            .limit_literal_len(64)
+            .limit_total(64)
+            .extract(&hir);
         let Some(lits) = seq.literals() else { continue };
         let v: Vec<Vec<u8>> = lits.iter().map(|l| l.as_bytes().to_vec()).collect();
         if v.is_empty() || v.iter().any(|l| l.is_empty()) {
@@ -345,7 +452,10 @@ mod tests {
 
     #[test]
     fn grams_of_a_substring_are_grams_of_the_string() {
-        let corpus: &[&[u8]] = &[b"The top rail of a guardrail system shall be 42 inches above the walking surface.", b"Toeboards shall be 3.5 inches high; see 29 CFR 1926.502(j)."];
+        let corpus: &[&[u8]] = &[
+            b"The top rail of a guardrail system shall be 42 inches above the walking surface.",
+            b"Toeboards shall be 3.5 inches high; see 29 CFR 1926.502(j).",
+        ];
         let w = weights_for(corpus);
         let mut seed = 12345u64;
         let mut next = || {
@@ -364,14 +474,23 @@ mod tests {
                 let b = (a + 1 + (next() as usize) % (d.len() - a)).min(d.len());
                 grams(&d[a..b], &w, &mut g_sub);
                 for g in &g_sub {
-                    assert!(g_doc.contains(g), "gram {g:#x} of substring {:?} missing from the document", String::from_utf8_lossy(&d[a..b]));
+                    assert!(
+                        g_doc.contains(g),
+                        "gram {g:#x} of substring {:?} missing from the document",
+                        String::from_utf8_lossy(&d[a..b])
+                    );
                 }
             }
         }
         // Sparse: fewer grams than positions, more than none.
         let d = lower(corpus[0]);
         grams(&d, &w, &mut g_doc);
-        assert!(g_doc.len() < d.len() - 3 && g_doc.len() > (d.len() - 3) / 3, "{} grams for {} positions", g_doc.len(), d.len() - 3);
+        assert!(
+            g_doc.len() < d.len() - 3 && g_doc.len() > (d.len() - 3) / 3,
+            "{} grams for {} positions",
+            g_doc.len(),
+            d.len() - 3
+        );
     }
 
     #[test]
@@ -409,12 +528,29 @@ mod tests {
         assert_eq!(stats.files, 4);
         assert!(stats.grams > 10);
         let pf = Prefilter::open(&tmp.path().join("ngram")).unwrap();
-        for lit in ["42 inches", "cage", "Toeboards", "guardrail", "1926.1053", "midrail 21", "walking surface", "§ 1926", "nothing", "zzzz not there"] {
+        for lit in [
+            "42 inches",
+            "cage",
+            "Toeboards",
+            "guardrail",
+            "1926.1053",
+            "midrail 21",
+            "walking surface",
+            "§ 1926",
+            "nothing",
+            "zzzz not there",
+        ] {
             let cands = pf.candidates_for(lit.as_bytes());
             for (i, (_, text)) in docs.iter().enumerate() {
-                let contains = lower(text.as_bytes()).windows(lit.len()).any(|w| w == lower(lit.as_bytes()).as_slice());
+                let contains = lower(text.as_bytes())
+                    .windows(lit.len())
+                    .any(|w| w == lower(lit.as_bytes()).as_slice());
                 if contains {
-                    assert!(cands.as_ref().map(|c| c.contains(i as u32)).unwrap_or(true), "{lit:?} is in {} but was excluded", docs[i].0);
+                    assert!(
+                        cands.as_ref().map(|c| c.contains(i as u32)).unwrap_or(true),
+                        "{lit:?} is in {} but was excluded",
+                        docs[i].0
+                    );
                 }
             }
         }
@@ -424,6 +560,9 @@ mod tests {
         assert!(plan.candidates.is_none() && plan.reason.contains("full scan"));
         let plan = pf.plan(&["cage|rail".into()], false, false);
         let c = plan.candidates.unwrap();
-        assert!(c.contains(&"b.md".to_string()) && c.contains(&"a.md".to_string()), "{c:?}");
+        assert!(
+            c.contains(&"b.md".to_string()) && c.contains(&"a.md".to_string()),
+            "{c:?}"
+        );
     }
 }

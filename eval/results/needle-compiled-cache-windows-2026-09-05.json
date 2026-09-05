@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-05T14:30:02.946149+00:00",
+  "purpose": "compiled passage-cache mutation diagnostic; no relevance labels",
+  "binary_sha256": "7c040b84ca8f56e3d911e371ff62d1e09fd805603a596f9d01d023db78dd8398",
+  "original_generation": "01788614805361510100",
+  "baseline_files": 45320,
+  "baseline_passages": 117075,
+  "steps": [],
+  "passed": false,
+  "limits": [
+    "Two synthetic probe sections are added to a real regulatory corpus; real source bytes are not edited.",
+    "Timings include freshness, rebuilding and reopening; no p95 claim from a single edit.",
+    "Structural graphs, snapshots and n-grams still rebuild; this measures passage-compiler reuse.",
+    "Initial seeding also creates the cache when the previous generation predates it."
+  ],
+  "error": "RuntimeError({'content': [{'type': 'text', 'text': 'error: validation failed with 2 error(s)'}], 'isError': True})",
+  "probe_removed_after_failure": true,
+  "post_failure_index_may_be_stale": true
+}

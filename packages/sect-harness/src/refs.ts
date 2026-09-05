@@ -236,7 +236,9 @@ export function preResolve(body: string, selfId: string, known: Known, anchorsOf
 
 /** Whether a reference the ingest side linked was deterministic: one real candidate, which it chose. */
 export function isDeterministic(x: XrefResolution, candidates: Candidate[]): boolean {
-  if (x.deterministic) return true;
-  const ids = [...new Set(candidates.map((c) => c.id))];
-  return ids.length === 1 && ids[0] === x.id;
+  // Only the registry-backed resolution path may claim deterministic evidence.
+  // A single search candidate, or an ingest-supplied flag alone, is insufficient.
+  if (!x.deterministic || x.search !== "deterministic") return false;
+  const targets = [...new Set(candidates.filter((c) => c.via === "pattern" || c.via === "paragraph" || c.via === "self" || c.via === "container").map((c) => `${c.id}#${c.anchor ?? ""}`))];
+  return targets.length === 1 && targets[0] === `${x.id}#${x.anchor ?? ""}`;
 }

@@ -25,5 +25,6 @@ sect-query.workspace = true
 sect-struct.workspace = true
 
 [dev-dependencies]
+sha2.workspace = true
 serde_json.workspace = true
 tempfile.workspace = true

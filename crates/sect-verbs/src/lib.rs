@@ -17,18 +17,22 @@ use sect_query::{Expand, ReadOptions, SearchMode, SearchOptions};
 use sect_struct::Direction;
 use serde::Deserialize;
 
-pub const DESC_SEARCH: &str = "Ranked hybrid retrieval over the corpus: BM25 and embeddings fused with RRF, one hit per section, at most 50. A citation (\"99 CFR 2.8\") or a definition question (\"what is a hole\") is answered structurally first. Start here for any question in prose.";
-pub const DESC_READ: &str = "Show a section by Work id, Expression id, or id#anchor, with structural context; --as-of snaps to the text in force on a date, --history lists every version and the Actions between them.";
+pub const DESC_SEARCH: &str = "Ranked hybrid retrieval over the corpus: BM25 and embeddings fused with RRF, up to 50 distinct passages with source evidence and bounded context. A citation (\"99 CFR 2.8\") or a definition question (\"what is a hole\") is answered structurally first. Start here for any question in prose.";
+pub const DESC_READ: &str = "Show a section by Work id, Expression id, or id#anchor, or expand a search passage address into its complete canonical sections. Passage reads retain exact revisions; --as-of on a Work snaps to the text in force on a date, --history lists every version and the Actions between them.";
 pub const DESC_MAP: &str = "Table of contents under a scope, bounded by a token budget; complete=true returns the whole subtree by traversal (sections under a container, paragraphs under a section).";
 pub const DESC_REFS: &str = "Cross-reference and amendment traversal: what points at this section, what it points to, filtered by edge type (references, overrides, narrows, supersedes, amends, defines).";
 pub const DESC_DEFINE: &str = "Defined-term lookup by structural resolution: the defining section and paragraph, optionally the sections that use the term.";
 pub const DESC_GREP: &str = "Exhaustive exact or regex search with ripgrep-compatible flags and path:line:text output, bounded by max_hits; beyond the bound the answer is per-file counts.";
 pub const DESC_STATUS: &str = "Freshness, counts, warnings, unresolved references, and the legal-status summary of the corpus.";
 pub const DESC_INDEX: &str = "Admin: build or refresh the index (incremental; validate_only checks the B.2 contract and writes nothing).";
-pub const DESC_REBUILD: &str = "Admin: rebuild every index layer from scratch, ignoring stored fingerprints.";
+pub const DESC_REBUILD: &str =
+    "Admin: rebuild every index layer from scratch, ignoring stored fingerprints.";
 
 fn d_limit() -> usize {
     10
+}
+fn d_relations() -> String {
+    "off".into()
 }
 fn d_budget() -> usize {
     1500
@@ -46,9 +50,32 @@ fn d_max_hits() -> usize {
     sect_exact::DEFAULT_MAX_HITS
 }
 
-#[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Args, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct SearchArgs {
+    /// Total words of quoted evidence and structural context across the result set.
+    #[arg(long, default_value_t = 1500)]
+    #[serde(default = "d_budget")]
+    pub evidence_budget: usize,
+    /// Keep the original short snippet display; structured evidence remains available in JSON.
+    #[arg(long)]
+    #[serde(default)]
+    pub legacy_snippets: bool,
+    /// Evaluation baseline; disables Sect pins, ranking signals, and relations.
+    #[arg(long, value_parser = ["body-bm25", "plain-hybrid"])]
+    pub baseline: Option<String>,
+    /// Experimental relation candidates: off | explicit | verified.
+    #[arg(long, default_value = "off", value_parser = ["off", "explicit", "verified"])]
+    #[serde(default = "d_relations")]
+    pub relations: String,
+    /// Follow only these relation types (repeatable).
+    #[arg(long = "relation-type")]
+    #[serde(default)]
+    pub relation_types: Vec<String>,
+    /// Include the evidence paths that introduced supporting candidates.
+    #[arg(long)]
+    #[serde(default)]
+    pub explain: bool,
     /// The question or phrase to search for.
     pub query: String,
     /// Lexical (BM25) only.
@@ -92,10 +119,35 @@ pub struct SearchArgs {
     pub budget: usize,
 }
 
+impl Default for SearchArgs {
+    fn default() -> Self {
+        Self {
+            evidence_budget: d_budget(),
+            legacy_snippets: false,
+            baseline: None,
+            relations: d_relations(),
+            relation_types: Vec::new(),
+            explain: false,
+            query: String::new(),
+            fts: false,
+            vector: false,
+            fuse: false,
+            scope: None,
+            source: None,
+            kind: None,
+            as_of: None,
+            limit: d_limit(),
+            expand: None,
+            seed: false,
+            budget: d_budget(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct ReadArgs {
-    /// Work id, Expression id, or id#anchor.
+    /// Work id, Expression id, id#anchor, or the chunk_id from a search result.
     pub id: String,
     /// Include the chain of ancestors.
     #[arg(long)]
@@ -124,6 +176,9 @@ pub struct ReadArgs {
 #[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct MapArgs {
+    /// Navigate an accepted concept ID, label or alias; use '*' to list concepts.
+    #[arg(long)]
+    pub concept: Option<String>,
     /// Root of the listing: a Work id, or id#anchor for paragraphs.
     #[arg(long, value_name = "ID[#anchor]")]
     pub scope: Option<String>,
@@ -150,11 +205,11 @@ pub struct RefsArgs {
     #[arg(long, default_value = "out", value_parser = ["in", "out", "both"])]
     #[serde(default = "d_out")]
     pub direction: String,
-    /// references | overrides | narrows | supersedes | amends | defines
+    /// Structural or accepted profile-defined relationship type.
     #[arg(long = "type", value_name = "TYPE")]
     #[serde(rename = "type")]
     pub kind: Option<String>,
-    /// Hops to follow (at most 5).
+    /// Hops to follow; visited identities prevent cycling.
     #[arg(long, default_value_t = 1)]
     #[serde(default = "d_one")]
     pub depth: usize,
@@ -223,11 +278,21 @@ pub struct GrepArgs {
     #[serde(default)]
     pub files_with_matches: bool,
     /// Lines of context after each match.
-    #[arg(short = 'A', long = "after-context", value_name = "NUM", default_value_t = 0)]
+    #[arg(
+        short = 'A',
+        long = "after-context",
+        value_name = "NUM",
+        default_value_t = 0
+    )]
     #[serde(default)]
     pub after: usize,
     /// Lines of context before each match.
-    #[arg(short = 'B', long = "before-context", value_name = "NUM", default_value_t = 0)]
+    #[arg(
+        short = 'B',
+        long = "before-context",
+        value_name = "NUM",
+        default_value_t = 0
+    )]
     #[serde(default)]
     pub before: usize,
     /// Lines of context on both sides.
@@ -264,6 +329,12 @@ pub struct StatusArgs {}
 #[derive(Debug, Clone, Default, Args, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct IndexArgs {
+    /// Target passage size in model tokens (words when --embedding none).
+    #[arg(long)]
+    pub passage_target: Option<usize>,
+    /// Hard passage bound, including its retrieval prefix.
+    #[arg(long)]
+    pub passage_max: Option<usize>,
     /// Corpus root (overrides --corpus).
     pub path: Option<PathBuf>,
     /// Re-hash every file and rebuild every layer instead of trusting stored fingerprints.
@@ -321,7 +392,8 @@ pub const TOOLS: &[(&str, &str)] = &[
     ("sect_map", DESC_MAP),
     ("sect_status", DESC_STATUS),
 ];
-pub const ADMIN_TOOLS: &[(&str, &str)] = &[("sect_index", DESC_INDEX), ("sect_rebuild", DESC_REBUILD)];
+pub const ADMIN_TOOLS: &[(&str, &str)] =
+    &[("sect_index", DESC_INDEX), ("sect_rebuild", DESC_REBUILD)];
 
 /// What a verb produced: the text the CLI prints, the JSON `--json` prints, and the exit code.
 #[derive(Debug, Clone)]
@@ -331,14 +403,24 @@ pub struct Outcome {
     pub exit: i32,
 }
 
-fn outcome<T: serde::Serialize>(r: &sect_core::Response<T>, text: String, exit: i32) -> Result<Outcome> {
-    Ok(Outcome { text, json: serde_json::to_value(r)?, exit })
+fn outcome<T: serde::Serialize>(
+    r: &sect_core::Response<T>,
+    text: String,
+    exit: i32,
+) -> Result<Outcome> {
+    Ok(Outcome {
+        text,
+        json: serde_json::to_value(r)?,
+        exit,
+    })
 }
 
 pub fn parse_date(s: &Option<String>) -> Result<Option<NaiveDate>> {
     match s {
         None => Ok(None),
-        Some(s) => NaiveDate::parse_from_str(s, "%Y-%m-%d").map(Some).map_err(|_| SectError::Other(format!("bad date {s:?}, expected YYYY-MM-DD"))),
+        Some(s) => NaiveDate::parse_from_str(s, "%Y-%m-%d")
+            .map(Some)
+            .map_err(|_| SectError::Other(format!("bad date {s:?}, expected YYYY-MM-DD"))),
     }
 }
 
@@ -348,12 +430,27 @@ pub fn open(corpus: &Path, policy: Refresh) -> Result<Index> {
 }
 
 pub fn search(index: &Index, a: &SearchArgs, include_superseded: bool) -> Result<Outcome> {
-    let mode = match (a.fts, a.vector, a.fuse) {
+    let mode = match (
+        a.fts || a.baseline.as_deref() == Some("body-bm25"),
+        a.vector,
+        a.fuse,
+    ) {
         (true, false, false) => SearchMode::Fts,
         (false, true, false) => SearchMode::Vector,
         _ => SearchMode::Fuse,
     };
     let opts = SearchOptions {
+        evidence_budget: a.evidence_budget,
+        legacy_snippets: a.legacy_snippets,
+        baseline: a.baseline.clone(),
+        relations: sect_query::RelationMode::parse(if a.relations.is_empty() {
+            "off"
+        } else {
+            &a.relations
+        })
+        .ok_or_else(|| SectError::Other("relations must be off, explicit, or verified".into()))?,
+        relation_types: a.relation_types.clone(),
+        explain: a.explain,
         query: a.query.clone(),
         mode,
         scope: a.scope.clone(),
@@ -371,24 +468,52 @@ pub fn search(index: &Index, a: &SearchArgs, include_superseded: bool) -> Result
 }
 
 pub fn read(index: &Index, a: &ReadArgs, include_superseded: bool) -> Result<Outcome> {
-    let opts = ReadOptions { ancestors: a.ancestors, children: a.children, tables: a.tables, history: a.history, as_of: parse_date(&a.as_of)?, version: a.version.clone(), include_superseded };
+    let opts = ReadOptions {
+        ancestors: a.ancestors,
+        children: a.children,
+        tables: a.tables,
+        history: a.history,
+        as_of: parse_date(&a.as_of)?,
+        version: a.version.clone(),
+        include_superseded,
+    };
     let r = sect_query::read(index, &a.id, &opts)?;
     outcome(&r, sect_format::read_text(&r), 0)
 }
 
 pub fn map(index: &Index, a: &MapArgs) -> Result<Outcome> {
+    if let Some(concept) = &a.concept {
+        let r = sect_query::map_concepts(index, concept, a.scope.as_deref(), a.budget, a.complete)?;
+        return outcome(&r, sect_format::map_text(&r), 0);
+    }
     let r = sect_query::map(index, a.scope.as_deref(), a.depth, a.budget, a.complete)?;
     outcome(&r, sect_format::map_text(&r), 0)
 }
 
 pub fn refs(index: &Index, a: &RefsArgs, include_superseded: bool) -> Result<Outcome> {
-    let dir = Direction::parse(&a.direction).ok_or_else(|| SectError::Other(format!("bad direction {:?}: in, out, or both", a.direction)))?;
-    let r = sect_query::refs(index, &a.id, dir, a.kind.as_deref(), a.depth, parse_date(&a.as_of)?, include_superseded)?;
+    let dir = Direction::parse(&a.direction).ok_or_else(|| {
+        SectError::Other(format!("bad direction {:?}: in, out, or both", a.direction))
+    })?;
+    let r = sect_query::refs(
+        index,
+        &a.id,
+        dir,
+        a.kind.as_deref(),
+        a.depth,
+        parse_date(&a.as_of)?,
+        include_superseded,
+    )?;
     outcome(&r, sect_format::refs_text(&r), 0)
 }
 
 pub fn define(index: &Index, a: &DefineArgs) -> Result<Outcome> {
-    let r = sect_query::define(index, &a.term, a.usages, a.scope.as_deref(), parse_date(&a.as_of)?)?;
+    let r = sect_query::define(
+        index,
+        &a.term,
+        a.usages,
+        a.scope.as_deref(),
+        parse_date(&a.as_of)?,
+    )?;
     let exit = if r.result.defined { 0 } else { 1 };
     outcome(&r, sect_format::define_text(&r), exit)
 }
@@ -420,7 +545,14 @@ pub fn grep(index: &Index, a: &GrepArgs) -> Result<Outcome> {
         only_paths: None,
         files: None,
     };
-    let r = sect_query::grep(index, &opts, a.annotate, a.scope.as_deref(), a.source.as_deref(), a.no_index)?;
+    let r = sect_query::grep(
+        index,
+        &opts,
+        a.annotate,
+        a.scope.as_deref(),
+        a.source.as_deref(),
+        a.no_index,
+    )?;
     outcome(&r, sect_format::grep_text(&r, !a.no_line_number), 0)
 }
 
@@ -432,16 +564,53 @@ pub fn status(index: &Index) -> Result<Outcome> {
 /// `index` builds or refreshes; `rebuild` is `index --full`.
 pub fn index(corpus: &Path, a: &IndexArgs) -> Result<Outcome> {
     let root = a.path.clone().unwrap_or_else(|| corpus.to_path_buf());
-    let rep = sect_index::build(&root, &BuildOptions { full: a.full, validate_only: a.validate_only, embedding: a.embedding.clone(), ngram: a.ngram.clone() })?;
-    Ok(Outcome { text: sect_format::build_text(&rep), json: serde_json::to_value(&rep)?, exit: if rep.errors() > 0 { 1 } else { 0 } })
+    let rep = sect_index::build(
+        &root,
+        &BuildOptions {
+            passage_policy: if a.passage_target.is_some() || a.passage_max.is_some() {
+                let defaults = sect_index::passages::PassagePolicy::default();
+                Some(sect_index::passages::PassagePolicy {
+                    target: a.passage_target.unwrap_or(defaults.target),
+                    max: a.passage_max.unwrap_or(defaults.max),
+                })
+            } else {
+                None
+            },
+            full: a.full,
+            validate_only: a.validate_only,
+            embedding: a.embedding.clone(),
+            ngram: a.ngram.clone(),
+        },
+    )?;
+    Ok(Outcome {
+        text: sect_format::build_text(&rep),
+        json: serde_json::to_value(&rep)?,
+        exit: if rep.errors() > 0 { 1 } else { 0 },
+    })
 }
 
 pub fn rebuild(corpus: &Path, a: &RebuildArgs) -> Result<Outcome> {
-    index(corpus, &IndexArgs { path: None, full: true, validate_only: false, embedding: a.embedding.clone(), ngram: None })
+    index(
+        corpus,
+        &IndexArgs {
+            passage_target: None,
+            passage_max: None,
+            path: None,
+            full: true,
+            validate_only: false,
+            embedding: a.embedding.clone(),
+            ngram: None,
+        },
+    )
 }
 
 /// Run one verb against a corpus: open the index under the freshness policy, then dispatch.
-pub fn run(corpus: &Path, policy: Refresh, include_superseded: bool, verb: &Verb) -> Result<Outcome> {
+pub fn run(
+    corpus: &Path,
+    policy: Refresh,
+    include_superseded: bool,
+    verb: &Verb,
+) -> Result<Outcome> {
     if let Verb::Index(a) = verb {
         return index(corpus, a);
     }
@@ -466,9 +635,15 @@ mod tests {
     fn schemas_mark_required_fields_and_reject_unknown_ones() {
         let s = serde_json::to_value(schemars::schema_for!(SearchArgs)).unwrap();
         assert_eq!(s["required"], serde_json::json!(["query"]), "{s}");
-        assert!(s["properties"]["limit"]["description"].as_str().unwrap().contains("at most 50"));
+        assert!(s["properties"]["limit"]["description"]
+            .as_str()
+            .unwrap()
+            .contains("at most 50"));
         let r = serde_json::to_value(schemars::schema_for!(RefsArgs)).unwrap();
-        assert!(r["properties"].get("type").is_some(), "kind is exposed as `type`, like the CLI flag: {r}");
+        assert!(
+            r["properties"].get("type").is_some(),
+            "kind is exposed as `type`, like the CLI flag: {r}"
+        );
         let a: SearchArgs = serde_json::from_str(r#"{"query":"cages","limit":3}"#).unwrap();
         assert_eq!((a.limit, a.budget, a.seed), (3, 1500, false));
         assert!(serde_json::from_str::<SearchArgs>(r#"{"query":"x","nope":1}"#).is_err());

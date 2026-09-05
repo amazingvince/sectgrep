@@ -10,10 +10,13 @@ use serde::{Deserialize, Serialize};
 use crate::cite::Resolver;
 use crate::walk::CorpusFile;
 
-static LINK_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\[([^\]]*)\]\(([^)\s]*)\)").unwrap());
+static LINK_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\[([^\]]*)\]\(([^)\s]*)\)").unwrap());
 /// A run of markers opening one line, `(f)(1)(i) text`: each marker nests under the previous.
-static LABEL_RUN_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^((?:\((?:[a-z]{1,4}|\d{1,2})\))+)\s").unwrap());
-static LABEL_ONE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\(([a-z]{1,4}|\d{1,2})\)").unwrap());
+static LABEL_RUN_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^((?:\((?:[a-z]{1,4}|\d{1,2})\))+)\s").unwrap());
+static LABEL_ONE_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\(([a-z]{1,4}|\d{1,2})\)").unwrap());
 static ID_LIKE_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[A-Z][A-Z0-9]*:").unwrap());
 const ROMAN: &[&str] = &["ii", "iii", "iv", "vi", "vii", "viii", "ix"];
 
@@ -52,7 +55,14 @@ impl Table {
     pub fn flat_rows(&self) -> Vec<String> {
         self.rows
             .iter()
-            .map(|r| self.header.iter().zip(r.iter()).map(|(h, c)| format!("{h}: {c}")).collect::<Vec<_>>().join("; "))
+            .map(|r| {
+                self.header
+                    .iter()
+                    .zip(r.iter())
+                    .map(|(h, c)| format!("{h}: {c}"))
+                    .collect::<Vec<_>>()
+                    .join("; ")
+            })
             .collect()
     }
 }
@@ -102,7 +112,11 @@ impl Document {
 
     /// Paragraph anchors plus one slug per defined term (spec B.2).
     pub fn anchors(&self) -> Vec<String> {
-        let mut out: Vec<String> = self.paragraph_anchors.iter().map(|a| a.anchor.clone()).collect();
+        let mut out: Vec<String> = self
+            .paragraph_anchors
+            .iter()
+            .map(|a| a.anchor.clone())
+            .collect();
         out.extend(self.front.defines.iter().map(|t| slug(t)));
         out
     }
@@ -113,7 +127,9 @@ impl Document {
 
     /// The body with markdown link syntax reduced to its text (`[§ 1.5](CFR:99-1.5)` -> `§ 1.5`).
     pub fn body_plain(&self) -> String {
-        LINK_RE.replace_all(&self.body, |c: &regex::Captures| c[1].to_string()).into_owned()
+        LINK_RE
+            .replace_all(&self.body, |c: &regex::Captures| c[1].to_string())
+            .into_owned()
     }
 }
 
@@ -158,18 +174,38 @@ pub fn paragraph_anchors(body: &str) -> Vec<AnchorLine> {
     let runs: Vec<(usize, Vec<String>)> = body
         .lines()
         .enumerate()
-        .filter_map(|(i, raw)| LABEL_RUN_RE.captures(raw.trim()).map(|m| (i + 1, LABEL_ONE_RE.captures_iter(&m[1]).map(|c| c[1].to_string()).collect())))
+        .filter_map(|(i, raw)| {
+            LABEL_RUN_RE.captures(raw.trim()).map(|m| {
+                (
+                    i + 1,
+                    LABEL_ONE_RE
+                        .captures_iter(&m[1])
+                        .map(|c| c[1].to_string())
+                        .collect(),
+                )
+            })
+        })
         .collect();
     let mut anchors = Vec::new();
     let mut lvl1: Option<String> = None;
     let mut lvl2: Option<String> = None;
     for (r, (line, labels)) in runs.iter().enumerate() {
-        let next_first = runs.get(r + 1).and_then(|(_, l)| l.first()).map(|s| s.as_str());
+        let next_first = runs
+            .get(r + 1)
+            .and_then(|(_, l)| l.first())
+            .map(|s| s.as_str());
         for (j, lab) in labels.iter().enumerate() {
             let lab = lab.as_str();
-            let following = if j + 1 < labels.len() { Some(labels[j + 1].as_str()) } else { next_first };
+            let following = if j + 1 < labels.len() {
+                Some(labels[j + 1].as_str())
+            } else {
+                next_first
+            };
             let is_digits = lab.chars().all(|c| c.is_ascii_digit());
-            let is_roman = lvl2.is_some() && (ROMAN.contains(&lab) || (matches!(lab, "i" | "v" | "x") && ambiguous_marker_is_roman(lab, lvl1.as_deref(), following)));
+            let is_roman = lvl2.is_some()
+                && (ROMAN.contains(&lab)
+                    || (matches!(lab, "i" | "v" | "x")
+                        && ambiguous_marker_is_roman(lab, lvl1.as_deref(), following)));
             let anchor = if is_digits {
                 let a = match &lvl1 {
                     Some(a) => format!("{a}-{lab}"),
@@ -178,14 +214,21 @@ pub fn paragraph_anchors(body: &str) -> Vec<AnchorLine> {
                 lvl2 = Some(lab.to_string());
                 a
             } else if is_roman {
-                format!("{}-{}-{lab}", lvl1.clone().unwrap_or_default(), lvl2.clone().unwrap())
+                format!(
+                    "{}-{}-{lab}",
+                    lvl1.clone().unwrap_or_default(),
+                    lvl2.clone().unwrap()
+                )
             } else {
                 lvl1 = Some(lab.to_string());
                 lvl2 = None;
                 lab.to_string()
             };
             // Every level the run opens is addressable: `(b)(2)(i)` answers to #b, #b-2, #b-2-i.
-            anchors.push(AnchorLine { anchor: anchor.clone(), line: *line });
+            anchors.push(AnchorLine {
+                anchor: anchor.clone(),
+                line: *line,
+            });
         }
     }
     anchors
@@ -240,7 +283,12 @@ pub fn parse_markdown(body: &str) -> (Vec<Link>, Vec<Table>) {
                     Some((t, a)) => (t.to_string(), Some(a.to_string())),
                     None => (l.url.clone(), None),
                 };
-                links.push(Link { target, anchor, line, via: Via::Link });
+                links.push(Link {
+                    target,
+                    anchor,
+                    line,
+                    via: Via::Link,
+                });
             }
             NodeValue::Table(_) => {
                 let mut header = Vec::new();
@@ -270,13 +318,18 @@ pub fn prose_links(body: &str, resolver: &Resolver, home: Option<&str>) -> Vec<L
     let mut out = Vec::new();
     for c in resolver.find_all(&blanked, home) {
         let line = blanked[..c.offset].matches('\n').count() + 1;
-        out.push(Link { target: c.id, anchor: c.anchor, line, via: Via::Prose });
+        out.push(Link {
+            target: c.id,
+            anchor: c.anchor,
+            line,
+            via: Via::Prose,
+        });
     }
     out
 }
 
 fn strip_emphasis(s: &str) -> String {
-    s.replace('*', "").replace('_', "")
+    s.replace(['*', '_'], "")
 }
 
 /// The definition paragraph for each term in `defines`: the paragraph starting with `*Term*`.
@@ -284,38 +337,92 @@ pub fn definitions(body: &str, defines: &[String]) -> Vec<Definition> {
     let mut out = Vec::new();
     let lines: Vec<&str> = body.lines().collect();
     for term in defines {
+        let pattern = format!(
+            r"(?i)^\s*(?:\([a-z0-9]+\)\s*)*(?:{})(?:\s+(?:means|shall mean|is defined|includes|refers to)\b|\s*[:—–-])",
+            regex::escape(term)
+        );
+        let re = regex::Regex::new(&pattern).ok();
         let needle = format!("*{}*", term).to_lowercase();
-        let found = lines.iter().enumerate().find(|(_, l)| l.trim_start().to_lowercase().starts_with(&needle));
+        let found = lines.iter().enumerate().find(|(_, l)| {
+            l.trim_start().to_lowercase().starts_with(&needle)
+                || re
+                    .as_ref()
+                    .map(|r| r.is_match(&strip_emphasis(l)))
+                    .unwrap_or(false)
+        });
         let (line, text) = match found {
-            Some((i, l)) => (i + 1, strip_emphasis(l.trim())),
+            Some((i, _)) => (
+                i + 1,
+                lines[i..]
+                    .iter()
+                    .take_while(|l| !l.trim().is_empty())
+                    .map(|l| strip_emphasis(l.trim()))
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            ),
             None => (0, String::new()),
         };
-        out.push(Definition { term: term.clone(), slug: slug(term), line, text });
+        out.push(Definition {
+            term: term.clone(),
+            slug: slug(term),
+            line,
+            text,
+        });
     }
     out
 }
 
 fn mapping_keys(value: &serde_yaml_ng::Value) -> BTreeSet<String> {
     match value {
-        serde_yaml_ng::Value::Mapping(m) => m.keys().filter_map(|k| k.as_str().map(|s| s.to_string())).collect(),
+        serde_yaml_ng::Value::Mapping(m) => m
+            .keys()
+            .filter_map(|k| k.as_str().map(|s| s.to_string()))
+            .collect(),
         _ => BTreeSet::new(),
     }
 }
 
 pub fn parse_text(rel: &str, source: &str, text: &str, resolver: &Resolver) -> Result<Document> {
+    static TIMING: LazyLock<bool> =
+        LazyLock::new(|| std::env::var_os("SECT_TIMING_PARSE").is_some());
+    let mut stage = std::time::Instant::now();
+    let mut lap = |name: &str| {
+        if *TIMING {
+            eprintln!(
+                "parse-timing: {rel} {name} {:.3} ms",
+                stage.elapsed().as_secs_f64() * 1000.0
+            );
+            stage = std::time::Instant::now();
+        }
+    };
     let path = std::path::PathBuf::from(rel);
-    let (yaml, body) = split_front_matter(text).ok_or_else(|| SectError::MissingFrontMatter { path: path.clone() })?;
+    let (yaml, body) = split_front_matter(text)
+        .ok_or_else(|| SectError::MissingFrontMatter { path: path.clone() })?;
     let value: serde_yaml_ng::Value =
-        serde_yaml_ng::from_str(yaml).map_err(|e| SectError::FrontMatter { path: path.clone(), message: e.to_string() })?;
+        serde_yaml_ng::from_str(yaml).map_err(|e| SectError::FrontMatter {
+            path: path.clone(),
+            message: e.to_string(),
+        })?;
     if !value.is_mapping() {
-        return Err(SectError::FrontMatter { path, message: "front matter is not a mapping".into() });
+        return Err(SectError::FrontMatter {
+            path,
+            message: "front matter is not a mapping".into(),
+        });
     }
     let keys = mapping_keys(&value);
-    let provenance_keys = value.get("provenance").map(mapping_keys).unwrap_or_default();
+    let provenance_keys = value
+        .get("provenance")
+        .map(mapping_keys)
+        .unwrap_or_default();
     let front: FrontMatter =
-        serde_yaml_ng::from_value(value).map_err(|e| SectError::FrontMatter { path: path.clone(), message: e.to_string() })?;
+        serde_yaml_ng::from_value(value).map_err(|e| SectError::FrontMatter {
+            path: path.clone(),
+            message: e.to_string(),
+        })?;
     let body = body.trim_end().to_string();
+    lap("front-matter");
     let (mut links, tables) = parse_markdown(&body);
+    lap("markdown");
     // Bare "§ x.y" citations belong to the document's home title (its own, or the one it amends).
     let mut targets: Vec<String> = links.iter().map(|l| l.target.clone()).collect();
     targets.extend(front.overrides.iter().cloned());
@@ -323,14 +430,22 @@ pub fn parse_text(rel: &str, source: &str, text: &str, resolver: &Resolver) -> R
     targets.extend(front.actions.iter().map(|a| a.target_id.clone()));
     let home = resolver.home_source(source, &targets).map(str::to_string);
     // A section citing itself ("paragraph (a) of this section", its own heading) is not a cross-reference.
-    links.extend(prose_links(&body, resolver, home.as_deref()).into_iter().filter(|l| Some(l.target.as_str()) != front.id.as_deref()));
+    links.extend(
+        prose_links(&body, resolver, home.as_deref())
+            .into_iter()
+            .filter(|l| Some(l.target.as_str()) != front.id.as_deref()),
+    );
+    lap("prose-links");
     let definitions = definitions(&body, &front.defines);
+    lap("definitions");
+    let paragraph_anchors = paragraph_anchors(&body);
+    lap("paragraph-anchors");
     Ok(Document {
         rel: rel.to_string(),
         source: source.to_string(),
         keys,
         provenance_keys,
-        paragraph_anchors: paragraph_anchors(&body),
+        paragraph_anchors,
         links,
         tables,
         definitions,
@@ -356,17 +471,33 @@ mod tests {
         let d = parse_text("x/y.md", "cfr-title-99", SAMPLE, &Resolver::default()).unwrap();
         assert_eq!(d.id(), Some("CFR:99-1.5"));
         assert_eq!(d.expr().as_deref(), Some("CFR:99-1.5@2024-01-01"));
-        let anchors: Vec<&str> = d.paragraph_anchors.iter().map(|a| a.anchor.as_str()).collect();
+        let anchors: Vec<&str> = d
+            .paragraph_anchors
+            .iter()
+            .map(|a| a.anchor.as_str())
+            .collect();
         assert_eq!(anchors, vec!["a", "a-1", "a-2", "b"]);
         assert_eq!(d.paragraph_anchors[1].line, 5);
-        assert_eq!(d.anchors().last().map(String::as_str), Some("competent-person"));
+        assert_eq!(
+            d.anchors().last().map(String::as_str),
+            Some("competent-person")
+        );
         assert_eq!(d.links.len(), 2);
         assert_eq!(d.links[1].anchor.as_deref(), Some("b"));
         assert_eq!(d.links[1].line, 5);
         assert_eq!(d.tables.len(), 1);
         assert_eq!(d.tables[0].header, vec!["Event", "Report within"]);
-        assert_eq!(d.tables[0].flat_rows()[1], "Report within: 24 hours".replace("Report within: 24 hours", "Event: Amputation; Report within: 24 hours"));
-        assert_eq!(d.definitions[0].text, "Competent person means a person who is capable.");
+        assert_eq!(
+            d.tables[0].flat_rows()[1],
+            "Report within: 24 hours".replace(
+                "Report within: 24 hours",
+                "Event: Amputation; Report within: 24 hours"
+            )
+        );
+        assert_eq!(
+            d.definitions[0].text,
+            "Competent person means a person who is capable."
+        );
         assert!(d.keys.contains("parent"));
         assert!(!d.keys.contains("order"));
     }
@@ -386,10 +517,23 @@ mod tests {
             },
         );
         let d = parse_text("x.md", "cfr-title-99", SAMPLE, &Resolver::new(&sources)).unwrap();
-        let prose: Vec<(&str, usize)> = d.links.iter().filter(|l| l.via == Via::Prose).map(|l| (l.target.as_str(), l.line)).collect();
-        assert_eq!(prose, vec![("CFR:99-2.9", 7), ("CFR:99-3", 7)], "{:?}", d.links);
+        let prose: Vec<(&str, usize)> = d
+            .links
+            .iter()
+            .filter(|l| l.via == Via::Prose)
+            .map(|l| (l.target.as_str(), l.line))
+            .collect();
+        assert_eq!(
+            prose,
+            vec![("CFR:99-2.9", 7), ("CFR:99-3", 7)],
+            "{:?}",
+            d.links
+        );
         // Linked citations are not double counted as prose.
-        assert_eq!(d.links.iter().filter(|l| l.target == "CFR:99-3.5").count(), 1);
+        assert_eq!(
+            d.links.iter().filter(|l| l.target == "CFR:99-3.5").count(),
+            1
+        );
     }
 
     #[test]
@@ -403,7 +547,10 @@ mod tests {
     #[test]
     fn slugs() {
         assert_eq!(slug("Walking-working surface"), "walking-working-surface");
-        assert_eq!(slug("physician or other licensed health care professional"), "physician-or-other-licensed-health-care-professional");
+        assert_eq!(
+            slug("physician or other licensed health care professional"),
+            "physician-or-other-licensed-health-care-professional"
+        );
     }
 }
 
@@ -418,18 +565,31 @@ mod compound_marker_tests {
 (i) Under b-1.
 (2) Second under b.
 (c) Plain.";
-        let got: Vec<String> = paragraph_anchors(body).into_iter().map(|a| a.anchor).collect();
+        let got: Vec<String> = paragraph_anchors(body)
+            .into_iter()
+            .map(|a| a.anchor)
+            .collect();
         assert_eq!(got, vec!["a", "b", "b-1", "b-1-i", "b-2", "c"]);
         // After (h)(1), a bare (i) followed by (j) is the letter i; followed by (ii) it is a numeral.
-        let got: Vec<String> = paragraph_anchors("(h) H.
+        let got: Vec<String> = paragraph_anchors(
+            "(h) H.
 (1) One.
 (i) Letter.
-(j) J.").into_iter().map(|a| a.anchor).collect();
+(j) J.",
+        )
+        .into_iter()
+        .map(|a| a.anchor)
+        .collect();
         assert_eq!(got, vec!["h", "h-1", "i", "j"]);
-        let got: Vec<String> = paragraph_anchors("(h) H.
+        let got: Vec<String> = paragraph_anchors(
+            "(h) H.
 (1) One.
 (i) Numeral.
-(ii) Two.").into_iter().map(|a| a.anchor).collect();
+(ii) Two.",
+        )
+        .into_iter()
+        .map(|a| a.anchor)
+        .collect();
         assert_eq!(got, vec!["h", "h-1", "h-1-i", "h-1-ii"]);
     }
 }

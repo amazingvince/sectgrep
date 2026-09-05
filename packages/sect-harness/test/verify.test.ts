@@ -17,6 +17,21 @@ const fixture = path.resolve(here, "../../../fixtures/corpus");
 const tmp = () => mkdtempSync(path.join(tmpdir(), "sect-h2-"));
 
 describe("evidence checks (D.3 layer 2)", () => {
+  it("finds a container Action beyond twelve ancestors without looping on cycles", () => {
+    const root = tmp();
+    const source = path.join(root, "test");
+    mkdirSync(source);
+    writeFileSync(path.join(source, "_source.yaml"), "name: test\nkind: base\nid_prefix: 'T:'\nprecedence: 0\n");
+    for (let n = 0; n < 17; n++) {
+      writeFileSync(path.join(source, `${n}.md`), `---\nid: T:${n}\nsource: test\ntitle: Nested region\nparent: ${n ? `T:${n - 1}` : "null"}\neffective: 2024-01-01\namended_by: ${n === 16 ? "['T:0#remove']" : "[]"}\n${n === 0 ? "actions:\n  - {action_id: 'T:0#remove', target_id: 'T:0', kind: remove}\n" : ""}---\nCopied source text.\n`);
+    }
+    const issues = () => evidenceChecks({ staging: root, corpus: root }).issues.filter((i) => i.level === "fail");
+    expect(issues()).toEqual([]);
+    const parent = path.join(source, "1.md");
+    writeFileSync(parent, readFileSync(parent, "utf8").replace("parent: T:0", "parent: T:16"));
+    expect(issues().some((i) => i.message.includes("not this section nor a container above it"))).toBe(true);
+  });
+
   it("pass on the fixture: overlays target base sections of lower precedence and share terms; the amended Expression carries the notice's text", () => {
     const r = evidenceChecks({ staging: fixture, corpus: fixture });
     expect(r.checked.overlays).toBe(3);

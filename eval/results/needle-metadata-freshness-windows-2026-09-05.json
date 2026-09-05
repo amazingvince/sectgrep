@@ -1,0 +1,245 @@
+{
+  "purpose": "freshness limitation and recovery diagnostic, not relevance qualification",
+  "binary_sha256": "3152b8201858cd27adc2de29f543a06f412f57bf2f53203539691bb53732142f",
+  "corpus": "C:\\Users\\amazi\\code\\sect\\corpora\\needle-metadata-freshness-v1",
+  "metadata_restored": true,
+  "before": {
+    "freshness": {
+      "state": "fresh",
+      "files": 49,
+      "built_at": "2026-09-05T11:41:57Z",
+      "rebuilt": null,
+      "stat_ms": 2
+    },
+    "counts": {
+      "shown": 1,
+      "matched": 1,
+      "works": 43,
+      "expressions": 44,
+      "superseded": 1,
+      "sources": 4,
+      "extra": [
+        [
+          "files-searched",
+          1
+        ],
+        [
+          "files-matched",
+          1
+        ],
+        [
+          "matching-lines",
+          1
+        ],
+        [
+          "max-hits",
+          200
+        ],
+        [
+          "candidates",
+          1
+        ]
+      ]
+    },
+    "result": {
+      "patterns": [
+        "NEEDLE_METADATA_"
+      ],
+      "mode": "lines",
+      "scope": null,
+      "source": null,
+      "lines": [
+        {
+          "path": "metadata-probe.txt",
+          "line": 1,
+          "kind": "match",
+          "text": "NEEDLE_METADATA_ALPHA_20260905",
+          "break_before": false,
+          "annotation": null
+        }
+      ],
+      "per_file": [
+        {
+          "path": "metadata-probe.txt",
+          "matches": 1
+        }
+      ],
+      "files_searched": 1,
+      "files_matched": 1,
+      "total_matches": 1,
+      "truncated": false,
+      "max_hits": 200,
+      "note": null,
+      "prefilter": {
+        "literals": [
+          "NEEDLE_METADATA_"
+        ],
+        "candidate_count": 1,
+        "files_total": 49,
+        "reason": "1 of 49 files can contain a required literal",
+        "elapsed_ms": 0.0969
+      },
+      "scan_ms": 0.4127
+    }
+  },
+  "after_same_stat_edit": {
+    "freshness": {
+      "state": "fresh",
+      "files": 49,
+      "built_at": "2026-09-05T11:41:57Z",
+      "rebuilt": null,
+      "stat_ms": 1
+    },
+    "counts": {
+      "shown": 1,
+      "matched": 1,
+      "works": 43,
+      "expressions": 44,
+      "superseded": 1,
+      "sources": 4,
+      "extra": [
+        [
+          "files-searched",
+          1
+        ],
+        [
+          "files-matched",
+          1
+        ],
+        [
+          "matching-lines",
+          1
+        ],
+        [
+          "max-hits",
+          200
+        ],
+        [
+          "candidates",
+          1
+        ]
+      ]
+    },
+    "result": {
+      "patterns": [
+        "NEEDLE_METADATA_"
+      ],
+      "mode": "lines",
+      "scope": null,
+      "source": null,
+      "lines": [
+        {
+          "path": "metadata-probe.txt",
+          "line": 1,
+          "kind": "match",
+          "text": "NEEDLE_METADATA_ALPHA_20260905",
+          "break_before": false,
+          "annotation": null
+        }
+      ],
+      "per_file": [
+        {
+          "path": "metadata-probe.txt",
+          "matches": 1
+        }
+      ],
+      "files_searched": 1,
+      "files_matched": 1,
+      "total_matches": 1,
+      "truncated": false,
+      "max_hits": 200,
+      "note": null,
+      "prefilter": {
+        "literals": [
+          "NEEDLE_METADATA_"
+        ],
+        "candidate_count": 1,
+        "files_total": 49,
+        "reason": "1 of 49 files can contain a required literal",
+        "elapsed_ms": 0.0893
+      },
+      "scan_ms": 0.24630000000000002
+    }
+  },
+  "after_full_rebuild": {
+    "freshness": {
+      "state": "fresh",
+      "files": 49,
+      "built_at": "2026-09-05T11:41:57Z",
+      "rebuilt": null,
+      "stat_ms": 1
+    },
+    "counts": {
+      "shown": 1,
+      "matched": 1,
+      "works": 43,
+      "expressions": 44,
+      "superseded": 1,
+      "sources": 4,
+      "extra": [
+        [
+          "files-searched",
+          1
+        ],
+        [
+          "files-matched",
+          1
+        ],
+        [
+          "matching-lines",
+          1
+        ],
+        [
+          "max-hits",
+          200
+        ],
+        [
+          "candidates",
+          1
+        ]
+      ]
+    },
+    "result": {
+      "patterns": [
+        "NEEDLE_METADATA_"
+      ],
+      "mode": "lines",
+      "scope": null,
+      "source": null,
+      "lines": [
+        {
+          "path": "metadata-probe.txt",
+          "line": 1,
+          "kind": "match",
+          "text": "NEEDLE_METADATA_BRAVO_20260905",
+          "break_before": false,
+          "annotation": null
+        }
+      ],
+      "per_file": [
+        {
+          "path": "metadata-probe.txt",
+          "matches": 1
+        }
+      ],
+      "files_searched": 1,
+      "files_matched": 1,
+      "total_matches": 1,
+      "truncated": false,
+      "max_hits": 200,
+      "note": null,
+      "prefilter": {
+        "literals": [
+          "NEEDLE_METADATA_"
+        ],
+        "candidate_count": 1,
+        "files_total": 49,
+        "reason": "1 of 49 files can contain a required literal",
+        "elapsed_ms": 0.0958
+      },
+      "scan_ms": 0.23929999999999998
+    }
+  },
+  "default_detected_content_edit": false,
+  "full_rebuild_recovered": true
+}

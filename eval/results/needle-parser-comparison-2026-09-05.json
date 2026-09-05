@@ -1,0 +1,986 @@
+{
+  "purpose": "diagnostic parser comparison",
+  "independently_judged": false,
+  "attention": {
+    "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "native": {
+      "regions": 166,
+      "units": 27,
+      "kinds": {
+        "heading": 27,
+        "paragraph": 117,
+        "footer": 15,
+        "header": 6,
+        "list_item": 1
+      },
+      "parser": "native:11a3babc9912f90face801eadb0786de12b1e3595ae751881e2b0d3b200e2165",
+      "exclusions": 14
+    },
+    "docling": {
+      "regions": 470,
+      "units": 31,
+      "kinds": {
+        "paragraph": 370,
+        "heading": 30,
+        "figure": 8,
+        "caption": 9,
+        "equation": 6,
+        "list_item": 43,
+        "table": 4
+      },
+      "parser": "docling:2.126.0:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+      "exclusions": 18
+    },
+    "native_attention_paragraph": [
+      {
+        "text": "We call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension d , and values of dimension√ d . We compute the dot products of the k v query with all keys, divide each by d , and apply a softmax function to obtain the weights on the k values. In practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix Q. The keys and values are also packed together into matrices K and V . We compute the matrix of outputs as:",
+        "locator": {
+          "type": "page",
+          "page": 4,
+          "elements": [
+            28
+          ],
+          "bbox": [
+            107.5,
+            367.4,
+            504.2,
+            448.3
+          ]
+        },
+        "uncertainty": []
+      }
+    ],
+    "docling_attention_paragraph": [
+      {
+        "text": "We call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension d k , and values of dimension d v . We compute the dot products of the query with all keys, divide each by √ d k , and apply a softmax function to obtain the weights on the values.",
+        "locator": {
+          "type": "page",
+          "page": 4,
+          "elements": [
+            40
+          ],
+          "bbox": [
+            107.532,
+            370.84734740000005,
+            504.0002506364003,
+            412.1262256070797
+          ]
+        },
+        "uncertainty": []
+      }
+    ],
+    "equations_preserved_from_original_field": 6,
+    "docling_query": {
+      "freshness": {
+        "state": "fresh",
+        "files": 40,
+        "built_at": "2026-09-05T06:05:58Z",
+        "rebuilt": null,
+        "stat_ms": 1
+      },
+      "counts": {
+        "shown": 5,
+        "matched": 40,
+        "works": 32,
+        "expressions": 32,
+        "superseded": 0,
+        "sources": 1,
+        "extra": [
+          [
+            "candidates-lexical",
+            40
+          ],
+          [
+            "candidates-vector",
+            40
+          ],
+          [
+            "limit",
+            5
+          ]
+        ]
+      },
+      "result": {
+        "response_version": 2,
+        "evidence_word_budget": 1500,
+        "legacy_snippets": false,
+        "baseline": null,
+        "supporting_context": [],
+        "context_truncated": false,
+        "context_word_budget": 687,
+        "relations": "off",
+        "traversal": {
+          "seeds": 0,
+          "hops": 2,
+          "candidate_limit": 200,
+          "discovered": 0,
+          "truncated": false,
+          "concept_candidates": 0,
+          "ambiguous_concepts": []
+        },
+        "query": "scaled dot product attention square root dimension",
+        "mode": "fuse",
+        "expand": null,
+        "seed": null,
+        "scope": null,
+        "source": null,
+        "kind": null,
+        "as_of": null,
+        "include_superseded": false,
+        "limit": 5,
+        "id_or_term_like": false,
+        "weights": [
+          1.0,
+          1.0
+        ],
+        "candidates_lexical": 40,
+        "candidates_vector": 40,
+        "embedding": "model2vec:minishlab/potion-retrieval-32M",
+        "abstained": false,
+        "nearest": null,
+        "confidence": {
+          "lex_overlap": 0.5714285714285714,
+          "cosine": 0.6268153786659241
+        },
+        "hits": [
+          {
+            "evidence": {
+              "version": 1,
+              "primary": {
+                "expr": "DOC:research:attention-v7/u000009@2026-09-04",
+                "title": "Scaled Dot-Product Attention",
+                "text": "# Scaled Dot-Product Attention\n\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.",
+                "spans": [
+                  {
+                    "expr": "DOC:research:attention-v7/u000009@2026-09-04",
+                    "title": "Scaled Dot-Product Attention",
+                    "breadcrumb": "attention-v7.pdf > Scaled Dot-Product Attention",
+                    "passage_start": 0,
+                    "passage_end": 165,
+                    "body_sha256": "cebf2d59308ca5e7b3ae29ad230c14fbb675061808c975d54a71f9c4b8bbb914",
+                    "byte_start": 0,
+                    "byte_end": 165,
+                    "line_start": 1,
+                    "line_end": 3
+                  }
+                ],
+                "unit_provenance": {
+                  "checks": {
+                    "extraction": "passed",
+                    "semantic": "not_applicable",
+                    "source_alignment": "unchecked"
+                  },
+                  "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+                  "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+                  "locator": {
+                    "pages": [
+                      4
+                    ],
+                    "elements": [
+                      33,
+                      36
+                    ],
+                    "regions": [
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          33
+                        ],
+                        "bbox": [
+                          147.783,
+                          72.26934740000002,
+                          266.2183888,
+                          80.82122560707967
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          36
+                        ],
+                        "bbox": [
+                          108,
+                          275.5333474,
+                          503.9972105879992,
+                          294.99422560707967
+                        ]
+                      }
+                    ],
+                    "artifact": "artifacts/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697/1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                    "recipe_sha256": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862"
+                  },
+                  "legal_status": "derived",
+                  "ingest_run": "native:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                  "confidence": 1.0,
+                  "verified_by": []
+                }
+              },
+              "context": [],
+              "context_basis": "same-parent source units and structural ancestry; semantic completeness is not asserted",
+              "passage_complete": true,
+              "section_complete": true,
+              "continuation": [],
+              "words": 21,
+              "budget_unit": "whitespace_words"
+            },
+            "role": "primary",
+            "retrieval_path": null,
+            "rank": 1,
+            "id": "DOC:research:attention-v7/u000009",
+            "expr": "DOC:research:attention-v7/u000009@2026-09-04",
+            "anchor": null,
+            "label": "§ v7/u000009",
+            "title": "Scaled Dot-Product Attention",
+            "breadcrumb": "attention-v7.pdf > Scaled Dot-Product Attention",
+            "kind": "base",
+            "source": "research",
+            "effective": "2026-09-04",
+            "score": 1.0571,
+            "pinned": null,
+            "lex_rank": 1,
+            "vec_rank": 1,
+            "cosine": 0.6268153786659241,
+            "chunk_id": "DOC:research:attention-v7/u000009@2026-09-04#pf1fbeec3b643b1695edce0c1a72b56df5fce7cb0750a0875ad9a640db3db2814",
+            "part": 0,
+            "nparts": 1,
+            "line": 1,
+            "snippet": "# Scaled Dot-Product Attention\n\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.",
+            "overridden_by": [],
+            "narrowed_by": [],
+            "refs_in": 1,
+            "refs_out": 0,
+            "expanded": []
+          },
+          {
+            "evidence": {
+              "version": 1,
+              "primary": {
+                "expr": "DOC:research:attention-v7/u000011@2026-09-04",
+                "title": "3.2.1 Scaled Dot-Product Attention",
+                "text": "# 3.2.1 Scaled Dot-Product Attention\n\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension d k , and values of dimension d v . We compute the dot products of the query with all keys, divide each by √ d k , and apply a softmax function to obtain the weights on the values.\n\nIn practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix Q . The keys and values are also packed together into matrices K and V . We compute the matrix of outputs as:\n\nAttention( Q,K,V ) = softmax( QK T √ d k ) V (1)\n\nThe two most commonly used attention functions are additive attention [2], and dot-product (multiplicative) attention. Dot-product attention is identical to our algorithm, except for the scaling factor of 1 √ d k . Additive attention computes the compatibility function using a feed-forward network with a single hidden layer. While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code.\n\nWhile for small values of d k the two mechanisms perform similarly, additive attention outperforms dot product attention without scaling for larger values of d k [3]. We suspect that for large values of d k , the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients 4 . To counteract this effect, we scale the dot products by 1 √ d k .",
+                "spans": [
+                  {
+                    "expr": "DOC:research:attention-v7/u000011@2026-09-04",
+                    "title": "3.2.1 Scaled Dot-Product Attention",
+                    "breadcrumb": "attention-v7.pdf > 3.2.1 Scaled Dot-Product Attention",
+                    "passage_start": 0,
+                    "passage_end": 1566,
+                    "body_sha256": "b977bc62b426819ffbc03f06da2327585bbfeea6ed723ad7b8c117a83fc6573b",
+                    "byte_start": 0,
+                    "byte_end": 1566,
+                    "line_start": 1,
+                    "line_end": 11
+                  }
+                ],
+                "unit_provenance": {
+                  "checks": {
+                    "extraction": "passed",
+                    "semantic": "not_applicable",
+                    "source_alignment": "unchecked"
+                  },
+                  "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+                  "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+                  "locator": {
+                    "pages": [
+                      4
+                    ],
+                    "elements": [
+                      39,
+                      40,
+                      41,
+                      42,
+                      43,
+                      44
+                    ],
+                    "regions": [
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          39
+                        ],
+                        "bbox": [
+                          108,
+                          351.828806,
+                          263.8848022000001,
+                          360.7851834
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          40
+                        ],
+                        "bbox": [
+                          107.532,
+                          370.8473474000001,
+                          504.0002506364003,
+                          412.1262256070797
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          41
+                        ],
+                        "bbox": [
+                          108,
+                          419.9633474,
+                          504.169962071999,
+                          450.33322560707967
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          42
+                        ],
+                        "bbox": [
+                          219.97,
+                          465.65389460000006,
+                          504.6673916,
+                          491.0424732674352
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          43
+                        ],
+                        "bbox": [
+                          107.691,
+                          500.5883474,
+                          505.652786382,
+                          565.9462256070797
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          44
+                        ],
+                        "bbox": [
+                          107.532,
+                          573.4645442,
+                          503.9998876890001,
+                          619.2110550613833
+                        ]
+                      }
+                    ],
+                    "artifact": "artifacts/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697/1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                    "recipe_sha256": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862"
+                  },
+                  "legal_status": "derived",
+                  "ingest_run": "native:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                  "confidence": 1.0,
+                  "verified_by": []
+                }
+              },
+              "context": [],
+              "context_basis": "same-parent source units and structural ancestry; semantic completeness is not asserted",
+              "passage_complete": true,
+              "section_complete": true,
+              "continuation": [],
+              "words": 268,
+              "budget_unit": "whitespace_words"
+            },
+            "role": "primary",
+            "retrieval_path": null,
+            "rank": 2,
+            "id": "DOC:research:attention-v7/u000011",
+            "expr": "DOC:research:attention-v7/u000011@2026-09-04",
+            "anchor": null,
+            "label": "§ v7/u000011",
+            "title": "3.2.1 Scaled Dot-Product Attention",
+            "breadcrumb": "attention-v7.pdf > 3.2.1 Scaled Dot-Product Attention",
+            "kind": "base",
+            "source": "research",
+            "effective": "2026-09-04",
+            "score": 1.041,
+            "pinned": null,
+            "lex_rank": 2,
+            "vec_rank": 2,
+            "cosine": 0.5860877633094788,
+            "chunk_id": "DOC:research:attention-v7/u000011@2026-09-04#pe38dcf736d875a6b1b43a6e9a9298fcba8d7cb036ae7324374178d9c62c4251d",
+            "part": 0,
+            "nparts": 1,
+            "line": 1,
+            "snippet": "# 3.2.1 Scaled Dot-Product Attention\n\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension d k , and values of dimension d v . We compute the dot products of the query with all keys, divide each by √ d k , and apply a softmax function to obtain the weights on the values.\n\nIn practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix Q . The keys and values are also packed together into matrices K and V . We compute the matrix of outputs as:\n\nAttention( Q,K,V ) = softmax( QK T √ d k ) V (1)\n\nThe two most commonly used attention functions are additive attention [2], and dot-product (multiplicative) attention. Dot-product attention is identical to our algorithm, except for the scaling factor of 1 √ d k . Additive attention computes the compatibility function using a feed-forward network with a single hidden layer. While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code.\n\nWhile for small values of d k the two mechanisms perform similarly, additive attention outperforms dot product attention without scaling for larger values of d k [3]. We suspect that for large values of d k , the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients 4 . To counteract this effect, we scale the dot products by 1 √ d k .",
+            "overridden_by": [],
+            "narrowed_by": [],
+            "refs_in": 1,
+            "refs_out": 0,
+            "expanded": []
+          },
+          {
+            "evidence": {
+              "version": 1,
+              "primary": {
+                "expr": "DOC:research:attention-v7/u000025@2026-09-04",
+                "title": "6.2 Model Variations",
+                "text": "\nTable 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metrics are on the English-to-German translation development set, newstest2013. Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.\n\nIn Table 3 rows (A), we vary the number of attention heads and the attention key and value dimensions, keeping the amount of computation constant, as described in Section 3.2.2. While single-head attention is 0.9 BLEU worse than the best setting, quality also drops off with too many heads.\n\nIn Table 3 rows (B), we observe that reducing the attention key size d k hurts model quality. This suggests that determining compatibility is not easy and that a more sophisticated compatibility function than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected, bigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our sinusoidal positional encoding with learned positional embeddings [9], and observe nearly identical results to the base model.",
+                "spans": [
+                  {
+                    "expr": "DOC:research:attention-v7/u000025@2026-09-04",
+                    "title": "6.2 Model Variations",
+                    "breadcrumb": "attention-v7.pdf > 6.2 Model Variations",
+                    "passage_start": 0,
+                    "passage_end": 1148,
+                    "body_sha256": "8d4d3d9ece2c74730ac17d21b52dcc5664912b39f5b6dcf317ca2620f2f7581c",
+                    "byte_start": 1809,
+                    "byte_end": 2957,
+                    "line_start": 29,
+                    "line_end": 34
+                  }
+                ],
+                "unit_provenance": {
+                  "checks": {
+                    "extraction": "passed",
+                    "semantic": "not_applicable",
+                    "source_alignment": "unchecked"
+                  },
+                  "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+                  "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+                  "locator": {
+                    "pages": [
+                      8,
+                      9
+                    ],
+                    "elements": [
+                      105,
+                      106,
+                      107,
+                      109,
+                      110,
+                      111,
+                      112
+                    ],
+                    "regions": [
+                      {
+                        "type": "page",
+                        "page": 8,
+                        "elements": [
+                          105
+                        ],
+                        "bbox": [
+                          108,
+                          658.397806,
+                          203.9398380000001,
+                          667.3541834
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 8,
+                        "elements": [
+                          106
+                        ],
+                        "bbox": [
+                          107.691,
+                          679.6543474,
+                          504.0004583971998,
+                          699.1152256070797
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 8,
+                        "elements": [
+                          107
+                        ],
+                        "bbox": [
+                          120.653,
+                          712.2995824,
+                          453.5559904000002,
+                          721.8596154902655
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 9,
+                        "elements": [
+                          109
+                        ],
+                        "bbox": [
+                          107.08683776855467,
+                          128.5205078125,
+                          509.67669677734375,
+                          385.29388427734375
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 9,
+                        "elements": [
+                          110
+                        ],
+                        "bbox": [
+                          107.691,
+                          72.26934740000002,
+                          504.0033873999995,
+                          113.54822560707964
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 9,
+                        "elements": [
+                          111
+                        ],
+                        "bbox": [
+                          108,
+                          442.1183474,
+                          505.2413400759995,
+                          472.4882256070797
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 9,
+                        "elements": [
+                          112
+                        ],
+                        "bbox": [
+                          108,
+                          480.0065441999999,
+                          505.2413400759998,
+                          543.4222256070797
+                        ]
+                      }
+                    ],
+                    "artifact": "artifacts/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697/1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                    "recipe_sha256": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862"
+                  },
+                  "legal_status": "derived",
+                  "ingest_run": "native:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                  "confidence": 1.0,
+                  "verified_by": []
+                }
+              },
+              "context": [],
+              "context_basis": "same-parent source units and structural ancestry; semantic completeness is not asserted",
+              "passage_complete": true,
+              "section_complete": false,
+              "continuation": [
+                {
+                  "expr": "DOC:research:attention-v7/u000025@2026-09-04",
+                  "chunk_id": "DOC:research:attention-v7/u000025@2026-09-04#pdc9f98093f1b1dd5539d444fa80f1256c975ff0e057b96cb9e6485f8b00b4051",
+                  "reason": "passage 3 of 3; read the expression for the complete section"
+                }
+              ],
+              "words": 178,
+              "budget_unit": "whitespace_words"
+            },
+            "role": "primary",
+            "retrieval_path": null,
+            "rank": 3,
+            "id": "DOC:research:attention-v7/u000025",
+            "expr": "DOC:research:attention-v7/u000025@2026-09-04",
+            "anchor": null,
+            "label": "§ v7/u000025",
+            "title": "6.2 Model Variations",
+            "breadcrumb": "attention-v7.pdf > 6.2 Model Variations",
+            "kind": "base",
+            "source": "research",
+            "effective": "2026-09-04",
+            "score": 1.0184,
+            "pinned": null,
+            "lex_rank": 6,
+            "vec_rank": 9,
+            "cosine": 0.21420428156852722,
+            "chunk_id": "DOC:research:attention-v7/u000025@2026-09-04#pdc9f98093f1b1dd5539d444fa80f1256c975ff0e057b96cb9e6485f8b00b4051",
+            "part": 2,
+            "nparts": 3,
+            "line": 29,
+            "snippet": "\nTable 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metrics are on the English-to-German translation development set, newstest2013. Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.\n\nIn Table 3 rows (A), we vary the number of attention heads and the attention key and value dimensions, keeping the amount of computation constant, as described in Section 3.2.2. While single-head attention is 0.9 BLEU worse than the best setting, quality also drops off with too many heads.\n\nIn Table 3 rows (B), we observe that reducing the attention key size d k hurts model quality. This suggests that determining compatibility is not easy and that a more sophisticated compatibility function than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected, bigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our sinusoidal positional encoding with learned positional embeddings [9], and observe nearly identical results to the base model.",
+            "overridden_by": [],
+            "narrowed_by": [],
+            "refs_in": 1,
+            "refs_out": 0,
+            "expanded": []
+          },
+          {
+            "evidence": {
+              "version": 1,
+              "primary": {
+                "expr": "DOC:research:attention-v7/u000015@2026-09-04",
+                "title": "3.4 Embeddings and Softmax",
+                "text": "\nTable 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types. n is the sequence length, d is the representation dimension, k is the kernel size of convolutions and r the size of the neighborhood in restricted self-attention.",
+                "spans": [
+                  {
+                    "expr": "DOC:research:attention-v7/u000015@2026-09-04",
+                    "title": "3.4 Embeddings and Softmax",
+                    "breadcrumb": "attention-v7.pdf > 3.4 Embeddings and Softmax",
+                    "passage_start": 0,
+                    "passage_end": 286,
+                    "body_sha256": "d3fc626bb7bbef9ff5b9bb5a823208b93ec440c85e6645494ffad486f0254577",
+                    "byte_start": 885,
+                    "byte_end": 1171,
+                    "line_start": 11,
+                    "line_end": 12
+                  }
+                ],
+                "unit_provenance": {
+                  "checks": {
+                    "extraction": "passed",
+                    "semantic": "not_applicable",
+                    "source_alignment": "unchecked"
+                  },
+                  "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+                  "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+                  "locator": {
+                    "pages": [
+                      5,
+                      6
+                    ],
+                    "elements": [
+                      63,
+                      64,
+                      66,
+                      67
+                    ],
+                    "regions": [
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          63
+                        ],
+                        "bbox": [
+                          108,
+                          649.090806,
+                          240.0243752000001,
+                          658.0471834
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          64
+                        ],
+                        "bbox": [
+                          108,
+                          669.8783474,
+                          505.743837,
+                          722.9403537769912
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 6,
+                        "elements": [
+                          66
+                        ],
+                        "bbox": [
+                          117.45597839355467,
+                          111.8236083984375,
+                          494.35833740234375,
+                          187.3212890625
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 6,
+                        "elements": [
+                          67
+                        ],
+                        "bbox": [
+                          107.691,
+                          72.26934740000002,
+                          504.0035257880001,
+                          102.63922560707964
+                        ]
+                      }
+                    ],
+                    "artifact": "artifacts/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697/1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                    "recipe_sha256": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862"
+                  },
+                  "legal_status": "derived",
+                  "ingest_run": "native:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                  "confidence": 1.0,
+                  "verified_by": []
+                }
+              },
+              "context": [],
+              "context_basis": "same-parent source units and structural ancestry; semantic completeness is not asserted",
+              "passage_complete": true,
+              "section_complete": false,
+              "continuation": [
+                {
+                  "expr": "DOC:research:attention-v7/u000015@2026-09-04",
+                  "chunk_id": "DOC:research:attention-v7/u000015@2026-09-04#p311fcc5f557ab512c1bb270c4cea977347144acf12e101bfeec6197fdb750f0c",
+                  "reason": "passage 3 of 3; read the expression for the complete section"
+                }
+              ],
+              "words": 44,
+              "budget_unit": "whitespace_words"
+            },
+            "role": "primary",
+            "retrieval_path": null,
+            "rank": 4,
+            "id": "DOC:research:attention-v7/u000015",
+            "expr": "DOC:research:attention-v7/u000015@2026-09-04",
+            "anchor": null,
+            "label": "§ v7/u000015",
+            "title": "3.4 Embeddings and Softmax",
+            "breadcrumb": "attention-v7.pdf > 3.4 Embeddings and Softmax",
+            "kind": "base",
+            "source": "research",
+            "effective": "2026-09-04",
+            "score": 1.003,
+            "pinned": null,
+            "lex_rank": 14,
+            "vec_rank": 4,
+            "cosine": 0.32924142479896545,
+            "chunk_id": "DOC:research:attention-v7/u000015@2026-09-04#p311fcc5f557ab512c1bb270c4cea977347144acf12e101bfeec6197fdb750f0c",
+            "part": 2,
+            "nparts": 3,
+            "line": 11,
+            "snippet": "\nTable 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types. n is the sequence length, d is the representation dimension, k is the kernel size of convolutions and r the size of the neighborhood in restricted self-attention.",
+            "overridden_by": [],
+            "narrowed_by": [],
+            "refs_in": 1,
+            "refs_out": 0,
+            "expanded": []
+          },
+          {
+            "evidence": {
+              "version": 1,
+              "primary": {
+                "expr": "DOC:research:attention-v7/u000012@2026-09-04",
+                "title": "3.2.2 Multi-Head Attention",
+                "text": "# 3.2.2 Multi-Head Attention\n\nInstead of performing a single attention function with d model-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to d k , d k and d v dimensions, respectively. On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding d v -dimensional output values. These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2.\n\n4 To illustrate why the dot products get large, assume that the components of q and k are independent random variables with mean 0 and variance 1 . Then their dot product, q · k = ∑ d k i =1 q i k i , has mean 0 and variance d k .\n\nMulti-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this.\n\nMultiHead( Q,K,V ) = Concat(head 1 , ..., head h ) W O where head = Attention( QW Q , KW K , V W V\n\ni i i i )\n\nWhere the projections are parameter matrices W Q i ∈ R d model × d k , W i K ∈ R d model × d k , W V i ∈ R d model × d v and W O ∈ R hd v × d model .\n\nIn this work we employ h = 8 parallel attention layers, or heads. For each of these we use d k = d v = d model /h = 64 . Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality.",
+                "spans": [
+                  {
+                    "expr": "DOC:research:attention-v7/u000012@2026-09-04",
+                    "title": "3.2.2 Multi-Head Attention",
+                    "breadcrumb": "attention-v7.pdf > 3.2.2 Multi-Head Attention",
+                    "passage_start": 0,
+                    "passage_end": 1526,
+                    "body_sha256": "0266b321cf6b261bf87fe820f80eaa813c1765ab497197d2c20bf1ffa611450d",
+                    "byte_start": 0,
+                    "byte_end": 1526,
+                    "line_start": 1,
+                    "line_end": 15
+                  }
+                ],
+                "unit_provenance": {
+                  "checks": {
+                    "extraction": "passed",
+                    "semantic": "not_applicable",
+                    "source_alignment": "unchecked"
+                  },
+                  "raw": "assets/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697.pdf",
+                  "raw_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+                  "locator": {
+                    "pages": [
+                      4,
+                      5
+                    ],
+                    "elements": [
+                      45,
+                      46,
+                      47,
+                      49,
+                      50,
+                      51,
+                      52,
+                      53
+                    ],
+                    "regions": [
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          45
+                        ],
+                        "bbox": [
+                          108,
+                          631.552806,
+                          230.5897930000001,
+                          640.5091834
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          46
+                        ],
+                        "bbox": [
+                          107.641,
+                          650.2525442,
+                          505.241375547,
+                          692.6104732674352
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 4,
+                        "elements": [
+                          47
+                        ],
+                        "bbox": [
+                          107.776,
+                          700.9495824,
+                          504.00192159999983,
+                          723.8812737106629
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          49
+                        ],
+                        "bbox": [
+                          108,
+                          102.7743474,
+                          503.99701133599984,
+                          122.23522560707966
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          50
+                        ],
+                        "bbox": [
+                          186.94,
+                          146.50589459999992,
+                          418.97152547999985,
+                          174.25922560707954
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          51
+                        ],
+                        "bbox": [
+                          271.80499999999995,
+                          165.38854419999973,
+                          425.0604551399999,
+                          176.30147326743497
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          52
+                        ],
+                        "bbox": [
+                          107.532,
+                          203.7578946,
+                          502.82449486,
+                          227.60622560707964
+                        ]
+                      },
+                      {
+                        "type": "page",
+                        "page": 5,
+                        "elements": [
+                          53
+                        ],
+                        "bbox": [
+                          108,
+                          235.12354419999997,
+                          504.00182671199906,
+                          265.81322560707963
+                        ]
+                      }
+                    ],
+                    "artifact": "artifacts/bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697/1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                    "recipe_sha256": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862"
+                  },
+                  "legal_status": "derived",
+                  "ingest_run": "native:1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+                  "confidence": 1.0,
+                  "verified_by": []
+                }
+              },
+              "context": [],
+              "context_basis": "same-parent source units and structural ancestry; semantic completeness is not asserted",
+              "passage_complete": true,
+              "section_complete": true,
+              "continuation": [],
+              "words": 302,
+              "budget_unit": "whitespace_words"
+            },
+            "role": "primary",
+            "retrieval_path": null,
+            "rank": 5,
+            "id": "DOC:research:attention-v7/u000012",
+            "expr": "DOC:research:attention-v7/u000012@2026-09-04",
+            "anchor": null,
+            "label": "§ v7/u000012",
+            "title": "3.2.2 Multi-Head Attention",
+            "breadcrumb": "attention-v7.pdf > 3.2.2 Multi-Head Attention",
+            "kind": "base",
+            "source": "research",
+            "effective": "2026-09-04",
+            "score": 0.9825,
+            "pinned": null,
+            "lex_rank": 3,
+            "vec_rank": 3,
+            "cosine": 0.3614908754825592,
+            "chunk_id": "DOC:research:attention-v7/u000012@2026-09-04#pb64034047373677310c3cf434364b5eee763a00b24bbc8ddb3aab4e9f23b729f",
+            "part": 0,
+            "nparts": 1,
+            "line": 1,
+            "snippet": "# 3.2.2 Multi-Head Attention\n\nInstead of performing a single attention function with d model-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to d k , d k and d v dimensions, respectively. On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding d v -dimensional output values. These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2.\n\n4 To illustrate why the dot products get large, assume that the components of q and k are independent random variables with mean 0 and variance 1 . Then their dot product, q · k = ∑ d k i =1 q i k i , has mean 0 and variance d k .\n\nMulti-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this.\n\nMultiHead( Q,K,V ) = Concat(head 1 , ..., head h ) W O where head = Attention( QW Q , KW K , V W V\n\ni i i i )\n\nWhere the projections are parameter matrices W Q i ∈ R d model × d k , W i K ∈ R d model × d k , W V i ∈ R d model × d v and W O ∈ R hd v × d model .\n\nIn this work we employ h = 8 parallel attention layers, or heads. For each of these we use d k = d v = d model /h = 64 . Due to the reduced dimension of each head, the total computational cost is similar to that of single-head attention with full dimensionality.",
+            "overridden_by": [],
+            "narrowed_by": [],
+            "refs_in": 1,
+            "refs_out": 0,
+            "expanded": []
+          }
+        ]
+      }
+    }
+  },
+  "fha": {
+    "raw_sha256": "e1bca3432cf19e097b7f466dddb2837d8a3393d7fb1f6a711f0eaf818b313e02",
+    "docling_page_range": "254:256",
+    "coverage": "partial comparison; not publishable as a complete document",
+    "literal_checks": [
+      {
+        "literal": "greater than 20 percent",
+        "native_page255": true,
+        "docling_page255": true
+      },
+      {
+        "literal": "downgrade and manually underwrite",
+        "native_page255": true,
+        "docling_page255": true
+      },
+      {
+        "literal": "at least two years",
+        "native_page255": true,
+        "docling_page255": true
+      }
+    ]
+  },
+  "grobid": {
+    "status": "not run",
+    "reason": "Local service at 127.0.0.1:8070 refused connection; Docker is not enabled in this WSL distribution.",
+    "adapter": "eval/adapters/grobid_adapter.py",
+    "api_documentation": "https://grobid.readthedocs.io/en/latest/Grobid-service/"
+  },
+  "decision": "Keep explicit parser selection. Docling improves reading order in this attention paragraph and retains tables, but promotes diagram labels to sections and currently ranks a caption ahead of the explanatory provision. Its original formula string still loses two-dimensional notation. Neither parser is qualified as a universal default.",
+  "artifacts": {
+    "review/needle-retrieval/docling-attention.json": "1e0337bd6a7f39295179aa238cdd1ab7f8d76892ec6152a195ac1e1ad481e862",
+    "review/needle-retrieval/docling-fha255.json": "4a1216c7c5ff5f7e33207b241cbbfc2820fd17da2145c32cb3296eb4997792f4"
+  }
+}

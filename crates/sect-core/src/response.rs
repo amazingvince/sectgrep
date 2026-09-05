@@ -29,10 +29,21 @@ impl Refresh {
 pub enum Freshness {
     /// Index matches the files on disk. `rebuilt` is set when this query rebuilt it first:
     /// (changed files, milliseconds the rebuild took).
-    Fresh { files: usize, built_at: String, rebuilt: Option<(usize, u64)>, stat_ms: u64 },
+    Fresh {
+        files: usize,
+        built_at: String,
+        rebuilt: Option<(usize, u64)>,
+        stat_ms: u64,
+    },
     /// Files changed since the index was built and the query did not refresh; `background` is
     /// true when a rebuild is running (or was just started) in another process.
-    PossiblyStale { files: usize, changed: usize, built_at: String, background: bool, stat_ms: u64 },
+    PossiblyStale {
+        files: usize,
+        changed: usize,
+        built_at: String,
+        background: bool,
+        stat_ms: u64,
+    },
     /// No index on disk.
     Missing,
 }
@@ -116,13 +127,32 @@ mod tests {
     #[test]
     fn lines_start_with_the_right_prefixes() {
         let h = Header {
-            freshness: Freshness::Fresh { files: 44, built_at: "2026-09-03T00:00:00Z".into(), rebuilt: None, stat_ms: 2 },
-            counts: Counts { shown: 1, matched: 1, works: 43, expressions: 44, superseded: 1, sources: 4, extra: vec![] },
+            freshness: Freshness::Fresh {
+                files: 44,
+                built_at: "2026-09-03T00:00:00Z".into(),
+                rebuilt: None,
+                stat_ms: 2,
+            },
+            counts: Counts {
+                shown: 1,
+                matched: 1,
+                works: 43,
+                expressions: 44,
+                superseded: 1,
+                sources: 4,
+                extra: vec![],
+            },
         };
         let [f, c] = h.lines();
         assert!(f.starts_with("freshness: fresh (44 files indexed; stat 2 ms"));
         assert!(c.starts_with("counts: 1 shown of 1 matched; 43 works"));
-        let stale = Freshness::PossiblyStale { files: 44, changed: 30, built_at: "t".into(), background: true, stat_ms: 3 };
+        let stale = Freshness::PossiblyStale {
+            files: 44,
+            changed: 30,
+            built_at: "t".into(),
+            background: true,
+            stat_ms: 3,
+        };
         assert!(stale.line().contains("rebuilding in background"));
         assert_eq!(Refresh::parse("wait"), Some(Refresh::Wait));
         assert_eq!(Refresh::parse("no"), Some(Refresh::No));

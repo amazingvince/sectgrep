@@ -4,12 +4,14 @@
 
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, cpSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { paragraphAnchors } from "../anchors.js";
 import { attr, parseXml, type Elem } from "../xml.js";
 import { dateOf, loadCorpus, splitExpr, type Corpus, type Doc, type SourceInfo } from "./corpus.js";
 import { containsRun, jaccard, spanMatch, tokens } from "./text.js";
+import { applyActions, type Action } from "../actions.js";
 
 export interface Issue {
   validator: number;
@@ -43,6 +45,7 @@ export interface ValidatorSummary {
 }
 
 export interface ValidateReport {
+  checks: Array<{ path: string; validator: number; state: "passed" | "failed" | "unchecked" | "not_applicable" }>;
   staging: string;
   corpus: string | null;
   issues: Issue[];
@@ -67,6 +70,7 @@ export interface SourceText {
   kind: "elements" | "xml";
   tokens: string[];
   cells: Set<string>;
+  tables: string[][][];
   where: string;
 }
 
@@ -111,10 +115,13 @@ export function buildContext(o: ValidateOptions): Context {
     const hit = cache.get(key);
     if (hit) return hit;
     let out: { text: SourceText | null; reason?: string };
-    const elements = sha ? path.join(work, sha, "elements.jsonl") : "";
-    const rawPath = raw ? (path.isAbsolute(raw) ? raw : path.join(rawRoot, raw)) : "";
+    const artifact = typeof locator.artifact === "string" && !locator.artifact.split(/[\\/]/).includes("..") && !path.isAbsolute(locator.artifact) ? path.join(staging.root, locator.artifact, "elements.jsonl") : "";
+    const elements = artifact && existsSync(artifact) ? artifact : sha ? path.join(work, sha, "elements.jsonl") : "";
+    const rawPath = raw ? (path.isAbsolute(raw) ? raw : existsSync(path.join(staging.root, raw)) ? path.join(staging.root, raw) : path.join(rawRoot, raw)) : "";
     if (!raw) out = { text: null, reason: "no provenance.raw" };
-    else if (elements && existsSync(elements)) out = { text: elementsText(elements, path.join(work, sha), locator) };
+    else if (!rawPath || !existsSync(rawPath)) out = { text: null, reason: `raw ${raw} not available` };
+    else if (hashOf(rawPath) !== sha) out = { text: null, reason: `raw ${raw} hash differs from provenance` };
+    else if (elements && existsSync(elements) && (Array.isArray(locator.pages) || Array.isArray(locator.elements))) out = { text: elementsText(elements, path.join(work, sha), locator) };
     else if (rawPath && existsSync(rawPath) && /\.xml$/i.test(rawPath)) {
       let dom = xmlCache.get(rawPath);
       if (!dom) {
@@ -148,6 +155,7 @@ function elementsText(file: string, dir: string, locator: Record<string, unknown
   const seqs = Array.isArray(locator.elements) ? new Set((locator.elements as unknown[]).map(Number)) : null;
   const toks: string[] = [];
   const cells = new Set<string>();
+  const tables: string[][][] = [];
   for (const line of readFileSync(file, "utf-8").split("\n")) {
     if (!line.trim()) continue;
     const e = JSON.parse(line) as { page: number; seq?: number; type: string; text: string; table_grid?: string[][] };
@@ -157,6 +165,7 @@ function elementsText(file: string, dir: string, locator: Record<string, unknown
     // typed as a header would otherwise be missing from its own section.
     toks.push(...tokens(e.text));
     for (const row of e.table_grid ?? []) for (const c of row) cells.add(cellKey(c));
+    if (e.table_grid?.length) tables.push(e.table_grid.map((r) => r.map(cellKey)));
   }
   const grids = path.join(dir, "grids.jsonl");
   if (existsSync(grids)) {
@@ -166,7 +175,7 @@ function elementsText(file: string, dir: string, locator: Record<string, unknown
       for (const row of g.rows) for (const c of row) cells.add(cellKey(String(c ?? "")));
     }
   }
-  return { kind: "elements", tokens: toks, cells, where: file };
+  return { kind: "elements", tokens: toks, cells, tables, where: file };
 }
 
 /**
@@ -197,13 +206,15 @@ export function locate(dom: Document, xpath: string): Elem | null {
   let m = /^\/\/(\w+|DIV\*|\*)\[@(\w+)='([^']*)'\]$/.exec(xpath);
   if (m) {
     const [, tag, name, value] = m;
-    return byAttr(dom, name, value).find((e) => tagMatches(e.tagName, tag)) ?? null;
+    const matches = byAttr(dom, name, value).filter((e) => tagMatches(e.tagName, tag));
+    return matches.length === 1 ? matches[0] : null;
   }
   const every = Array.from(dom.getElementsByTagName("*")) as unknown as Elem[];
   m = /^\/\/(\w+)\[(\w+)\[contains\(\.,\s*'([^']*)'\)\]\]$/.exec(xpath);
   if (m) {
     const [, tag, childTag, value] = m;
-    return every.find((e) => e.tagName === tag && Array.from((e as unknown as Element).getElementsByTagName(childTag)).some((c) => (c.textContent ?? "").includes(value))) ?? null;
+    const matches = every.filter((e) => e.tagName === tag && Array.from((e as unknown as Element).getElementsByTagName(childTag)).some((c) => (c.textContent ?? "").includes(value)));
+    return matches.length === 1 ? matches[0] : null;
   }
   return null;
 }
@@ -241,6 +252,11 @@ function spacedText(node: Node): string {
  */
 function xmlText(el: Elem, where: string): SourceText {
   const cells = new Set<string>();
+  const tables = Array.from((el as unknown as Element).getElementsByTagName("GPOTABLE")).map((t) => {
+    const header = Array.from(t.getElementsByTagName("CHED")).map((c) => cellKey(c.textContent ?? ""));
+    const rows = Array.from(t.getElementsByTagName("ROW")).map((r) => Array.from(r.getElementsByTagName("ENT")).map((c) => cellKey(c.textContent ?? "")));
+    return header.length ? [header, ...rows] : rows;
+  });
   for (const ent of Array.from((el as unknown as Element).getElementsByTagName("ENT"))) cells.add(cellKey(ent.textContent ?? ""));
   let text = "";
   for (const c of Array.from((el as unknown as Node).childNodes)) {
@@ -248,7 +264,7 @@ function xmlText(el: Elem, where: string): SourceText {
     if (skipChild(c)) continue;
     text += ` ${spacedText(c)} `;
   }
-  return { kind: "xml", tokens: tokens(text), cells, where };
+  return { kind: "xml", tokens: tokens(text), cells, tables, where };
 }
 
 const issue = (validator: number, level: Issue["level"], doc: Doc, message: string): Issue => ({ validator, level, path: doc.rel, message });
@@ -298,7 +314,7 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
   if (doc.front.kind === "note" || doc.source?.kind === "note") return out;
   const body = tokens(bodyBelowHeading(doc.body));
   const ctx = tokens(String(doc.front.context ?? ""));
-  if (ctx.length && body.length) {
+  if (ctx.length && body.length && doc.front.context_kind !== "navigation") {
     const j = jaccard(ctx, body);
     if (j >= cx.contextMax) out.push(issue(2, "error", doc, `context block paraphrases the body (token Jaccard ${j.toFixed(2)} >= ${cx.contextMax})`));
   }
@@ -313,34 +329,24 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
     const prior = (cx.byId.get(pid) ?? []).find((d) => dateOf(d.front) === pdate);
     if (!prior) reason = `prior Expression ${String(derivedFrom)} not found`;
     else {
-      const actionTexts: string[] = [];
+      const actions: Action[] = [];
       for (const ref of (doc.front.amended_by ?? []).map(String)) {
         const notice = (cx.byId.get(ref.split("#")[0]) ?? []).find((n) => (n.front.actions?.length ?? 0) > 0);
         const a = notice?.front.actions?.find((x) => x.action_id === ref);
-        if (a?.text) actionTexts.push(String(a.text));
+        if (a) actions.push(a as Action);
       }
-      text = { tokens: [...tokens(prior.body), ...tokens(actionTexts.join("\n"))], kind: "derived" };
+      const replay = applyActions(prior.body, actions);
+      if (!actions.length || actions.length !== (doc.front.amended_by ?? []).length || replay.unapplied.length || replay.partial?.length) {
+        reason = "Actions are missing or cannot be completely replayed";
+      } else text = { tokens: tokens(bodyBelowHeading(replay.body)), kind: "derived" };
     }
   } else ({ text, reason } = cx.sourceOf(doc));
   if (!text) {
-    out.push(issue(2, "warning", doc, `round-trip not checked: ${reason ?? "source unavailable"}`));
+    out.push(issue(2, "error", doc, `round-trip not checked: ${reason ?? "source unavailable"}`));
     return out;
   }
   if (text.kind === "derived" && body.length) {
-    // The amended paragraph sits out of order with the prior text, so no single span holds the
-    // body: every body token must instead come from the prior Expression or the Actions' text.
-    const bag = new Map<string, number>();
-    for (const t of text.tokens) bag.set(t, (bag.get(t) ?? 0) + 1);
-    let hit = 0;
-    for (const t of body) {
-      const n = bag.get(t) ?? 0;
-      if (n > 0) {
-        hit++;
-        bag.set(t, n - 1);
-      }
-    }
-    const score = hit / body.length;
-    if (score < cx.roundTrip) out.push(issue(2, "error", doc, `body tokens found in the prior Expression and the Actions' text: ${score.toFixed(3)} (< ${cx.roundTrip}; ${hit} of ${body.length})`));
+    if (body.length !== text.tokens.length || body.some((t, i) => t !== text.tokens[i])) out.push(issue(2, "error", doc, "derived body differs from ordered Action replay"));
     return out;
   }
   if (!body.length) {
@@ -349,7 +355,7 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
     if (text.tokens.length > 12) out.push(issue(2, "error", doc, `empty body; the ${text.kind} source holds ${text.tokens.length} tokens`));
     return out;
   }
-  if (body.length < 8) {
+  if (body.length < 8 && !text.tokens.length) {
     // A stub ("§ 11.6 [Reserved]", then "[Reserved]") is too short for a ratio to mean anything:
     // every distinct token of the body must be in the source or in the stub's own heading.
     const have = new Set([...text.tokens, ...tokens(doc.body.split("\n").find((l) => l.trim()) ?? "")]);
@@ -357,8 +363,11 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
     if (missing.length) out.push(issue(2, "error", doc, `body token(s) not in its ${text.kind} source: ${missing.join(", ")}`));
     return out;
   }
-  const s = spanMatch(body, text.tokens, cx.roundTrip);
-  if (s.score < cx.roundTrip) out.push(issue(2, "error", doc, `body matches its ${text.kind} source at ${s.score.toFixed(3)} (< ${cx.roundTrip}; ${s.lcs} of ${body.length} tokens in a span of ${s.end - s.start + 1}${s.capped ? "; diff cut off" : ""})`));
+  const faithful = text.kind === "xml" ? body.length === text.tokens.length && body.every((t, i) => t === text.tokens[i]) : containsRun(text.tokens, body);
+  if (!faithful) {
+    const i = body.findIndex((t, i) => t !== text!.tokens[i]);
+    out.push(issue(2, "error", doc, `body is not an unchanged ordered ${text.kind === "xml" ? "copy" : "span"} of its ${text.kind} source; first difference near token ${i}: ${body.slice(Math.max(i - 3, 0), i + 4).join(" ")} / source ${text.tokens.slice(Math.max(i - 3, 0), i + 4).join(" ")}`));
+  }
   return out;
 }
 
@@ -367,19 +376,35 @@ export function roundTrip(doc: Doc, cx: Context): Issue[] {
 export function tableCells(doc: Doc, cx: Context): Issue[] {
   const out: Issue[] = [];
   const rows: string[][] = [];
+  const blocks: string[][][] = [];
+  let block: string[][] | null = null;
   for (const line of doc.body.split("\n")) {
     const t = line.trim();
-    if (!t.startsWith("|")) continue;
+    if (!t.startsWith("|")) { block = null; continue; }
     if (/^\|?\s*:?-{3,}/.test(t)) continue;
-    rows.push(t.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim()));
+    const row = t.replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+    rows.push(row);
+    if (!block) { block = []; blocks.push(block); }
+    block.push(row);
   }
   if (!rows.length) return out;
   const { text, reason } = cx.sourceOf(doc);
   if (!text) {
-    out.push(issue(3, "warning", doc, `table cells not checked: ${reason ?? "source unavailable"}`));
+    out.push(issue(3, "error", doc, `table cells not checked: ${reason ?? "source unavailable"}`));
     return out;
   }
   const missing: string[] = [];
+  for (const table of blocks) {
+    const grid = table.map((r) => r.map(cellKey));
+    if (!text.tables.some((source) => JSON.stringify(source) === JSON.stringify(grid))) out.push(issue(3, "error", doc, "table row/header association differs from every complete located source table"));
+  }
+  const sourceRows = text.tables.flat();
+  for (const row of rows) {
+    const normalized = row.map(cellKey);
+    if (!sourceRows.some((r) => r.length === normalized.length && r.every((c, i) => c === normalized[i]))) {
+      out.push(issue(3, "error", doc, `table row/header association not found in the located source: ${row.join(" | ")}`));
+    }
+  }
   for (const row of rows) {
     for (const cell of row) {
       const key = cellKey(cell.replace(/[*_`]/g, ""));
@@ -612,10 +637,23 @@ export function validateStaging(o: ValidateOptions): ValidateReport {
   const cx = buildContext(o);
   const issues: Issue[] = [];
   const summaries: ValidatorSummary[] = [];
+  const checks: ValidateReport["checks"] = [];
   const staging = cx.staging.root;
   if (o.skipIndex) summaries.push({ n: 1, name: VALIDATOR_NAMES[1], checked: 0, errors: 0, warnings: 0, skipped: "skipped by option" });
   else {
-    const r = validateIndex(staging, o.sectBin);
+    let combined: string | undefined;
+    let r: ReturnType<typeof validateIndex>;
+    try {
+      if (o.corpus && path.resolve(o.corpus) !== staging) {
+        combined = mkdtempSync(path.join(tmpdir(), "sect-validate-"));
+        const filter = (p: string) => !path.basename(p).startsWith(".");
+        cpSync(o.corpus, combined, { recursive: true, filter });
+        cpSync(staging, combined, { recursive: true, filter });
+      }
+      r = validateIndex(combined ?? staging, o.sectBin);
+    } finally {
+      if (combined && path.dirname(combined) === path.resolve(tmpdir()) && path.basename(combined).startsWith("sect-validate-")) rmSync(combined, { recursive: true, force: true });
+    }
     // The index validator sees the staging alone; a target the corpus already holds resolves at merge.
     for (const i of r.issues) {
       const t = /link target `([^`]+)` does not resolve/.exec(i.message)?.[1] ?? /(?:parent|supersedes|superseded_by) `([^`]+)` (?:does not resolve|is not a known)/.exec(i.message)?.[1];
@@ -629,11 +667,16 @@ export function validateStaging(o: ValidateOptions): ValidateReport {
   }
   for (const v of VALIDATORS) {
     const found: Issue[] = [];
-    for (const doc of cx.staging.docs) found.push(...v.run(doc, cx));
+    for (const doc of cx.staging.docs) {
+      const results = v.run(doc, cx);
+      found.push(...results);
+      const inapplicable = v.n === 3 && !doc.body.split("\n").some((l) => l.trim().startsWith("|")) || v.n === 6 && !doc.front.overrides?.length && !doc.front.narrows?.length || v.n === 7 && !doc.front.amended_by?.length;
+      checks.push({ path: doc.rel, validator: v.n, state: results.some((r) => /not checked|unchecked/.test(r.message)) ? "unchecked" : results.some((r) => r.level === "error") ? "failed" : inapplicable ? "not_applicable" : "passed" });
+    }
     issues.push(...found);
     summaries.push({ n: v.n, name: VALIDATOR_NAMES[v.n], checked: cx.staging.docs.length, errors: found.filter((i) => i.level === "error").length, warnings: found.filter((i) => i.level === "warning").length });
   }
-  return { staging, corpus: o.corpus ? path.resolve(o.corpus) : null, issues, errors: issues.filter((i) => i.level === "error").length, warnings: issues.filter((i) => i.level === "warning").length, validators: summaries, documents: cx.staging.docs.length };
+  return { checks, staging, corpus: o.corpus ? path.resolve(o.corpus) : null, issues, errors: issues.filter((i) => i.level === "error").length, warnings: issues.filter((i) => i.level === "warning").length, validators: summaries, documents: cx.staging.docs.length };
 }
 
 export function formatReport(r: ValidateReport): string {

@@ -1,0 +1,14 @@
+{
+  "purpose": "first real scale build; interrupted before publication",
+  "corpus": "corpora/needle-scale-real-v1",
+  "binary_sha256": "680eaa101d76f36a93a860d8128a800df44a842608bdf839c4fdcfacd2b3e138",
+  "passage_recipe": "coherent-passages-v3",
+  "start": "2026-09-05T08:40:33.1602123Z",
+  "stopped_at": "2026-09-05T08:56:27.7809660Z",
+  "elapsed_ms_lower_bound": 954622.7334,
+  "cpu_seconds": 976.203125,
+  "observed_peak_rss_bytes": 2838126592,
+  "published": false,
+  "reason": "No generation published after approximately 15 minutes; preserve the baseline and test bounded tokenization before retrying",
+  "completed": false
+}

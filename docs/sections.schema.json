@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SectionBundle",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "recipe": {
+      "type": "string"
+    },
+    "document": {
+      "type": "string"
+    },
+    "artifacts": {
+      "description": "Corpus-relative organized document artifacts, including historical revisions, with SHA-256.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "sections": {
+      "description": "Virtual paths preserve the exact-search, citation, and revision contracts.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "recipe",
+    "document",
+    "artifacts",
+    "sections"
+  ]
+}

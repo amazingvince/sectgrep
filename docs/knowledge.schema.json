@@ -1,0 +1,595 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KnowledgeArtifact",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0
+    },
+    "profile": {
+      "$ref": "#/$defs/Profile"
+    },
+    "concepts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Concept"
+      }
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Mention"
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Relation"
+      }
+    },
+    "derivations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Derivation"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile",
+    "concepts",
+    "mentions",
+    "relations",
+    "derivations"
+  ],
+  "$defs": {
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "unit_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "concept_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metadata_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relation_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RelationType"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "unit_types",
+        "concept_types",
+        "metadata_fields",
+        "relation_types"
+      ]
+    },
+    "RelationType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/RelationDirection"
+        },
+        "weight": {
+          "type": "number",
+          "format": "double"
+        },
+        "required_context": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "direction",
+        "weight",
+        "required_context"
+      ]
+    },
+    "RelationDirection": {
+      "type": "string",
+      "enum": [
+        "out",
+        "in",
+        "both"
+      ]
+    },
+    "Concept": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Profile-scoped identifier. Equal labels never imply equal identities.",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "kind": {
+          "type": "string"
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "definition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/Verification"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "aliases",
+        "kind",
+        "evidence",
+        "verification"
+      ]
+    },
+    "Evidence": {
+      "type": "object",
+      "properties": {
+        "raw": {
+          "type": "string"
+        },
+        "raw_sha256": {
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/Locator"
+        },
+        "quote": {
+          "type": "string"
+        },
+        "verification": {
+          "$ref": "#/$defs/Verification"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "raw",
+        "raw_sha256",
+        "locator",
+        "quote",
+        "verification"
+      ]
+    },
+    "Locator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "elements": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint32",
+                "minimum": 0
+              }
+            },
+            "bbox": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            },
+            "type": {
+              "type": "string",
+              "const": "page"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "page",
+            "elements"
+          ]
+        },
+        {
+          "description": "Ordered source boxes for one region. The quote belongs to their union;\nindividual boxes do not assert character-level quote alignment.",
+          "type": "object",
+          "properties": {
+            "locations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PageLocation"
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "pages"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "locations"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "xpath": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "xml"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "xpath"
+          ]
+        },
+        {
+          "description": "An XPath within a named XML member of an Office Open XML ZIP package.",
+          "type": "object",
+          "properties": {
+            "part": {
+              "type": "string"
+            },
+            "xpath": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "office"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "part",
+            "xpath"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "line_start": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "line_end": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "type": {
+              "type": "string",
+              "const": "text"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "line_start",
+            "line_end"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sheet": {
+              "type": "string"
+            },
+            "range": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "sheet"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "sheet",
+            "range"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "slide": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            },
+            "shape": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "const": "slide"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "slide"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "pointer": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "record"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "pointer"
+          ]
+        }
+      ]
+    },
+    "PageLocation": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "elements": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0
+          }
+        },
+        "bbox": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "elements"
+      ]
+    },
+    "Verification": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/$defs/CheckState"
+        },
+        "method": {
+          "type": "string"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "method"
+      ]
+    },
+    "CheckState": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "unchecked",
+        "not_applicable"
+      ]
+    },
+    "Mention": {
+      "type": "object",
+      "properties": {
+        "concept": {
+          "type": "string"
+        },
+        "at": {
+          "$ref": "#/$defs/Endpoint"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/Verification"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "concept",
+        "at",
+        "evidence",
+        "verification"
+      ]
+    },
+    "Endpoint": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "string"
+        },
+        "anchor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "revision"
+      ]
+    },
+    "Relation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/$defs/Endpoint"
+        },
+        "to": {
+          "$ref": "#/$defs/Endpoint"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "qualifiers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/Verification"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "from",
+        "to",
+        "kind",
+        "evidence",
+        "verification"
+      ]
+    },
+    "Derivation": {
+      "type": "object",
+      "properties": {
+        "stage": {
+          "type": "string"
+        },
+        "implementation": {
+          "type": "string"
+        },
+        "recipe_sha256": {
+          "type": "string"
+        },
+        "inputs": {
+          "description": "Input paths and SHA-256 hashes, including parser, prompt, model, and profile artifacts.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "implementation",
+        "recipe_sha256",
+        "inputs",
+        "outputs"
+      ]
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-05T14:32:40.057457+00:00",
+  "purpose": "compiled passage-cache mutation diagnostic; no relevance labels",
+  "binary_sha256": "7c040b84ca8f56e3d911e371ff62d1e09fd805603a596f9d01d023db78dd8398",
+  "original_generation": "01788614805361510100",
+  "baseline_files": 45320,
+  "baseline_passages": 117075,
+  "steps": [
+    {
+      "action": "seed two probe sections and cache",
+      "elapsed_ms_including_refresh": 192650.8926999959,
+      "generation": "01788618914379725700",
+      "passage_cache": {
+        "compiled_documents": 45322,
+        "reused_documents": 0,
+        "compiled_groups": 45322,
+        "reused_groups": 0,
+        "reused_passages": 0
+      },
+      "layer_ms": {
+        "lexical": 848,
+        "ngram": 21134,
+        "passages": 110400,
+        "semantic": 500,
+        "structural": 10953,
+        "validate": 3467,
+        "walk": 17395,
+        "write-caches": 922,
+        "write-structural": 15135
+      }
+    },
+    {
+      "action": "edit one section",
+      "elapsed_ms_including_refresh": 85601.39710000658,
+      "generation": "01788619000569984700",
+      "passage_cache": {
+        "compiled_documents": 1,
+        "reused_documents": 45321,
+        "compiled_groups": 1,
+        "reused_groups": 45321,
+        "reused_passages": 117076
+      },
+      "layer_ms": {
+        "lexical": 825,
+        "ngram": 20985,
+        "passages": 7451,
+        "semantic": 414,
+        "structural": 12040,
+        "validate": 3449,
+        "walk": 17682,
+        "write-caches": 1241,
+        "write-structural": 15454
+      }
+    },
+    {
+      "action": "remove probe sections",
+      "elapsed_ms_including_refresh": 88074.45529999677,
+      "generation": "01788619089606320100",
+      "passage_cache": {
+        "compiled_documents": 0,
+        "reused_documents": 45320,
+        "compiled_groups": 0,
+        "reused_groups": 45320,
+        "reused_passages": 117075
+      },
+      "layer_ms": {
+        "lexical": 831,
+        "ngram": 21504,
+        "passages": 3781,
+        "semantic": 561,
+        "structural": 11235,
+        "validate": 3297,
+        "walk": 19359,
+        "write-caches": 1120,
+        "write-structural": 15412
+      }
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "Two synthetic probe sections are added to a real regulatory corpus; real source bytes are not edited.",
+    "Timings include freshness, rebuilding and reopening; no p95 claim from a single edit.",
+    "Structural graphs, snapshots and n-grams still rebuild; this measures passage-compiler reuse.",
+    "Initial seeding also creates the cache when the previous generation predates it."
+  ],
+  "final_generation": "01788619089606320100",
+  "canonical_passages_vectors_and_answers_unchanged": true,
+  "old_generation_immutable": true,
+  "real_raw_sources_unchanged": true,
+  "peak_mcp_rss_including_rebuilds": 6739607552
+}

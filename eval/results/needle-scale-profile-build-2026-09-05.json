@@ -1,0 +1,8 @@
+{
+  "purpose": "diagnostic retry; switch to direct native log handles",
+  "elapsed_ms_lower_bound": 446726.7842,
+  "binary_sha256": "4566b265922e9716a7b0d025c59c2ac8f3bdbdd67ed98dc531eb463fba614cb9",
+  "completed": false,
+  "stage_evidence": "Timing output absent in this invocation despite fast standalone parsing and walking; phase inference unconfirmed",
+  "peak_rss_bytes": 2676764672
+}

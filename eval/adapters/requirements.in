@@ -1,0 +1,4 @@
+docling==2.126.0
+docling-graph==1.9.1
+langextract==1.6.0
+pypdf==6.17.0
